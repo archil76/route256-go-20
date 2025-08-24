@@ -1,0 +1,37 @@
+### get product info  by sku
+GET http://localhost:8082/product/1076963
+Content-Type: application/json
+X-API-KEY: testToken
+
+{
+
+  "sku": "1076963"
+}
+
+
+
+
+### expected {} 200 OK; must add 1 item
+
+
+### get product info  by sku
+POST http://route256.pavl.uk:8080/get_product
+Content-Type: application/json
+
+{
+  "token": "testtoken",
+  "sku": 1076968
+}
+### expected {} 200 OK; must add 1 item
+
+
+### get product list
+POST http://route256.pavl.uk:8080/list_skus
+Content-Type: application/json
+
+{
+  "token": "testtoken",
+  "startAfterSku": 0,
+  "count": 100
+}
+### expected {} 200 OK; must add 1 item

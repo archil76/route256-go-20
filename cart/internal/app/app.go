@@ -9,7 +9,6 @@ import (
 	cartsService "route256/cart/internal/domain/carts/service"
 	product_service "route256/cart/internal/domain/products/service"
 	"route256/cart/internal/infra/config"
-	"route256/cart/internal/infra/http/middlewares"
 	"route256/cart/internal/infra/http/round_trippers"
 	"time"
 )
@@ -32,6 +31,7 @@ func NewApp(configPath string) (*App, error) {
 }
 
 func (app *App) ListenAndServe() error {
+
 	address := fmt.Sprintf("%s:%s", app.config.Server.Host, app.config.Server.Port)
 
 	l, err := net.Listen("tcp", address)
@@ -39,7 +39,7 @@ func (app *App) ListenAndServe() error {
 		return err
 	}
 
-	fmt.Println("app bootstrap")
+	fmt.Printf("app bootstrap %s:%s", app.config.Server.Host, app.config.Server.Port)
 
 	return app.server.Serve(l)
 }
@@ -71,8 +71,8 @@ func (app *App) bootstrapHandlers() http.Handler {
 	mux.HandleFunc("DELETE /user/{user_id}/cart/{sku_id}", s.DeleteItem)
 	mux.HandleFunc("DELETE /user/{user_id}/cart", s.ClearCart)
 
-	timerMux := middlewares.NewTimeMux(mux)
-	logMux := middlewares.NewLogMux(timerMux)
+	//timerMux := middlewares.NewTimeMux(mux)
+	//logMux := middlewares.NewLogMux(timerMux)
 
-	return logMux
+	return mux
 }

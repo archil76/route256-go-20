@@ -10,7 +10,7 @@ type Config struct {
 	Server struct {
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
-	} `yaml:"server"`
+	} `yaml:"service"`
 	ProductService struct {
 		Host  string `yaml:"host"`
 		Port  string `yaml:"port"`

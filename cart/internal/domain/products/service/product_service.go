@@ -34,7 +34,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		fmt.Sprintf("%s/product/%d", s.address, sku),
+		fmt.Sprintf("http://%s/product/%d", s.address, sku),
 		http.NoBody,
 	)
 	if err != nil {
