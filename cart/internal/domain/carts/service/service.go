@@ -77,7 +77,7 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 		return nil, err
 	}
 
-	if cart.Items == nil || len(cart.Items) == 0 {
+	if len(cart.Items) == 0 {
 		return nil, ErrCartIsEmpty
 	}
 
