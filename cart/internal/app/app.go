@@ -7,8 +7,9 @@ import (
 	"route256/cart/internal/app/server"
 	cartsRepository "route256/cart/internal/domain/carts/repository"
 	cartsService "route256/cart/internal/domain/carts/service"
-	product_service "route256/cart/internal/domain/products/service"
+	productservice "route256/cart/internal/domain/products/service"
 	"route256/cart/internal/infra/config"
+	"route256/cart/internal/infra/http/middlewares"
 	"route256/cart/internal/infra/http/round_trippers"
 	"time"
 )
@@ -53,7 +54,7 @@ func (app *App) bootstrapHandlers() http.Handler {
 		Timeout:   10 * time.Second,
 	}
 
-	productService := product_service.NewProductService(
+	productService := productservice.NewProductService(
 		httpClient,
 		app.config.ProductService.Token,
 		fmt.Sprintf("%s:%s", app.config.ProductService.Host, app.config.ProductService.Port),
@@ -71,8 +72,8 @@ func (app *App) bootstrapHandlers() http.Handler {
 	mux.HandleFunc("DELETE /user/{user_id}/cart/{sku_id}", s.DeleteItem)
 	mux.HandleFunc("DELETE /user/{user_id}/cart", s.ClearCart)
 
-	//timerMux := middlewares.NewTimeMux(mux)
-	//logMux := middlewares.NewLogMux(timerMux)
+	timerMux := middlewares.NewTimeMux(mux)
+	logMux := middlewares.NewLogMux(timerMux)
 
-	return mux
+	return logMux
 }

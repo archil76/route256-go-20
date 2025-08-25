@@ -28,7 +28,7 @@ func ValidateID(w http.ResponseWriter, r *http.Request, id int64) (int64, error)
 	if id < 1 {
 
 		err := errors.New("id should be greater than 0")
-		err = WriteErrorToResponse(w, r, err, "", http.StatusBadRequest)
+		//err = WriteErrorToResponse(w, r, err, "", http.StatusBadRequest)
 
 		return id, err
 	}
@@ -40,14 +40,14 @@ func ConvertID(w http.ResponseWriter, r *http.Request, stringID string) (int64, 
 	id, err := strconv.ParseInt(stringID, 10, 64)
 
 	if err != nil {
-		err = WriteErrorToResponse(w, r, err, "parsing error", http.StatusBadRequest)
+		//err = WriteErrorToResponse(w, r, err, "parsing error", http.StatusBadRequest)
 
 		return id, err
 	}
 	return id, nil
 }
 
-func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) error {
+func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) {
 
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
@@ -55,10 +55,10 @@ func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, mes
 	if errOut != nil {
 		//instead r.pat.str
 		log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, errOut.Error(), message)
-		return errOut
+		return
 	}
 
-	return err
+	return
 
 }
 
@@ -70,5 +70,11 @@ func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message strin
 	if errOut != nil {
 		log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, errOut.Error(), message)
 	}
+
+}
+
+func WriteErrorToLog(w http.ResponseWriter, r *http.Request, err error, message string) {
+
+	log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, err.Error(), message)
 
 }
