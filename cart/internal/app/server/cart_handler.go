@@ -12,20 +12,31 @@ import (
 	"github.com/guiferpa/gody/v2/rule"
 )
 
+var (
+	ErrInvalidUserID = errors.New("Идентификатор пользователя должен быть натуральным числом (больше нуля)")
+	ErrInvalidSKU    = errors.New("SKU должен быть натуральным числом (больше нуля)")
+	ErrInvalidCount  = errors.New("Количество должно быть натуральным числом (больше нуля)")
+	ErrPSFail        = errors.New("SKU должен существовать в сервисе product-service")
+	ErrUnmarshalling = errors.New("Unmarshalling error")
+	ErrOther         = errors.New("Ошибка сервера")
+)
+
 func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
+		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
 		return
 	}
 
 	rawSkuID := request.PathValue("sku_id")
-	skuID, err := utils.PrepareID(writer, request, rawSkuID)
+	skuID, err := utils.PrepareID(rawSkuID)
 
 	if err != nil {
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
 		return
 	}
 
@@ -35,31 +46,34 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	err = json.Unmarshal(body, &addItemRequest)
 	if err != nil {
-		err = utils.WriteErrorToResponse(writer, request, err, "unmarshalling error", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrUnmarshalling, "", http.StatusBadRequest)
 		return
 	}
 
 	validator := gody.NewValidator()
 	err = validator.AddRules(rule.Min)
 	if err != nil {
-		_ = utils.WriteErrorToResponse(writer, request, err, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
 		return
 	}
 	if _, err := validator.Validate(addItemRequest); err != nil {
-		_ = utils.WriteErrorToResponse(writer, request, err, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
 		return
 	}
 
 	if addItemRequest.Count < 1 {
-		_ = utils.WriteErrorToResponse(writer, request, errors.New("count of items must be greater than zero"), "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
 		return
 	}
 
 	_, err = s.cartService.AddItem(request.Context(), userID, skuID, addItemRequest.Count)
 
 	if err != nil {
-		err = utils.WriteErrorToResponse(writer, request, err, "unable to add cart", http.StatusPreconditionFailed)
-
+		if errors.Is(err, model.ErrProductNotFound) {
+			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
+		} else {
+			utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+		}
 		return
 	}
 	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
@@ -70,38 +84,49 @@ func (s *Server) DeleteItem(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
 
-		utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
 		return
 	}
 
 	rawSkuID := request.PathValue("sku_id")
-	skuID, err := utils.PrepareID(writer, request, rawSkuID)
+	skuID, err := utils.PrepareID(rawSkuID)
 
 	if err != nil {
-		utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
 		return
 	}
 
-	_, _ = s.cartService.DeleteItem(request.Context(), userID, skuID)
+	_, err = s.cartService.DeleteItem(request.Context(), userID, skuID)
+	if err != nil {
+		// тут ошибки могут быть из-за невалидных ID а они проверены раньше. Поэтому просто лог и ответ ОК.
+		utils.WriteErrorToLog(request, err, "")
+	}
 
 	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
 
 }
 
 func (s *Server) ClearCart(writer http.ResponseWriter, request *http.Request) {
+
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
+		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
 		return
 	}
 
 	_, err = s.cartService.DeleteItemByUserId(request.Context(), userID)
+
+	if err != nil {
+		// тут ошибки могут быть из-за невалидных ID а они проверены раньше. Поэтому просто лог и ответ ОК.
+		utils.WriteErrorToLog(request, err, "")
+	}
 
 	utils.WriteStatusToResponse(writer, request, "", http.StatusNoContent)
 
@@ -111,16 +136,17 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
+		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
 		return
 	}
 
 	cart, err := s.cartService.GetItemsByUserId(request.Context(), userID)
 
 	if err != nil {
-		err = utils.WriteErrorToResponse(writer, request, err, "", http.StatusOK)
+		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
 		return
 	}
 
@@ -142,7 +168,7 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 	rawResponce, err := json.Marshal(reportCart)
 
 	if err != nil {
-		_ = utils.WriteErrorToResponse(writer, request, err, "can't get cart. marshalling error", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, err, "can't get cart. marshalling error", http.StatusBadRequest)
 		return
 	}
 
@@ -151,7 +177,7 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 	_, err = writer.Write(rawResponce)
 
 	if err != nil {
-		_ = utils.WriteErrorToResponse(writer, request, err, "can't get cart. marshalling error", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, err, "can't get cart. marshalling error", http.StatusBadRequest)
 
 	}
 }

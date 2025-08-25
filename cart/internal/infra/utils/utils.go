@@ -8,14 +8,14 @@ import (
 	"strconv"
 )
 
-func PrepareID(w http.ResponseWriter, r *http.Request, stringID string) (int64, error) {
+func PrepareID(stringID string) (int64, error) {
 
-	id, err := ConvertID(w, r, stringID)
+	id, err := ConvertID(stringID)
 	if err != nil {
 		return id, err
 	}
 
-	id, err = ValidateID(w, r, id)
+	id, err = ValidateID(id)
 	if err != nil {
 		return id, err
 	}
@@ -23,31 +23,31 @@ func PrepareID(w http.ResponseWriter, r *http.Request, stringID string) (int64, 
 	return id, nil
 }
 
-func ValidateID(w http.ResponseWriter, r *http.Request, id int64) (int64, error) {
+func ValidateID(id int64) (int64, error) {
 
 	if id < 1 {
 
 		err := errors.New("id should be greater than 0")
-		err = WriteErrorToResponse(w, r, err, "", http.StatusBadRequest)
+		//err = WriteErrorToResponse(w, r, err, "", http.StatusBadRequest)
 
 		return id, err
 	}
 	return id, nil
 }
 
-func ConvertID(w http.ResponseWriter, r *http.Request, stringID string) (int64, error) {
+func ConvertID(stringID string) (int64, error) {
 
 	id, err := strconv.ParseInt(stringID, 10, 64)
 
 	if err != nil {
-		err = WriteErrorToResponse(w, r, err, "parsing error", http.StatusBadRequest)
+		//err = WriteErrorToResponse(w, r, err, "parsing error", http.StatusBadRequest)
 
 		return id, err
 	}
 	return id, nil
 }
 
-func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) error {
+func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) {
 
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
@@ -55,10 +55,10 @@ func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, mes
 	if errOut != nil {
 		//instead r.pat.str
 		log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, errOut.Error(), message)
-		return errOut
+		return
 	}
 
-	return err
+	return
 
 }
 
@@ -70,5 +70,11 @@ func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message strin
 	if errOut != nil {
 		log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, errOut.Error(), message)
 	}
+
+}
+
+func WriteErrorToLog(r *http.Request, err error, message string) {
+
+	log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, err.Error(), message)
 
 }
