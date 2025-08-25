@@ -90,7 +90,7 @@ func (s *CartService) GetItemsByUserId(ctx context.Context, userID model.UserID)
 
 	for sku, count := range cart.Items {
 		name := ""
-		price := int32(0)
+		price := uint32(0)
 
 		itemInfo, err := s.productService.GetProductBySku(ctx, sku)
 		if err == nil {
@@ -105,7 +105,7 @@ func (s *CartService) GetItemsByUserId(ctx context.Context, userID model.UserID)
 			Price: price,
 		}
 
-		reportCart.TotalPrice += price * int32(count)
+		reportCart.TotalPrice += price * uint32(count)
 
 	}
 

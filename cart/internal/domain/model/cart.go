@@ -8,12 +8,12 @@ type Cart struct {
 type ReportCart struct {
 	UserID     UserID
 	Items      map[Sku]ItemInСart
-	TotalPrice int32
+	TotalPrice uint32
 }
 
 type ItemInСart struct {
 	SKU   Sku
 	Count uint16
 	Name  string
-	Price int32
+	Price uint32
 }
