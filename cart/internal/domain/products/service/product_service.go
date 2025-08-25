@@ -65,7 +65,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	return &model.Product{
 		Name:  resp.Name,
-		Price: resp.Price,
+		Price: uint32(resp.Price),
 		Sku:   model.Sku(resp.Sku),
 	}, nil
 }
