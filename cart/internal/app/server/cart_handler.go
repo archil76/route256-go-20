@@ -150,7 +150,7 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 	cart, err := s.cartService.GetItemsByUserID(request.Context(), userID)
 
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusNotFound)
 		return
 	}
 

@@ -9,7 +9,7 @@ import (
 var (
 	ErrInvalidSKU     = errors.New("invalid sku")
 	ErrFailValidation = errors.New("fail validation")
-	//ErrCartIsEmpty    = errors.New("cart is empty")
+	ErrCartIsEmpty    = errors.New("cart is empty")
 )
 
 type CartsRepository interface {
@@ -77,10 +77,9 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 		return nil, err
 	}
 
-	//if cart.Items == nil || len(cart.Items) == 0 {
-	// // can't be reach
-	//	return nil, ErrCartIsEmpty
-	//}
+	if cart.Items == nil || len(cart.Items) == 0 {
+		return nil, ErrCartIsEmpty
+	}
 
 	reportCart := model.ReportCart{
 		UserID:     userID,
