@@ -41,6 +41,10 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	body, err := io.ReadAll(request.Body)
+	if err != nil {
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
+		return
+	}
 
 	var addItemRequest AddItemRequest
 
@@ -56,7 +60,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
 		return
 	}
-	if _, err := validator.Validate(addItemRequest); err != nil {
+	if _, err = validator.Validate(addItemRequest); err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
 		return
 	}
@@ -121,7 +125,7 @@ func (s *Server) ClearCart(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_, err = s.cartService.DeleteItemByUserId(request.Context(), userID)
+	_, err = s.cartService.DeleteItemByUserID(request.Context(), userID)
 
 	if err != nil {
 		// тут ошибки могут быть из-за невалидных ID а они проверены раньше. Поэтому просто лог и ответ ОК.
@@ -143,7 +147,7 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	cart, err := s.cartService.GetItemsByUserId(request.Context(), userID)
+	cart, err := s.cartService.GetItemsByUserID(request.Context(), userID)
 
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)

@@ -65,7 +65,7 @@ func (s *CartService) DeleteItem(ctx context.Context, userID model.UserID, skuID
 
 }
 
-func (s *CartService) GetItemsByUserId(ctx context.Context, userID model.UserID) (*model.ReportCart, error) {
+func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID) (*model.ReportCart, error) {
 
 	if userID < 1 {
 		return nil, ErrFailValidation
@@ -112,7 +112,7 @@ func (s *CartService) GetItemsByUserId(ctx context.Context, userID model.UserID)
 	return &reportCart, nil
 }
 
-func (s *CartService) DeleteItemByUserId(ctx context.Context, userID model.UserID) (model.UserID, error) {
+func (s *CartService) DeleteItemByUserID(ctx context.Context, userID model.UserID) (model.UserID, error) {
 
 	if userID < 1 {
 		return 0, ErrFailValidation

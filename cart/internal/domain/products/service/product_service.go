@@ -42,7 +42,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	}
 
 	req.Header.Add("X-API-KEY", s.token)
-	fmt.Printf("http.NewRequestWithContext: %w %s %s", err, s.address, sku)
+	fmt.Printf("http.NewRequestWithContext: %s %s", s.address, sku)
 	response, err := s.httpClient.Do(req)
 	if err != nil {
 

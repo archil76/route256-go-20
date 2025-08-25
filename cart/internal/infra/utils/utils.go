@@ -58,8 +58,6 @@ func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, mes
 		return
 	}
 
-	return
-
 }
 
 func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message string, status int) {
