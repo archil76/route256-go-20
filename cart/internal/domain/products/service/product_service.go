@@ -34,7 +34,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		fmt.Sprintf("http://%s/product/%d", s.address, sku),
+		fmt.Sprintf("%s/product/%d", s.address, sku),
 		http.NoBody,
 	)
 	if err != nil {
@@ -42,9 +42,10 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	}
 
 	req.Header.Add("X-API-KEY", s.token)
-
+	fmt.Printf("http.NewRequestWithContext: %w %s %s", err, s.address, sku)
 	response, err := s.httpClient.Do(req)
 	if err != nil {
+
 		return nil, fmt.Errorf("httpClient.Do: %w", err)
 	}
 	defer response.Body.Close()

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	application, err := app.NewApp(os.Getenv("ROUTE_256_WS1_CONFIG"))
+	application, err := app.NewApp(os.Getenv("CONFIG_FILE"))
 	if err != nil {
 		panic(err)
 	}
