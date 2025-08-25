@@ -7,3 +7,7 @@ bindir:
 build: bindir
 	echo "build cart"
 	docker-compose up --build
+
+run-all: bindir
+	echo "build cart"
+	docker-compose up --build
