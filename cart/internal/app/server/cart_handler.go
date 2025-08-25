@@ -25,7 +25,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
@@ -33,7 +33,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	rawSkuID := request.PathValue("sku_id")
-	skuID, err := utils.PrepareID(writer, request, rawSkuID)
+	skuID, err := utils.PrepareID(rawSkuID)
 
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
@@ -84,7 +84,7 @@ func (s *Server) DeleteItem(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
 
@@ -93,7 +93,7 @@ func (s *Server) DeleteItem(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	rawSkuID := request.PathValue("sku_id")
-	skuID, err := utils.PrepareID(writer, request, rawSkuID)
+	skuID, err := utils.PrepareID(rawSkuID)
 
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
@@ -114,7 +114,7 @@ func (s *Server) ClearCart(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
@@ -136,7 +136,7 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 
 	rawUserID := request.PathValue("user_id")
 
-	userID, err := utils.PrepareID(writer, request, rawUserID)
+	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)

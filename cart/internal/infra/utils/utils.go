@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func PrepareID(w http.ResponseWriter, r *http.Request, stringID string) (int64, error) {
+func PrepareID(stringID string) (int64, error) {
 
 	id, err := ConvertID(stringID)
 	if err != nil {
