@@ -44,7 +44,7 @@ GET http://localhost:8080/user/41447/cart
 Content-Type: application/json
 ### expected {json} 200 OK;
 
-### Проверка корзины ксли корзины нет либо она пуста
+### Проверка корзины eсли корзины нет либо она пуста
 GET http://localhost:8080/user/3000/cart
 Content-Type: application/json
 ### expected {} 404 OK;
@@ -64,3 +64,44 @@ DELETE http://localhost:8080/user/31337/cart/2565544
 Content-Type: application/json
 ### expected {} 200 OK;
 
+### Удаление SKU с нулевым или отрицательным значением
+DELETE http://localhost:8080/user/31337/cart/-1
+Content-Type: application/json
+### expected {} 400 OK;
+
+### Добавление SKU с нулевым или отрицательным значением
+POST http://localhost:8080/user/31337/cart/-1
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 400 OK;
+
+### expected {} 400 OK;
+### Добавление валидного SKU для пользователя (user_id) с нулевым или отрицательным значением
+POST http://localhost:8080/user/0/cart/1076963
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 400 OK;
+
+### Добавление SKU с нулевым или отрицательным количеством (count)
+POST http://localhost:8080/user/31337/cart/1076963
+Content-Type: application/json
+
+{
+  "count": -100
+}
+### expected {} 400 OK;
+
+### Добавление несуществующего SKU в корзину
+POST http://localhost:8080/user/31337/cart/3380
+Content-Type: application/json
+
+{
+  "count": 12
+}
+### expected {} 412 OK;
