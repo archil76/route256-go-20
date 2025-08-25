@@ -10,12 +10,12 @@ import (
 
 func PrepareID(w http.ResponseWriter, r *http.Request, stringID string) (int64, error) {
 
-	id, err := ConvertID(w, r, stringID)
+	id, err := ConvertID(stringID)
 	if err != nil {
 		return id, err
 	}
 
-	id, err = ValidateID(w, r, id)
+	id, err = ValidateID(id)
 	if err != nil {
 		return id, err
 	}
@@ -23,7 +23,7 @@ func PrepareID(w http.ResponseWriter, r *http.Request, stringID string) (int64, 
 	return id, nil
 }
 
-func ValidateID(w http.ResponseWriter, r *http.Request, id int64) (int64, error) {
+func ValidateID(id int64) (int64, error) {
 
 	if id < 1 {
 
@@ -35,7 +35,7 @@ func ValidateID(w http.ResponseWriter, r *http.Request, id int64) (int64, error)
 	return id, nil
 }
 
-func ConvertID(w http.ResponseWriter, r *http.Request, stringID string) (int64, error) {
+func ConvertID(stringID string) (int64, error) {
 
 	id, err := strconv.ParseInt(stringID, 10, 64)
 
@@ -73,7 +73,7 @@ func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message strin
 
 }
 
-func WriteErrorToLog(w http.ResponseWriter, r *http.Request, err error, message string) {
+func WriteErrorToLog(r *http.Request, err error, message string) {
 
 	log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, err.Error(), message)
 

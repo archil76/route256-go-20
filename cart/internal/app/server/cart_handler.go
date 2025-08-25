@@ -103,7 +103,7 @@ func (s *Server) DeleteItem(writer http.ResponseWriter, request *http.Request) {
 	_, err = s.cartService.DeleteItem(request.Context(), userID, skuID)
 	if err != nil {
 		// тут ошибки могут быть из-за невалидных ID а они проверены раньше. Поэтому просто лог и ответ ОК.
-		utils.WriteErrorToLog(writer, request, err, "")
+		utils.WriteErrorToLog(request, err, "")
 	}
 
 	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
@@ -125,7 +125,7 @@ func (s *Server) ClearCart(writer http.ResponseWriter, request *http.Request) {
 
 	if err != nil {
 		// тут ошибки могут быть из-за невалидных ID а они проверены раньше. Поэтому просто лог и ответ ОК.
-		utils.WriteErrorToLog(writer, request, err, "")
+		utils.WriteErrorToLog(request, err, "")
 	}
 
 	utils.WriteStatusToResponse(writer, request, "", http.StatusNoContent)
