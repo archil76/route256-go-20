@@ -44,7 +44,6 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 		} else {
 			return 0, ErrInvalidSKU
 		}
-
 	}
 
 	_, err := s.repository.AddItem(ctx, userID, model.Item{Sku: skuID, Count: count})
