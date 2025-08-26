@@ -39,7 +39,12 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 	}
 
 	if _, err := s.productService.GetProductBySku(ctx, skuID); err != nil {
-		return 0, ErrInvalidSKU
+		if errors.Is(err, model.ErrProductNotFound) {
+			return 0, err
+		} else {
+			return 0, ErrInvalidSKU
+		}
+
 	}
 
 	_, err := s.repository.AddItem(ctx, userID, model.Item{Sku: skuID, Count: count})

@@ -1,0 +1,3 @@
+github.com/stretchr/objx v0.1.0 h1:4G4v2dO3VZwixGIRoQ5Lfboy6nUhCyYzaqnIAPPhYs4=
+google.golang.org/protobuf v1.34.2-0.20240506121844-09393c19510d h1:h8xsSGLFQq60pvyB0ZoBfl9MKwoPJQckUhU0t8kaADA=
+google.golang.org/protobuf v1.34.2-0.20240506121844-09393c19510d/go.mod h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHhKbcUYpos=

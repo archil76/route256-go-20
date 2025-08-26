@@ -105,3 +105,21 @@ Content-Type: application/json
   "count": 12
 }
 ### expected {} 412 OK;
+
+###  Добавление в корзину
+POST http://localhost:8080/user/7652906241826593180/cart/1076963000
+Content-Type: application/json
+
+{
+  "count": 12
+}
+#### expected {} 412 OK;
+
+###  Добавление в корзину
+POST http://localhost:8080/user/7652906241826593180/cart/9223372036854775807
+Content-Type: application/json
+
+{
+  "count": 12
+}
+#### expected {} 412 OK;
