@@ -2,7 +2,17 @@ package server
 
 import (
 	"context"
+	"errors"
 	"route256/cart/internal/domain/model"
+)
+
+var (
+	ErrInvalidUserID = errors.New("Идентификатор пользователя должен быть натуральным числом (больше нуля)")
+	ErrInvalidSKU    = errors.New("SKU должен быть натуральным числом (больше нуля)")
+	ErrInvalidCount  = errors.New("Количество должно быть натуральным числом (больше нуля)")
+	ErrPSFail        = errors.New("SKU должен существовать в сервисе product-service")
+	ErrUnmarshalling = errors.New("Unmarshalling error")
+	ErrOther         = errors.New("Ошибка сервера")
 )
 
 type CartService interface {

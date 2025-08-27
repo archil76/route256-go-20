@@ -1,7 +1,7 @@
 package server
 
 import (
-	model "route256/cart/internal/domain/model"
+	"route256/cart/internal/domain/model"
 )
 
 type AddItemRequest struct {

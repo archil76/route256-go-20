@@ -123,3 +123,12 @@ Content-Type: application/json
   "count": 12
 }
 #### expected {} 412 OK;
+
+### Добавление товара в корзину
+POST http://localhost:8080/user/-9223372036854775807/cart/1148162
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 200 OK;
