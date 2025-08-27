@@ -3,12 +3,13 @@ package server
 import (
 	"encoding/json"
 	"errors"
-	gody "github.com/guiferpa/gody/v2"
-	rule "github.com/guiferpa/gody/v2/rule"
 	"io"
 	"net/http"
 	"route256/cart/internal/domain/model"
 	"route256/cart/internal/infra/utils"
+
+	gody "github.com/guiferpa/gody/v2"
+	rule "github.com/guiferpa/gody/v2/rule"
 )
 
 func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
