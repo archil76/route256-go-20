@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 	"route256/cart/internal/app/server"
-	cartsRepository "route256/cart/internal/domain/carts/repository/inMemoryRepository"
+	cartsRepository "route256/cart/internal/domain/carts/repository/inmemoryrepository"
 	cartsService "route256/cart/internal/domain/carts/service"
 	productservice "route256/cart/internal/domain/products/service"
 	"route256/cart/internal/infra/config"

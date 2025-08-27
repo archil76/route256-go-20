@@ -1,4 +1,4 @@
-package inMemoryRepository
+package inmemoryrepository
 
 import (
 	"context"

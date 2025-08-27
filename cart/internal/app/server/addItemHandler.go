@@ -18,7 +18,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusAccepted)
 		return
 	}
 
@@ -26,13 +26,13 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	skuID, err := utils.PrepareID(rawSkuID)
 
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusAlreadyReported)
 		return
 	}
 
 	body, err := io.ReadAll(request.Body)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusConflict)
 		return
 	}
 
@@ -40,23 +40,23 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	err = json.Unmarshal(body, &addItemRequest)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrUnmarshalling, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrUnmarshalling, "", http.StatusBadGateway)
 		return
 	}
 
 	validator := gody.NewValidator()
 	err = validator.AddRules(rule.Min)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusContinue)
 		return
 	}
 	if _, err = validator.Validate(addItemRequest); err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusCreated)
 		return
 	}
 
 	if addItemRequest.Count < 1 {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusExpectationFailed)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 		if errors.Is(err, model.ErrProductNotFound) {
 			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
 		} else {
-			utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+			utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusForbidden)
 		}
 		return
 	}
