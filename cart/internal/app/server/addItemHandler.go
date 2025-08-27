@@ -19,7 +19,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	userID, err := utils.PrepareID(rawUserID)
 
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusAccepted)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
 		return
 	}
 
@@ -27,13 +27,13 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	skuID, err := utils.PrepareID(rawSkuID)
 
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusAlreadyReported)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
 		return
 	}
 
 	body, err := io.ReadAll(request.Body)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusConflict)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
 		return
 	}
 
@@ -41,23 +41,23 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	err = json.Unmarshal(body, &addItemRequest)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrUnmarshalling, "", http.StatusBadGateway)
+		utils.WriteErrorToResponse(writer, request, ErrUnmarshalling, "", http.StatusBadRequest)
 		return
 	}
 
 	validator := gody.NewValidator()
 	err = validator.AddRules(rule.Min)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusContinue)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
 		return
 	}
 	if _, err = validator.Validate(addItemRequest); err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusCreated)
+		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
 		return
 	}
 
 	if addItemRequest.Count < 1 {
-		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusExpectationFailed)
+		utils.WriteErrorToResponse(writer, request, ErrInvalidCount, "", http.StatusBadRequest)
 		return
 	}
 

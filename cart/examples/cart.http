@@ -132,3 +132,8 @@ Content-Type: application/json
   "count": 1
 }
 ### expected {} 200 OK;
+
+### Успешно удаление SKU из корзины
+DELETE http://localhost:8080/user/9223372036854775807/cart/1148162
+Content-Type: application/json
+### expected {} 200 OK;

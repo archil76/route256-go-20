@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,12 +12,12 @@ func PrepareID(stringID string) (int64, error) {
 
 	id, err := ConvertID(stringID)
 	if err != nil {
-		return id, err
+		return 0, err
 	}
 
 	id, err = ValidateID(id)
 	if err != nil {
-		return id, err
+		return 0, err
 	}
 
 	return id, nil
@@ -30,7 +30,7 @@ func ValidateID(id int64) (int64, error) {
 		err := errors.New("id should be greater than 0")
 		//err = WriteErrorToResponse(w, r, err, "", http.StatusBadRequest)
 
-		return id, err
+		return 0, err
 	}
 	return id, nil
 }
@@ -40,35 +40,52 @@ func ConvertID(stringID string) (int64, error) {
 	id, err := strconv.ParseInt(stringID, 10, 64)
 
 	if err != nil {
-		//err = WriteErrorToResponse(w, r, err, "parsing error", http.StatusBadRequest)
 
-		return id, err
+		return 0, err
 	}
 	return id, nil
 }
 
-func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) {
+type ErrorResponse struct {
+	Message string `json:"message"`
+	Error   string `json:"error,omitempty"`
+}
 
-	w.WriteHeader(status)
+type StatusResponse struct {
+	Status string `json:"status"`
+}
+
+func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) {
 	w.Header().Set("Content-Type", "application/json")
-	_, errOut := fmt.Fprintf(w, "{\"message\": \"%s\" - \"%s\"}", message, err)
-	if errOut != nil {
-		//instead r.pat.str
-		log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, errOut.Error(), message)
-		return
+	w.WriteHeader(status)
+
+	resp := ErrorResponse{
+		Message: message,
 	}
 
+	if err != nil {
+		resp.Error = err.Error()
+	}
+
+	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
+		log.Printf("error %s %s: failed to write error response: %v | original: %v",
+			r.Method, r.RequestURI, encodeErr, err)
+	}
 }
 
 func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message string, status int) {
-
-	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
-	_, errOut := fmt.Fprintf(w, "{%s}", message)
-	if errOut != nil {
-		log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, errOut.Error(), message)
+	w.WriteHeader(status)
+
+	resp := StatusResponse{
+		Status: message,
 	}
 
+	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
+
+		log.Printf("error %s %s: failed to write status response: %v | message: %s",
+			r.Method, r.RequestURI, encodeErr, message)
+	}
 }
 
 func WriteErrorToLog(r *http.Request, err error, message string) {
