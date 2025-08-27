@@ -1,8 +1,12 @@
 module route256/cart
 
-go 1.23
+go 1.23.0
+
+toolchain go1.23.9
 
 require (
+
 	github.com/guiferpa/gody/v2 v2.2.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+

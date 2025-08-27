@@ -38,7 +38,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 		http.NoBody,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("http.NewRequestWithContext: %w", err)
+		return nil, ErrNotOk
 	}
 
 	req.Header.Add("X-API-KEY", s.token)
@@ -46,7 +46,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	response, err := s.httpClient.Do(req)
 	if err != nil {
 
-		return nil, fmt.Errorf("httpClient.Do: %w", err)
+		return nil, ErrNotOk
 	}
 	defer response.Body.Close()
 
@@ -60,7 +60,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	resp := &GetProductResponse{}
 	if err := json.NewDecoder(response.Body).Decode(resp); err != nil {
-		return nil, fmt.Errorf("json.NewDecoder: %w", err)
+		return nil, ErrNotOk
 	}
 
 	return &model.Product{
