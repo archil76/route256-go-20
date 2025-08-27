@@ -12,15 +12,25 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 		return 0, ErrFailValidation
 	}
 
-	if _, err := s.productService.GetProductBySku(ctx, skuID); err != nil {
+	product, err := s.productService.GetProductBySku(ctx, skuID)
+
+	if err != nil {
 
 		if errors.Is(err, model.ErrProductNotFound) {
 			return 0, err
 		}
-		return 0, ErrInvalidSKU
+
 	}
 
-	_, err := s.repository.AddItem(ctx, userID, model.Item{Sku: skuID, Count: count})
+	if product != nil {
+		if product.Sku != skuID {
+			return 0, ErrFailValidation
+		}
+	} else {
+		return 0, ErrFailValidation
+	}
+
+	_, err = s.repository.AddItem(ctx, userID, model.Item{Sku: skuID, Count: count})
 	if err != nil {
 		return 0, err
 	}

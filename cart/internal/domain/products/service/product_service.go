@@ -59,9 +59,9 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 		return nil, model.ErrProductNotFound
 	}
 
-	//if response.StatusCode != http.StatusOK {
-	//	return nil, ErrNotOk
-	//}
+	if response.StatusCode != http.StatusOK {
+		return nil, ErrNotOk
+	}
 
 	resp := &GetProductResponse{}
 	if err := json.NewDecoder(response.Body).Decode(resp); err != nil {
