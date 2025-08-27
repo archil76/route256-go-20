@@ -28,6 +28,7 @@ func NewProductService(httpClient http.Client, token string, address string) *Pr
 }
 
 func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*model.Product, error) {
+
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -42,21 +43,25 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	}
 
 	req.Header.Add("X-API-KEY", s.token)
+
 	fmt.Printf("http.NewRequestWithContext: %s %d", s.address, sku)
+
 	response, err := s.httpClient.Do(req)
+
 	if err != nil {
 
 		return nil, ErrNotOk
 	}
+
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotFound {
 		return nil, model.ErrProductNotFound
 	}
 
-	if response.StatusCode != http.StatusOK {
-		return nil, ErrNotOk
-	}
+	//if response.StatusCode != http.StatusOK {
+	//	return nil, ErrNotOk
+	//}
 
 	resp := &GetProductResponse{}
 	if err := json.NewDecoder(response.Body).Decode(resp); err != nil {

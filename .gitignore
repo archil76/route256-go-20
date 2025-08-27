@@ -1,2 +1,4 @@
 .idea
 bin
+cart/internal/domain/carts/service/mock
+cart/internal/domain/carts/service/sevice_test.go

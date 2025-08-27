@@ -9,7 +9,6 @@ import (
 	cartsService "route256/cart/internal/domain/carts/service"
 	productservice "route256/cart/internal/domain/products/service"
 	"route256/cart/internal/infra/config"
-	"route256/cart/internal/infra/http/middlewares"
 	"route256/cart/internal/infra/http/round_trippers"
 	"time"
 )
@@ -72,8 +71,8 @@ func (app *App) bootstrapHandlers() http.Handler {
 	mux.HandleFunc("DELETE /user/{user_id}/cart/{sku_id}", s.DeleteItem)
 	mux.HandleFunc("DELETE /user/{user_id}/cart", s.ClearCart)
 
-	timerMux := middlewares.NewTimeMux(mux)
-	logMux := middlewares.NewLogMux(timerMux)
+	//timerMux := middlewares.NewTimeMux(mux)
+	//logMux := middlewares.NewLogMux(timerMux)
 
-	return logMux
+	return mux
 }
