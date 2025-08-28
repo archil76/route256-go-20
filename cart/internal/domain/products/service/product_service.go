@@ -12,7 +12,6 @@ import (
 )
 
 var ErrNotOk = errors.New("status not ok")
-var ErrMyStrangeError = errors.New("yStrangeError")
 
 type ProductService struct {
 	httpClient http.Client
@@ -50,10 +49,8 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	response, err := s.httpClient.Do(req)
 
 	if err != nil {
-
-		return nil, ErrMyStrangeError
+		return nil, ErrNotOk
 	}
-
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotFound {
