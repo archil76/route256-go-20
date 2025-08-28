@@ -57,7 +57,9 @@ type StatusResponse struct {
 func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, message string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-
+	if len(message) == 0 {
+		return
+	}
 	resp := ErrorResponse{
 		Message: message,
 	}
@@ -73,9 +75,12 @@ func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, mes
 }
 
 func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message string, status int) {
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-
+	if len(message) == 0 {
+		return
+	}
 	resp := StatusResponse{
 		Status: message,
 	}
