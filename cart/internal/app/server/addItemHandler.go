@@ -3,10 +3,11 @@ package server
 import (
 	"encoding/json"
 	"errors"
-	gody "github.com/guiferpa/gody/v2"
-	rule "github.com/guiferpa/gody/v2/rule"
 	"io"
 	"net/http"
+
+	gody "github.com/guiferpa/gody/v2"
+	rule "github.com/guiferpa/gody/v2/rule"
 	//"route256/cart/internal/domain/model"
 	productsservice "route256/cart/internal/domain/products/service"
 	"route256/cart/internal/infra/utils"
