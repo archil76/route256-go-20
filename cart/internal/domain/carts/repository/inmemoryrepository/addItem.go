@@ -11,7 +11,7 @@ func (r *Repository) AddItem(ctx context.Context, userID model.UserID, item mode
 
 	if err != nil {
 
-		cart, err = r.CreateCart(ctx, model.Cart{UserID: userID, Items: map[model.Sku]uint16{}})
+		cart, err = r.CreateCart(ctx, model.Cart{UserID: userID, Items: map[model.Sku]uint32{}})
 		if err != nil {
 			return nil, err
 		}

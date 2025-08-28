@@ -6,7 +6,7 @@ import (
 	"route256/cart/internal/domain/model"
 )
 
-func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID model.Sku, count uint16) (model.Sku, error) {
+func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID model.Sku, count uint32) (model.Sku, error) {
 
 	if userID < 1 || skuID < 1 || count < 1 {
 		return 0, ErrFailValidation

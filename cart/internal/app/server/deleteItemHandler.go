@@ -24,7 +24,6 @@ func (s *Server) DeleteItem(writer http.ResponseWriter, request *http.Request) {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
 		return
 	}
-
 	_, err = s.cartService.DeleteItem(request.Context(), userID, skuID)
 	if err != nil {
 		// тут ошибки могут быть из-за невалидных ID а они проверены раньше. Поэтому просто лог и ответ ОК.

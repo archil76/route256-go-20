@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"sort"
 
 	"route256/cart/internal/domain/model"
 )
@@ -47,6 +48,8 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 		reportCart.TotalPrice += price * uint32(count)
 
 	}
+
+	sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
 
 	return &reportCart, nil
 }

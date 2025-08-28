@@ -2,7 +2,7 @@ package model
 
 type Cart struct {
 	UserID UserID
-	Items  map[Sku]uint16
+	Items  map[Sku]uint32
 }
 
 type ReportCart struct {
@@ -12,7 +12,7 @@ type ReportCart struct {
 
 type ItemInСart struct {
 	SKU   Sku
-	Count uint16
+	Count uint32
 	Name  string
 	Price uint32
 }

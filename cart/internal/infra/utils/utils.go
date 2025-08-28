@@ -28,7 +28,6 @@ func ValidateID(id int64) (int64, error) {
 	if id < 1 {
 
 		err := errors.New("id should be greater than 0")
-		//err = WriteErrorToResponse(w, r, err, "", http.StatusBadRequest)
 
 		return 0, err
 	}

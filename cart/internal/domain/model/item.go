@@ -4,5 +4,5 @@ type Sku = int64
 
 type Item struct {
 	Sku   Sku
-	Count uint16
+	Count uint32
 }
