@@ -48,6 +48,7 @@ func (app *App) bootstrapHandlers() http.Handler {
 
 	transport := http.DefaultTransport
 	transport = round_trippers.NewLogRoundTripper(transport)
+	transport = round_trippers.NewRetryRoundTripper(transport, 3, 5*time.Second)
 	httpClient := http.Client{
 		Transport: transport,
 		Timeout:   10 * time.Second,
