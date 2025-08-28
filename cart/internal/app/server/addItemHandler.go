@@ -5,12 +5,11 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	productsservice "route256/cart/internal/domain/products/service"
+	"route256/cart/internal/infra/utils"
 
 	gody "github.com/guiferpa/gody/v2"
 	rule "github.com/guiferpa/gody/v2/rule"
-	//"route256/cart/internal/domain/model"
-	productsservice "route256/cart/internal/domain/products/service"
-	"route256/cart/internal/infra/utils"
 )
 
 func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
