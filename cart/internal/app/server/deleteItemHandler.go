@@ -30,6 +30,6 @@ func (s *Server) DeleteItem(writer http.ResponseWriter, request *http.Request) {
 		utils.WriteErrorToLog(request, err, "")
 	}
 
-	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
+	utils.WriteStatusToResponse(writer, request, "", http.StatusNoContent)
 
 }
