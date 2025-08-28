@@ -23,8 +23,7 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 	}
 
 	reportCart := model.ReportCart{
-		UserID:     userID,
-		Items:      map[model.Sku]model.ItemInСart{},
+		Items:      []model.ItemInСart{},
 		TotalPrice: 0,
 	}
 
@@ -38,12 +37,12 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 			price = itemInfo.Price
 		}
 
-		reportCart.Items[sku] = model.ItemInСart{
+		reportCart.Items = append(reportCart.Items, model.ItemInСart{
 			SKU:   sku,
 			Count: count,
 			Name:  name,
 			Price: price,
-		}
+		})
 
 		reportCart.TotalPrice += price * uint32(count)
 

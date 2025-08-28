@@ -6,8 +6,7 @@ type Cart struct {
 }
 
 type ReportCart struct {
-	UserID     UserID
-	Items      map[Sku]ItemInСart
+	Items      []ItemInСart
 	TotalPrice uint32
 }
 

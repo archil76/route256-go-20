@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"net/http"
-	"route256/cart/internal/domain/model"
 	"route256/cart/internal/infra/utils"
 )
 
@@ -26,17 +25,16 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	reportCart := ReportCart{
-		UserID:     cart.UserID,
-		Items:      map[model.Sku]ItemInСart{},
+		Items:      []ItemInСart{},
 		TotalPrice: cart.TotalPrice}
 
-	for sku, item := range cart.Items {
-		reportCart.Items[item.SKU] = ItemInСart{
-			SKU:   sku,
+	for _, item := range cart.Items {
+		reportCart.Items = append(reportCart.Items, ItemInСart{
+			SKU:   item.SKU,
 			Count: item.Count,
 			Name:  item.Name,
 			Price: item.Price,
-		}
+		})
 
 	}
 
