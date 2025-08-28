@@ -12,6 +12,7 @@ import (
 )
 
 var ErrNotOk = errors.New("status not ok")
+var ErrMyStrangeError = errors.New("yStrangeError")
 
 type ProductService struct {
 	httpClient http.Client
@@ -50,7 +51,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	if err != nil {
 
-		return nil, ErrNotOk
+		return nil, ErrMyStrangeError
 	}
 
 	defer response.Body.Close()

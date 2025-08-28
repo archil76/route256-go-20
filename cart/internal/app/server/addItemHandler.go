@@ -3,13 +3,13 @@ package server
 import (
 	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
-	"route256/cart/internal/domain/model"
-	"route256/cart/internal/infra/utils"
-
 	gody "github.com/guiferpa/gody/v2"
 	rule "github.com/guiferpa/gody/v2/rule"
+	"io"
+	"net/http"
+	//"route256/cart/internal/domain/model"
+	productsservice "route256/cart/internal/domain/products/service"
+	"route256/cart/internal/infra/utils"
 )
 
 func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
@@ -64,13 +64,21 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	_, err = s.cartService.AddItem(request.Context(), userID, skuID, addItemRequest.Count)
 
 	if err != nil {
-		if errors.Is(err, model.ErrProductNotFound) {
-			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
+		if errors.Is(err, productsservice.ErrMyStrangeError) {
+			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusGone)
 		} else {
 			utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusForbidden)
 		}
 		return
 	}
+	//if err != nil {
+	//	if errors.Is(err, model.ErrProductNotFound) {
+	//		utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
+	//	} else {
+	//		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusForbidden)
+	//	}
+	//	return
+	//}
 	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
 
 }

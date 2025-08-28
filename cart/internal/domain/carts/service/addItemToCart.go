@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"route256/cart/internal/domain/model"
 )
 
@@ -15,10 +14,10 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 	product, err := s.productService.GetProductBySku(ctx, skuID)
 
 	if err != nil {
-
-		if errors.Is(err, model.ErrProductNotFound) {
-			return 0, err
-		}
+		return 0, err
+		//if errors.Is(err, model.ErrProductNotFound) {
+		//	return 0, err
+		//}
 
 	}
 
@@ -31,6 +30,7 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 	}
 
 	_, err = s.repository.AddItem(ctx, userID, model.Item{Sku: skuID, Count: count})
+
 	if err != nil {
 		return 0, err
 	}
