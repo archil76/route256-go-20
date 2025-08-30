@@ -15,9 +15,6 @@ func NewTimeMux(h http.Handler) http.Handler {
 }
 
 func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//defer func(now time.Time) {
-	//	log.Printf("handler spent %s", time.Since(now))
-	//}(time.Now())
 	now := time.Now()
 	m.h.ServeHTTP(w, r)
 	log.Printf("handler spent %s", time.Since(now))

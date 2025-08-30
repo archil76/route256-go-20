@@ -11,6 +11,7 @@ type Config struct {
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
 	} `yaml:"service"`
+
 	ProductService struct {
 		Host  string `yaml:"host"`
 		Port  string `yaml:"port"`
@@ -23,6 +24,7 @@ func LoadConfig(filename string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer f.Close()
 
 	config := &Config{}

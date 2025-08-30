@@ -13,7 +13,6 @@ import (
 )
 
 func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
-
 	rawUserID := request.PathValue("user_id")
 
 	userID, err := utils.PrepareID(rawUserID)
@@ -25,7 +24,6 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	rawSkuID := request.PathValue("sku_id")
 	skuID, err := utils.PrepareID(rawSkuID)
-
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidSKU, "", http.StatusBadRequest)
 		return
@@ -62,7 +60,6 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	_, err = s.cartService.AddItem(request.Context(), userID, skuID, addItemRequest.Count)
-
 	if err != nil {
 		if errors.Is(err, model.ErrProductNotFound) {
 			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
@@ -72,5 +69,4 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
-
 }

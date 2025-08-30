@@ -8,17 +8,14 @@ import (
 )
 
 func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID) (*model.ReportCart, error) {
-
 	if userID < 1 {
 		return nil, ErrFailValidation
 	}
 
 	cart, err := s.repository.GetCart(ctx, userID)
-
 	if err != nil {
 		return nil, err
 	}
-
 	if len(cart.Items) == 0 {
 		return nil, ErrCartIsEmpty
 	}
@@ -46,7 +43,6 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 		})
 
 		reportCart.TotalPrice += price * uint32(count)
-
 	}
 
 	sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })

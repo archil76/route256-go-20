@@ -5,9 +5,9 @@ import (
 	"net"
 	"net/http"
 	"route256/cart/internal/app/server"
-	cartsRepository "route256/cart/internal/domain/carts/repository/inmemoryrepository"
-	cartsService "route256/cart/internal/domain/carts/service"
-	productservice "route256/cart/internal/domain/products/service"
+	cartsRepository "route256/cart/internal/domain/repository/inmemoryrepository"
+	productservice "route256/cart/internal/domain/repository/productservicerepository"
+	cartsService "route256/cart/internal/domain/service"
 	"route256/cart/internal/infra/config"
 	"route256/cart/internal/infra/http/middlewares"
 	"route256/cart/internal/infra/http/round_trippers"
@@ -32,7 +32,6 @@ func NewApp(configPath string) (*App, error) {
 }
 
 func (app *App) ListenAndServe() error {
-
 	address := fmt.Sprintf("%s:%s", app.config.Server.Host, app.config.Server.Port)
 
 	l, err := net.Listen("tcp", address)
@@ -46,10 +45,10 @@ func (app *App) ListenAndServe() error {
 }
 
 func (app *App) bootstrapHandlers() http.Handler {
-
 	transport := http.DefaultTransport
 	transport = round_trippers.NewLogRoundTripper(transport)
 	transport = round_trippers.NewRetryRoundTripper(transport, 3, 5*time.Second)
+
 	httpClient := http.Client{
 		Transport: transport,
 		Timeout:   10 * time.Second,

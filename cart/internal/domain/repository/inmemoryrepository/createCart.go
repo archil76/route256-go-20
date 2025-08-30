@@ -6,11 +6,10 @@ import (
 	"route256/cart/internal/domain/model"
 )
 
-func (r *Repository) CreateCart(_ context.Context, cart model.Cart) (*model.Cart, error) {
-
+func (r *Repository) createCart(_ context.Context, cart model.Cart) (*model.Cart, error) {
 	if cart.UserID < 1 {
 
-		return nil, ErrUserIDIsnotValid
+		return nil, ErrUserIDIsNotValid
 	}
 
 	r.storage[cart.UserID] = cart

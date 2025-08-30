@@ -17,14 +17,12 @@ func NewRetryRoundTripper(rt http.RoundTripper, maxRetries int, delay time.Durat
 }
 
 func (customRT *RetryRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
-
 	log.Print("using product_service api")
 
 	var response *http.Response
 	var err error
 
 	for attempts := 0; attempts < customRT.maxRetries; attempts++ {
-
 		response, err = customRT.rt.RoundTrip(request)
 
 		// good outcome
@@ -41,5 +39,4 @@ func (customRT *RetryRoundTripper) RoundTrip(request *http.Request) (*http.Respo
 	}
 
 	return response, err
-
 }

@@ -7,18 +7,14 @@ import (
 )
 
 func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
-
 	rawUserID := request.PathValue("user_id")
-
 	userID, err := utils.PrepareID(rawUserID)
-
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrInvalidUserID, "", http.StatusBadRequest)
 		return
 	}
 
 	cart, err := s.cartService.GetItemsByUserID(request.Context(), userID)
-
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusNotFound)
 		return
@@ -35,11 +31,9 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 			Name:  item.Name,
 			Price: item.Price,
 		})
-
 	}
 
-	rawResponce, err := json.Marshal(reportCart)
-
+	rawResponse, err := json.Marshal(reportCart)
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, err, "can't get cart. marshalling error", http.StatusBadRequest)
 		return
@@ -47,8 +41,8 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
-	_, err = writer.Write(rawResponce)
 
+	_, err = writer.Write(rawResponse)
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, err, "can't get cart. marshalling error", http.StatusBadRequest)
 

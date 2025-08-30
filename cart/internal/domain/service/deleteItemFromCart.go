@@ -6,7 +6,6 @@ import (
 )
 
 func (s *CartService) DeleteItem(ctx context.Context, userID model.UserID, skuID model.Sku) (model.Sku, error) {
-
 	if userID < 1 || skuID < 1 {
 		return 0, ErrFailValidation
 	}
@@ -17,5 +16,4 @@ func (s *CartService) DeleteItem(ctx context.Context, userID model.UserID, skuID
 	}
 
 	return skuID, nil
-
 }

@@ -6,16 +6,16 @@ import (
 )
 
 func (r *Repository) AddItem(ctx context.Context, userID model.UserID, item model.Item) (*model.Item, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
-	cart, err := r.GetCart(ctx, userID)
+	cart, err := r.getCart(ctx, userID)
 
 	if err != nil {
-
-		cart, err = r.CreateCart(ctx, model.Cart{UserID: userID, Items: map[model.Sku]uint32{}})
+		cart, err = r.createCart(ctx, model.Cart{UserID: userID, Items: map[model.Sku]uint32{}})
 		if err != nil {
 			return nil, err
 		}
-
 	}
 
 	if _, ok := cart.Items[item.Sku]; !ok {

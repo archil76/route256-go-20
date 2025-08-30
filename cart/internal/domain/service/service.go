@@ -7,16 +7,15 @@ import (
 )
 
 var (
-	ErrInvalidSKU     = errors.New("invalid sku")
 	ErrFailValidation = errors.New("fail validation")
 	ErrCartIsEmpty    = errors.New("cart is empty")
 )
 
 type CartsRepository interface {
-	AddItem(_ context.Context, userID model.UserID, item model.Item) (*model.Item, error)
-	DeleteItem(_ context.Context, userID model.UserID, item model.Item) (*model.Item, error)
-	GetCart(_ context.Context, userID model.UserID) (*model.Cart, error)
-	DeleteItems(_ context.Context, userID model.UserID) (model.UserID, error)
+	AddItem(ctx context.Context, userID model.UserID, item model.Item) (*model.Item, error)
+	DeleteItem(ctx context.Context, userID model.UserID, item model.Item) (*model.Item, error)
+	GetCart(ctx context.Context, userID model.UserID) (*model.Cart, error)
+	DeleteItems(ctx context.Context, userID model.UserID) (model.UserID, error)
 }
 
 type ProductService interface {
