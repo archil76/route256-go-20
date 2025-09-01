@@ -1,0 +1,25 @@
+### get product info  by sku
+GET http://localhost:8082/product/1076963
+Content-Type: application/json
+X-API-KEY: testToken
+
+{
+
+  "sku": "1076963"
+}
+
+### get product info  nothing found by the sku"
+GET http://localhost:8082/product/1148163
+Content-Type: application/json
+X-API-KEY: testToken
+
+{
+
+  "sku": "1148163"
+}
+
+### get list sku
+GET http://localhost:8082/product?count=10&start_after_sku=0
+Content-Type: application/json
+X-API-KEY: testToken
+
