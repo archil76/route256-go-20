@@ -8,7 +8,7 @@ jaeger:
   port: 6831
 
 product_service:
-  host: product-service
+  host: http://product-service
   port: 8082
   token: testToken
   limit: 10
