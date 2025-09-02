@@ -21,16 +21,20 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	totalPrice32 := int32(modelReportCart.TotalPrice) //nolint:gosec
+
 	reportCart := ReportCart{
 		Items:      []ItemInСart{},
 		TotalPrice: totalPrice32}
 
 	for _, item := range modelReportCart.Items {
+		count32 := int32(item.Count) //nolint:gosec
+		price32 := int32(item.Price) //nolint:gosec
+
 		reportCart.Items = append(reportCart.Items, ItemInСart{
 			SKU:   item.SKU,
-			Count: int32(item.Count), //nolint:gosec
+			Count: count32,
 			Name:  item.Name,
-			Price: int32(item.Price), //nolint:gosec
+			Price: price32,
 		})
 	}
 
