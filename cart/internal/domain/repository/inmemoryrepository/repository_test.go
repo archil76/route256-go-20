@@ -23,8 +23,8 @@ var (
 		userID2         int64
 		userID3         int64
 		wrongSkuZero    model.Sku
-		wrongUserIdZero int64
-		wrongUserIdNeg  int64
+		wrongUserIDZero int64
+		wrongUserIDNeg  int64
 		count           uint32
 		count2          uint32
 	}{
@@ -34,8 +34,8 @@ var (
 		userID2:         2525455,
 		userID3:         1001,
 		wrongSkuZero:    model.Sku(0),
-		wrongUserIdZero: 0,
-		wrongUserIdNeg:  -125555,
+		wrongUserIDZero: 0,
+		wrongUserIDNeg:  -125555,
 		count:           2,
 		count2:          3,
 	}
@@ -80,7 +80,7 @@ func TestHandler_AddItem_Table(t *testing.T) {
 		},
 		{
 			name:   "Не успешное добавление товара пользователю с нулевым ID",
-			userID: tp.wrongUserIdZero,
+			userID: tp.wrongUserIDZero,
 			item: model.Item{
 				Sku:   model.Sku(tp.sku2),
 				Count: tp.count2,
@@ -126,12 +126,12 @@ func TestHandler_CreateCart_Table(t *testing.T) {
 		},
 		{
 			name:      "Не успешное создании корзины пользователю с нулевым ID",
-			userID:    tp.wrongUserIdZero,
+			userID:    tp.wrongUserIDZero,
 			wantedErr: ErrUserIDIsNotValid,
 		},
 		{
 			name:      "Не успешное создании корзины пользователю с отрицательным ID",
-			userID:    tp.wrongUserIdZero,
+			userID:    tp.wrongUserIDZero,
 			wantedErr: ErrUserIDIsNotValid,
 		},
 	}
@@ -169,7 +169,7 @@ func TestHandler_GetCart_Table(t *testing.T) {
 		},
 		{
 			name:      "Не успешное получение корзины пользователя с отрицательным ID",
-			userID:    tp.wrongUserIdNeg,
+			userID:    tp.wrongUserIDNeg,
 			wantedErr: ErrUserIDIsNotValid,
 		},
 		{
@@ -223,7 +223,7 @@ func TestHandler_DeleteItem_Table(t *testing.T) {
 		},
 		{
 			name:      "Неуспешное удаление из корзины пользователя с нулевым ID",
-			userID:    tp.wrongUserIdZero,
+			userID:    tp.wrongUserIDZero,
 			wantedErr: ErrUserIDIsNotValid,
 		},
 		{
@@ -274,7 +274,7 @@ func TestHandler_DeleteItems_Table(t *testing.T) {
 		},
 		{
 			name:      "Неуспешная очистка корзины пользователя с нулевым ID",
-			userID:    tp.wrongUserIdZero,
+			userID:    tp.wrongUserIDZero,
 			wantedErr: ErrUserIDIsNotValid,
 		},
 		{

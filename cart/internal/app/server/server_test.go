@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"route256/cart/internal/domain/model"
@@ -28,7 +27,7 @@ var (
 	name2      = "Greenhouse"
 	count      = uint32(2)
 	count2     = uint32(3)
-	userID     = int64(rand.Int())
+	userID     = int64(2009999999)
 	price      = uint32(1000)
 	price2     = uint32(2000)
 	totalPrice = price*count + price2*count2
@@ -338,7 +337,7 @@ func Test_GetCartHandler(t *testing.T) {
 		response := writer.Result()
 		require.Equal(t, http.StatusOK, response.StatusCode)
 
-		reportCart, err := decodeResponseBody(response, err)
+		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
 		wantedReportCart := ReportCart{
@@ -464,14 +463,14 @@ func getClearCartRequest(userID int64) (*http.Request, error) {
 	return request, nil
 }
 
-func decodeResponseBody(response *http.Response, err error) (ReportCart, error) {
+func decodeResponseBody(response *http.Response) (ReportCart, error) {
 	defer response.Body.Close()
 
 	decoder := json.NewDecoder(response.Body)
 
 	reportCart := ReportCart{}
 
-	err = decoder.Decode(&reportCart)
+	err := decoder.Decode(&reportCart)
 
 	return reportCart, err
 }
