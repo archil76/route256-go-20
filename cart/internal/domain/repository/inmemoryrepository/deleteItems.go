@@ -10,7 +10,6 @@ func (r *Repository) DeleteItems(ctx context.Context, userID model.UserID) (mode
 	defer r.mu.Unlock()
 
 	cart, err := r.getCart(ctx, userID)
-
 	if err != nil {
 
 		return userID, nil

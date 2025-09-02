@@ -13,7 +13,6 @@ func (r *Repository) GetCart(ctx context.Context, userID model.UserID) (*model.C
 }
 
 func (r *Repository) getCart(_ context.Context, userID model.UserID) (*model.Cart, error) {
-
 	if userID < 1 {
 		return nil, ErrUserIDIsNotValid
 	}

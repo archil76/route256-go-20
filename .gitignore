@@ -1,5 +1,4 @@
 .idea
 bin
-cart/internal/domain/service/mock
+cart/tests
 cart/internal/domain/service/sevice_test.go
-cart/internal/domain/repository/inmemoryrepository/repository_test.go

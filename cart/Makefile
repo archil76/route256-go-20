@@ -11,3 +11,9 @@ build: bindir
 run-all: bindir
 	echo "build cart"
 	docker-compose up --build
+
+test-all:
+	go test -cover ./internal/app/server ./internal/domain/repository/inmemoryrepository
+
+
+

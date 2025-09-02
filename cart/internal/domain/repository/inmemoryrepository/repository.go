@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	//ErrInvalidSKU       = errors.New("invalid sku")
 	ErrCartDoesntExist  = errors.New("cart doesn't exist")
 	ErrUserIDIsNotValid = errors.New("UserID should be more than 0")
 )
