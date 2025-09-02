@@ -340,11 +340,12 @@ func Test_GetCartHandler(t *testing.T) {
 		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
-		count32 := int32(count)   //nolint:gosec
-		price32 := int32(price)   //nolint:gosec
-		count232 := int32(count2) //nolint:gosec
-		price232 := int32(price2) //nolint:gosec
-		totalPrice32 := int32(totalPrice)
+		count32 := int32(count)           //nolint:gosec
+		price32 := int32(price)           //nolint:gosec
+		count232 := int32(count2)         //nolint:gosec
+		price232 := int32(price2)         //nolint:gosec
+		totalPrice32 := int32(totalPrice) //nolint:gosec
+
 		wantedReportCart := ReportCart{
 			Items: []ItemInСart{
 				{
