@@ -340,22 +340,27 @@ func Test_GetCartHandler(t *testing.T) {
 		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
+		count32 := int32(count)   //nolint:gosec
+		price32 := int32(price)   //nolint:gosec
+		count232 := int32(count2) //nolint:gosec
+		price232 := int32(price2) //nolint:gosec
+		totalPrice32 := int32(totalPrice)
 		wantedReportCart := ReportCart{
 			Items: []ItemInСart{
 				{
 					SKU:   sku,
-					Count: int32(count),
+					Count: count32,
 					Name:  name,
-					Price: int32(price),
+					Price: price32,
 				},
 				{
 					SKU:   sku2,
-					Count: int32(count2),
+					Count: count232,
 					Name:  name2,
-					Price: int32(price2),
+					Price: price232,
 				},
 			},
-			TotalPrice: int32(totalPrice),
+			TotalPrice: totalPrice32,
 		}
 		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
 		require.Equal(t, wantedReportCart, reportCart)
