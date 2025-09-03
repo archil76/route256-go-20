@@ -2,7 +2,7 @@
 
 package mock
 
-//go:generate minimock -i route256/cart/internal/domain/carts/service.ProductService -o product_service_mock.go -n ProductServiceMock -p mock
+//go:generate minimock -i route256/cart/internal/domain/service.ProductService -o product_service_mock.go -n ProductServiceMock -p mock
 
 import (
 	"context"

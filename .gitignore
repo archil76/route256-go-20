@@ -1,4 +1,5 @@
 .idea
 bin
 cart/tests
-cart/internal/domain/service/sevice_test.go
+cart/tests/sevice_test.go
+cart/tests/allure-results
