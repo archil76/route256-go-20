@@ -59,7 +59,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_, err = s.cartService.AddItem(request.Context(), userID, skuID, addItemRequest.Count)
+	_, err = s.cartService.AddItem(request.Context(), userID, skuID, uint32(addItemRequest.Count))
 	if err != nil {
 		if errors.Is(err, model.ErrProductNotFound) {
 			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)

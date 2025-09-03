@@ -14,22 +14,27 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	cart, err := s.cartService.GetItemsByUserID(request.Context(), userID)
+	modelReportCart, err := s.cartService.GetItemsByUserID(request.Context(), userID)
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusNotFound)
 		return
 	}
 
+	totalPrice32 := int32(modelReportCart.TotalPrice) //nolint:gosec
+
 	reportCart := ReportCart{
 		Items:      []ItemInСart{},
-		TotalPrice: cart.TotalPrice}
+		TotalPrice: totalPrice32}
 
-	for _, item := range cart.Items {
+	for _, item := range modelReportCart.Items {
+		count32 := int32(item.Count) //nolint:gosec
+		price32 := int32(item.Price) //nolint:gosec
+
 		reportCart.Items = append(reportCart.Items, ItemInСart{
 			SKU:   item.SKU,
-			Count: item.Count,
+			Count: count32,
 			Name:  item.Name,
-			Price: item.Price,
+			Price: price32,
 		})
 	}
 

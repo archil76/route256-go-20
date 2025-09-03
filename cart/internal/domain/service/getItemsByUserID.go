@@ -25,14 +25,15 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 		TotalPrice: 0,
 	}
 
+	totalPrice := uint32(0)
 	for sku, count := range cart.Items {
 		name := ""
 		price := uint32(0)
 
-		itemInfo, err := s.productService.GetProductBySku(ctx, sku)
+		product, err := s.productService.GetProductBySku(ctx, sku)
 		if err == nil {
-			name = itemInfo.Name
-			price = itemInfo.Price
+			name = product.Name
+			price = product.Price
 		}
 
 		reportCart.Items = append(reportCart.Items, model.ItemInСart{
@@ -42,8 +43,10 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 			Price: price,
 		})
 
-		reportCart.TotalPrice += price * uint32(count)
+		totalPrice += price * count
 	}
+
+	reportCart.TotalPrice += totalPrice
 
 	sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
 

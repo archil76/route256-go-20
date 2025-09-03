@@ -11,7 +11,10 @@ import (
 	"route256/cart/internal/domain/model"
 )
 
-var ErrNotOk = errors.New("status not ok")
+var (
+	ErrNotOk           = errors.New("status not ok")
+	ErrProductNotFound = errors.New("product not found")
+)
 
 type ProductService struct {
 	httpClient http.Client
@@ -54,7 +57,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotFound {
-		return nil, model.ErrProductNotFound
+		return nil, ErrProductNotFound
 	}
 
 	if response.StatusCode != http.StatusOK {
@@ -69,7 +72,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	return &model.Product{
 		Name:  resp.Name,
 		Price: uint32(resp.Price),
-		Sku:   model.Sku(resp.Sku),
+		Sku:   resp.Sku,
 	}, nil
 }
 

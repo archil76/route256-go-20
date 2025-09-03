@@ -10,7 +10,6 @@ func (r *Repository) AddItem(ctx context.Context, userID model.UserID, item mode
 	defer r.mu.Unlock()
 
 	cart, err := r.getCart(ctx, userID)
-
 	if err != nil {
 		cart, err = r.createCart(ctx, model.Cart{UserID: userID, Items: map[model.Sku]uint32{}})
 		if err != nil {

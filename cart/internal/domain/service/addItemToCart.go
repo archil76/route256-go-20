@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"route256/cart/internal/domain/model"
+	productrepo "route256/cart/internal/domain/repository/productservicerepository"
 )
 
 func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID model.Sku, count uint32) (model.Sku, error) {
@@ -13,8 +14,8 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 
 	product, err := s.productService.GetProductBySku(ctx, skuID)
 	if err != nil {
-		if errors.Is(err, model.ErrProductNotFound) {
-			return 0, err
+		if errors.Is(err, productrepo.ErrProductNotFound) {
+			return 0, model.ErrProductNotFound
 		}
 		return 0, err
 	}
