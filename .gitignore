@@ -1,5 +1,5 @@
 .idea
 bin
-cart/tests
-cart/tests/sevice_test.go
-cart/tests/allure-results
+cart/testsignore
+cart/testsignore/sevice_test.go
+cart/testsignore/allure-results
