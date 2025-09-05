@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.9
 
 require (
-	github.com/gojuno/minimock/v3 v3.4.6
+	github.com/gojuno/minimock/v3 v3.4.7
 	github.com/guiferpa/gody/v2 v2.2.0
 	github.com/ozontech/allure-go/pkg/framework v0.7.2
 	github.com/stretchr/testify v1.11.1
