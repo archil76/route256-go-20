@@ -16,11 +16,12 @@ func BenchmarkRepository_AddItem(b *testing.B) {
 	handler := NewCartInMemoryRepository(100)
 
 	for i := 0; i < b.N; i++ {
+		wg.Add(1)
+
 		go func(i int) {
-			wg.Add(1)
-			userID := int64(rand.Int63() + 1)
-			sku := model.Sku(rand.Int63() + 1)
-			count := uint32(i + 100/10)
+			userID := rand.Int63() + 1  //nolint:gosec
+			sku := rand.Int63() + 1     //nolint:gosec
+			count := uint32(i + 100/10) //nolint:gosec
 			item := model.Item{Sku: sku, Count: count}
 
 			_, err := handler.AddItem(ctx, userID, item)

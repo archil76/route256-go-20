@@ -37,6 +37,8 @@ func (s *ServerE) BeforeAll(t provider.T) {
 	s.Host = fmt.Sprintf("http://%s:%s", c.Server.Host, c.Server.Port)
 
 	s.client = &http.Client{}
+
+	t.Title("e2e test")
 }
 
 type testReportCart struct {
@@ -62,15 +64,15 @@ func (s *ServerE) TestServerE(t provider.T) {
 	sku := int64(1076963)
 	sku2 := int64(1148162) // должен быть больше sku для проверки сортировки получаемой корзины
 
-	count := uint32(2)
-	count2 := uint32(3)
+	count := int32(2)
+	count2 := int32(3)
 	userID := int64(1022222)
 
 	addItemRequest := testAddItemRequest{
-		Count: int32(count),
+		Count: count,
 	}
 	addItemRequest2 := testAddItemRequest{
-		Count: int32(count2),
+		Count: count2,
 	}
 
 	t.Title("Проверка удаления товара из корзины")
@@ -91,6 +93,7 @@ func (s *ServerE) TestServerE(t provider.T) {
 			require.ErrorIs(t, nil, err)
 
 			response, err := s.client.Do(request)
+			require.ErrorIs(t, nil, err)
 
 			require.Equal(t, http.StatusNotFound, response.StatusCode)
 		})
@@ -100,12 +103,14 @@ func (s *ServerE) TestServerE(t provider.T) {
 			require.ErrorIs(t, nil, err)
 
 			response, err := s.client.Do(request)
+			require.ErrorIs(t, nil, err)
 			require.Equal(t, http.StatusOK, response.StatusCode)
 
 			request2, err := getAddItemRequest(s.Host, addItemRequest2, userID, sku2)
 			require.ErrorIs(t, nil, err)
 
 			response2, err := s.client.Do(request2)
+			require.ErrorIs(t, nil, err)
 			require.Equal(t, http.StatusOK, response2.StatusCode)
 		})
 	})
@@ -119,7 +124,7 @@ func (s *ServerE) TestServerE(t provider.T) {
 		require.ErrorIs(t, nil, err)
 		require.Equal(t, http.StatusOK, response.StatusCode)
 
-		reportCart, err := decodeResponseBody(response, err)
+		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
 		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
@@ -147,7 +152,7 @@ func (s *ServerE) TestServerE(t provider.T) {
 		response, err := s.client.Do(request)
 		require.ErrorIs(t, nil, err)
 
-		reportCart, err := decodeResponseBody(response, err)
+		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
 		require.Equal(t, 1, len(reportCart.Items))
@@ -220,14 +225,14 @@ func getClearCartRequest(host string, userID int64) (*http.Request, error) {
 	return request, nil
 }
 
-func decodeResponseBody(response *http.Response, err error) (testReportCart, error) {
+func decodeResponseBody(response *http.Response) (testReportCart, error) {
 	defer response.Body.Close()
 
 	decoder := json.NewDecoder(response.Body)
 
 	reportCart := testReportCart{}
 
-	err = decoder.Decode(&reportCart)
+	err := decoder.Decode(&reportCart)
 
 	return reportCart, err
 }
