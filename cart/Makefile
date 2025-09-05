@@ -20,7 +20,7 @@ gen-mock:
 	minimock -i ./internal/domain/service.ProductService -o ./internal/domain/service/mock/product_service_mock.go
 
 test-all:
-	go test -cover ./internal/app/server ./internal/domain/repository/inmemoryrepository
+	go test -cover -tags e2e_test ./internal/app/server ./internal/domain/repository/inmemoryrepository
 
 bench-all:
 	go test ./internal/domain/repository/inmemoryrepository -bench=.
