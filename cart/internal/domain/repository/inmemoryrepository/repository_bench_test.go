@@ -37,10 +37,8 @@ func BenchmarkRepository_AddItem(b *testing.B) {
 		for pb.Next() {
 			i++
 			testCase := testData[i]
-			_, err := handler.AddItem(ctx, testCase.userID, *testCase.item)
-			if err != nil {
+			handler.AddItem(ctx, testCase.userID, *testCase.item)
 
-			}
 		}
 	})
 }
@@ -75,10 +73,7 @@ func BenchmarkRepository_DeleteItem(b *testing.B) {
 		for pb.Next() {
 			i++
 			testCase := testData[i]
-			_, err := handler.DeleteItem(ctx, testCase.userID, *testCase.item)
-			if err != nil {
-
-			}
+			handler.DeleteItem(ctx, testCase.userID, *testCase.item)
 		}
 	})
 }
