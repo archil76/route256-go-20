@@ -31,8 +31,15 @@ func TestServerE(t *testing.T) {
 }
 
 func (s *ServerE) BeforeAll(t provider.T) {
+	env_var := os.Getenv("CONFIG_FILE")
+	if env_var == "" {
+		t.Fatalf("Не задана переменная окружения CONFIG_FILE")
+		return
+	}
+
 	c, err := config.LoadConfig(os.Getenv("CONFIG_FILE"))
 	if err != nil {
+		t.Fatalf("Неверный формат конфига по адресу: %s", env_var)
 		return
 	}
 
@@ -70,6 +77,9 @@ func (s *ServerE) TestServerE(t provider.T) {
 	count2 := int32(3)
 	userID := int64(1022222)
 
+	countUint32 := uint32(count)   //nolint:gosec
+	count2Uint32 := uint32(count2) //nolint:gosec
+
 	addItemRequest := testAddItemRequest{
 		Count: count,
 	}
@@ -83,36 +93,36 @@ func (s *ServerE) TestServerE(t provider.T) {
 		t.WithNewStep("Подготовка: Очистка корзины", func(t provider.StepCtx) {
 
 			request, err := getClearCartRequest(s.Host, userID)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 			require.Equal(t, http.StatusNoContent, response.StatusCode)
 		})
 
 		t.WithNewStep("Подготовка: Проверка что корзина пуста", func(t provider.StepCtx) {
 			request, err := getGetCartRequest(s.Host, userID)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 
 			require.Equal(t, http.StatusNotFound, response.StatusCode)
 		})
 
 		t.WithNewStep("Подготовка: Наполнение корзины", func(t provider.StepCtx) {
 			request, err := getAddItemRequest(s.Host, addItemRequest, userID, sku)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 			require.Equal(t, http.StatusOK, response.StatusCode)
 
 			request2, err := getAddItemRequest(s.Host, addItemRequest2, userID, sku2)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 
 			response2, err := s.client.Do(request2)
-			require.ErrorIs(t, nil, err)
+			require.NoError(t, err)
 			require.Equal(t, http.StatusOK, response2.StatusCode)
 		})
 	})
@@ -120,39 +130,40 @@ func (s *ServerE) TestServerE(t provider.T) {
 	t.WithNewStep("Действие: Получение", func(t provider.StepCtx) {
 
 		request, err := getGetCartRequest(s.Host, userID)
-		require.ErrorIs(t, nil, err)
+		require.NoError(t, err)
 
 		response, err := s.client.Do(request)
-		require.ErrorIs(t, nil, err)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, response.StatusCode)
 
 		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
 		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
-		require.Equal(t, len(reportCart.Items), 2)
-		require.Equal(t, reportCart.Items[0].SKU, sku)
-		require.Equal(t, reportCart.Items[1].SKU, sku2)
-		require.Equal(t, reportCart.Items[0].Count, count)
-		require.Equal(t, reportCart.Items[1].Count, count2)
+
+		require.Equal(t, 2, len(reportCart.Items))
+		require.Equal(t, sku, reportCart.Items[0].SKU)
+		require.Equal(t, sku2, reportCart.Items[1].SKU)
+		require.Equal(t, countUint32, reportCart.Items[0].Count)
+		require.Equal(t, count2Uint32, reportCart.Items[1].Count)
 
 	})
 
 	t.WithNewStep("Действие: удаление sku из корзины", func(t provider.StepCtx) {
 		request, err := getDeleteItemRequest(s.Host, userID, sku)
-		require.ErrorIs(t, nil, err)
+		require.NoError(t, err)
 
 		response, err := s.client.Do(request)
-		require.ErrorIs(t, nil, err)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusNoContent, response.StatusCode)
 	})
 
 	t.WithNewStep("Проверка: Проверка корзины после удаления", func(t provider.StepCtx) {
 		request, err := getGetCartRequest(s.Host, userID)
-		require.ErrorIs(t, nil, err)
+		require.NoError(t, err)
 
 		response, err := s.client.Do(request)
-		require.ErrorIs(t, nil, err)
+		require.NoError(t, err)
 
 		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
