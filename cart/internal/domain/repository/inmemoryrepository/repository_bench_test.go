@@ -37,7 +37,7 @@ func BenchmarkRepository_AddItem(b *testing.B) {
 		for pb.Next() {
 			i++
 			testCase := testData[i]
-			handler.AddItem(ctx, testCase.userID, *testCase.item)
+			_, _ = handler.AddItem(ctx, testCase.userID, *testCase.item)
 
 		}
 	})
@@ -73,7 +73,7 @@ func BenchmarkRepository_DeleteItem(b *testing.B) {
 		for pb.Next() {
 			i++
 			testCase := testData[i]
-			handler.DeleteItem(ctx, testCase.userID, *testCase.item)
+			_, _ = handler.DeleteItem(ctx, testCase.userID, *testCase.item)
 		}
 	})
 }
