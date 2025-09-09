@@ -1,6 +1,8 @@
 package service
 
-import "context"
+import (
+	"context"
+)
 
 func (s *LomsService) StocksInfo(ctx context.Context, sku int64) (uint32, error) {
 	if sku < 1 {

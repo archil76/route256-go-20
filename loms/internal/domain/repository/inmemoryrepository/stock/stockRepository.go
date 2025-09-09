@@ -1,12 +1,15 @@
 package inmemoryrepository
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
-	"os"
 	"route256/loms/internal/domain/model"
 	"sync"
 )
+
+//go:embed stock-data.json
+var stock_data string
 
 var (
 	ErrStockDoesntExist = errors.New("stock doesn't exist")
@@ -27,24 +30,18 @@ type Repository struct {
 	mu      sync.RWMutex
 }
 
-func loadSource(filename string) ([]StockData, error) {
-	f, err := os.Open(filename) //nolint:gosec
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
-
+func loadSource() ([]StockData, error) {
+	jsonData := []byte(stock_data)
 	var stockData []StockData
-	if err := json.NewDecoder(f).Decode(&stockData); err != nil {
+	if err := json.Unmarshal(jsonData, &stockData); err != nil {
 		return nil, err
 	}
 
 	return stockData, nil
 }
 
-func NewStockInMemoryRepository(source string, capacity int) *Repository {
-	stockData, err := loadSource(source)
+func NewStockInMemoryRepository(capacity int) *Repository {
+	stockData, err := loadSource()
 	if err != nil {
 		return nil
 	}

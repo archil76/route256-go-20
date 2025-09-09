@@ -46,8 +46,7 @@ func TestHandler_GetStock_Table(t *testing.T) {
 
 	ctx := context.Background()
 
-	source := "C:\\Users\\atvaladze\\Documents\\Archil\\classroom-20\\students\\homework-draft\\docs\\homework-3\\stock-data.json"
-	handler := NewStockInMemoryRepository(source, 10)
+	handler := NewStockInMemoryRepository(10)
 
 	for _, td := range testData {
 		t.Run(td.name, func(t *testing.T) {

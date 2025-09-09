@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "loms/internal/api;loms";
+
+
+service Loms {
+  rpc OrderCreate(OrderCreateRequest) returns (OrderCreateResponse);
+  rpc OrderInfo(OrderInfoRequest) returns (OrderInfoResponse);
+  rpc OrderPay(OrderPayRequest) returns (OrderPayResponse);
+  rpc OrderCancel(OrderCancelRequest) returns (OrderCancelResponse);
+  rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse);
+};
+
+message OrderCreateRequest{
+  int64 userId = 1;
+  repeated Items  items = 2;
+}
+
+message Items{
+  int64 sku = 1;
+  uint32  count  = 2;
+}
+
+message OrderCreateResponse{
+   int64 orderId = 1;
+}
+
+message OrderInfoRequest{
+  int64 orderId = 1;
+}
+
+message OrderInfoResponse{
+  string status = 1;
+  int64 orderId = 2;
+  repeated Items  items = 3;
+}
+
+message OrderPayRequest{
+  int64 orderId = 1;
+}
+
+message OrderPayResponse{
+}
+
+message OrderCancelRequest{
+  int64 orderId = 1;
+}
+
+message OrderCancelResponse{
+}
+
+message StocksInfoRequest{
+  int64 sku  = 1;
+}
+
+message StocksInfoResponse{
+  uint32  count  = 2;
+}
