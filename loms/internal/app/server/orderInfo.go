@@ -9,10 +9,6 @@ import (
 )
 
 func (s Server) OrderInfo(ctx context.Context, request *desc.OrderInfoRequest) (*desc.OrderInfoResponse, error) {
-	if err := request.Validate(); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Невалидный запрос")
-	}
-
 	order, err := s.lomsServise.OrderInfo(ctx, request.OrderId)
 	if err != nil {
 		return nil, err

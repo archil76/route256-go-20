@@ -13,6 +13,8 @@ import (
 	"route256/loms/internal/infra/config"
 	"sync/atomic"
 
+	"route256/loms/internal/infra/middlewares"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -28,7 +30,11 @@ func NewApp(configPath string) (*App, error) {
 		return nil, fmt.Errorf("config.LoadConfig: %w", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			middlewares.Validate,
+		),
+	)
 
 	reflection.Register(grpcServer)
 
