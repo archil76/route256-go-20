@@ -10,6 +10,10 @@ import (
 )
 
 func (s Server) OrderCreate(ctx context.Context, request *lomspb.OrderCreateRequest) (*lomspb.OrderCreateResponse, error) {
+	if err := request.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Невалидный запрос")
+	}
+
 	items := []model.Item{}
 
 	for _, reqItem := range request.Items {

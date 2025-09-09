@@ -9,6 +9,10 @@ import (
 )
 
 func (s Server) StocksInfo(ctx context.Context, request *lomspb.StocksInfoRequest) (*lomspb.StocksInfoResponse, error) {
+	if err := request.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Невалидный запрос")
+	}
+
 	count, err := s.lomsServise.StocksInfo(ctx, request.Sku)
 	if err != nil {
 		return nil, err

@@ -9,6 +9,10 @@ import (
 )
 
 func (s Server) OrderPay(ctx context.Context, request *lomspb.OrderPayRequest) (*lomspb.OrderPayResponse, error) {
+	if err := request.Validate(); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Невалидный запрос")
+	}
+
 	err := s.lomsServise.OrderPay(ctx, request.OrderId)
 	if err != nil {
 		return nil, err

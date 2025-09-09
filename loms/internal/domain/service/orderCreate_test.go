@@ -18,7 +18,7 @@ func Test_OrderCreate(t *testing.T) {
 
 	orderRepository := orderrepo.NewOrderInMemoryRepository(10, &counter)
 
-	stockRepository := stockrepo.NewStockInMemoryRepository(10, source)
+	stockRepository := stockrepo.NewStockInMemoryRepository(10)
 
 	handler := NewLomsService(orderRepository, stockRepository)
 
