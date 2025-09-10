@@ -1,7 +1,12 @@
 BINDIR=${CURDIR}/bin
 PACKAGE=route256/loms
+CONFIG_FILE=loms/configs/values_local.yaml
 
 PROTO_PATH := "./api"
+
+run:
+	export CONFIG_FILE
+	go run cmd/server/main.go
 
 bindir:
 	mkdir -p ${BINDIR}
@@ -12,6 +17,9 @@ build: bindir
 run-migrations:
 	echo "run migrations"
 
+.install-minimock:
+	go install github.com/gojuno/minimock/v3/cmd/minimock@v3.4.5
+
 gen-mock:
 	minimock -i ./internal/app/server.LomsServise -o ./internal/app/server/mock/loms_servise_mock.go
 
@@ -21,7 +29,9 @@ test-all:
 bin-deps:
 	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1 && \
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
-	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4
+	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
+	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \
+    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
 
 vendor-rm:
 	rm -rf vendor-proto
@@ -46,7 +56,17 @@ vendor-proto/validate:
 	mv vendor-proto/tmp/validate vendor-proto/
 	rm -rf vendor-proto/tmp
 
-vendor-proto: vendor-rm vendor-proto/google/protobuf vendor-proto/validate
+vendor-proto/google/api:
+	git clone -b master --single-branch -n --depth=1 --filter=tree:0 \
+ 		https://github.com/googleapis/googleapis vendor-proto/googleapis && \
+ 	cd vendor-proto/googleapis && \
+	git sparse-checkout set --no-cone google/api && \
+	git checkout
+	mkdir -p  vendor-proto/google
+	mv vendor-proto/googleapis/google/api vendor-proto/google
+	rm -rf vendor-proto/googleapis
+
+vendor-proto: vendor-rm vendor-proto/google/protobuf vendor-proto/validate vendor-proto/google/api
 
 protoc-generate:
 	protoc \
@@ -60,6 +80,14 @@ protoc-generate:
 	--go-grpc_opt paths=source_relative \
 	--plugin=protoc-gen-validate=$(BINDIR)/protoc-gen-validate \
     --validate_out="lang=go,paths=source_relative:internal/"${PROTO_PATH} \
+    --plugin=protoc-gen-grpc-gateway=$(BINDIR)/protoc-gen-grpc-gateway \
+    --grpc-gateway_out internal/${PROTO_PATH} \
+    --grpc-gateway_opt logtostderr=true  \
+    --grpc-gateway_opt paths=source_relative \
+    --grpc-gateway_opt generate_unbound_methods=true \
+    --plugin=protoc-gen-openapiv2=$(BINDIR)/protoc-gen-openapiv2 \
+    --openapiv2_out internal/${PROTO_PATH} \
+    --openapiv2_opt logtostderr=true \
 	api/loms.proto && \
 	go mod tidy
 

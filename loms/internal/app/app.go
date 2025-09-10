@@ -1,7 +1,10 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"net"
 
@@ -15,7 +18,9 @@ import (
 
 	"route256/loms/internal/infra/middlewares"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -59,9 +64,47 @@ func (app *App) ListenAndServe() error {
 		return err
 	}
 
+	go func() {
+		conn, err := grpc.NewClient(
+			fmt.Sprintf(":%s", app.config.Server.GrpcPort),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			panic(err)
+		}
+		ctx := context.Background()
+
+		gwmux := runtime.NewServeMux(
+			runtime.WithIncomingHeaderMatcher(headerMatcher),
+		)
+
+		if err = desc.RegisterLomsHandler(ctx, gwmux, conn); err != nil {
+			panic(err)
+		}
+
+		gwServer := &http.Server{
+			Addr:    fmt.Sprintf(":%s", app.config.Server.HttpPort),
+			Handler: gwmux,
+		}
+
+		if err = gwServer.ListenAndServe(); err != nil {
+			panic(err)
+		}
+	}()
+
+	fmt.Printf("app up %s:%s-%s", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
 	if err = app.server.Serve(l); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func headerMatcher(key string) (string, bool) {
+	switch strings.ToLower(key) {
+	case "x-auth":
+		return key, true
+	default:
+		return key, false
+	}
 }

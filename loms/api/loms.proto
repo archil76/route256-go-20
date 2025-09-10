@@ -3,13 +3,42 @@ syntax = "proto3";
 option go_package = "loms/internal/api;loms";
 
 import "validate/validate.proto";
+import "google/api/annotations.proto";
 
 service Loms {
-  rpc OrderCreate(OrderCreateRequest) returns (OrderCreateResponse);
-  rpc OrderInfo(OrderInfoRequest) returns (OrderInfoResponse);
-  rpc OrderPay(OrderPayRequest) returns (OrderPayResponse);
-  rpc OrderCancel(OrderCancelRequest) returns (OrderCancelResponse);
-  rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse);
+  rpc OrderCreate(OrderCreateRequest) returns (OrderCreateResponse){
+    option(google.api.http) = {
+      post: "/order/create"
+      body: "*"
+    };
+  };
+
+  rpc OrderInfo(OrderInfoRequest) returns (OrderInfoResponse){
+    option(google.api.http) = {
+      get: "/order/info"
+    };
+  };
+
+  rpc OrderPay(OrderPayRequest) returns (OrderPayResponse){
+    option(google.api.http) = {
+      post: "/order/pay"
+      body: "*"
+    };
+  };
+
+  rpc OrderCancel(OrderCancelRequest) returns (OrderCancelResponse){
+    option(google.api.http) = {
+      post: "/order/cancel"
+      body: "*"
+    };
+  };
+
+  ;
+  rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse){
+    option(google.api.http) = {
+      get: "/stock/info"
+    };
+  };
 };
 
 message OrderCreateRequest{
