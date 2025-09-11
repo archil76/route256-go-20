@@ -9,17 +9,17 @@ import (
 )
 
 func (s Server) OrderInfo(ctx context.Context, request *desc.OrderInfoRequest) (*desc.OrderInfoResponse, error) {
-	order, err := s.lomsServise.OrderInfo(ctx, request.OrderId)
+	order, err := s.lomsServise.OrderInfo(ctx, request.OrderID)
 	if err != nil {
 		return nil, err
 	}
 
 	orderInfoResponse := desc.OrderInfoResponse{
 		Status:  string(order.Status),
-		OrderId: order.OrderID,
+		OrderID: order.OrderID,
 		Items:   []*desc.Items{},
 	}
-	orderInfoResponse.OrderId = order.OrderID
+	orderInfoResponse.OrderID = order.OrderID
 	for _, item := range order.Items {
 
 		orderInfoResponse.Items = append(orderInfoResponse.Items, &desc.Items{

@@ -21,7 +21,7 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID model.UserID, repo
 
 	client := desc.NewLomsClient(conn)
 
-	orderCreateRequest := desc.OrderCreateRequest{UserId: userID}
+	orderCreateRequest := desc.OrderCreateRequest{UserID: userID}
 	for _, itemInCart := range reportCart.Items {
 		orderCreateRequest.Items = append(orderCreateRequest.Items, &desc.Items{
 			Sku:   itemInCart.SKU,
@@ -34,5 +34,5 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID model.UserID, repo
 		return 0, ErrOrderNotFound
 	}
 
-	return orderCreateResponse.OrderId, nil
+	return orderCreateResponse.OrderID, nil
 }
