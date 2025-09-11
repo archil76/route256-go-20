@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"route256/cart/internal/domain/model"
 	producrepo "route256/cart/internal/domain/repository/productservicerepository"
 	cartsService "route256/cart/internal/domain/service"
 	mock2 "route256/cart/internal/domain/service/mock"
@@ -106,7 +107,8 @@ func Test_AddItemHandler(t *testing.T) {
 	})
 
 	t.Run("Добавление sku в корзину. Не хватает остатка", func(t *testing.T) {
-		productServiceMock.GetProductBySkuMock.When(ctx, 139275865).Then(product, nil)
+		product3 := &model.Product{Sku: 139275865, Name: "139275865", Price: 1000}
+		productServiceMock.GetProductBySkuMock.When(ctx, 139275865).Then(product3, nil)
 
 		lomsServiceMock.StockInfoMock.When(ctx, 139275865).Then(0, nil)
 
