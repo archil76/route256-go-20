@@ -5,12 +5,12 @@ import (
 	"route256/loms/internal/domain/model"
 )
 
-func (s *LomsService) OrderPay(ctx context.Context, orderId int64) error {
-	if orderId < 1 {
+func (s *LomsService) OrderPay(ctx context.Context, orderID int64) error {
+	if orderID < 1 {
 		return ErrOrderIDIsNotValid
 	}
 
-	order, err := s.OrderInfo(ctx, orderId)
+	order, err := s.OrderInfo(ctx, orderID)
 	if err != nil {
 		return ErrOrderDoesntExist
 	}

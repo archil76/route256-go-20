@@ -9,7 +9,7 @@ import (
 )
 
 func (s Server) OrderCancel(ctx context.Context, request *lomspb.OrderCancelRequest) (*lomspb.OrderCancelResponse, error) {
-	err := s.lomsServise.OrderCancel(ctx, request.OrderId)
+	err := s.lomsServise.OrderCancel(ctx, request.OrderID)
 	if err != nil {
 		return nil, err
 	}

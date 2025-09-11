@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "loms/internal/api;loms";
+option go_package = "./internal/api;loms";
 
 import "validate/validate.proto";
 import "google/api/annotations.proto";
@@ -42,7 +42,7 @@ service Loms {
 };
 
 message OrderCreateRequest{
-  int64 userId = 1[(validate.rules).int64.gt = 0];
+  int64 userID = 1[(validate.rules).int64.gt = 0];
   repeated Items  items = 2[(validate.rules).repeated.ignore_empty=false];
 }
 
@@ -52,28 +52,28 @@ message Items{
 }
 
 message OrderCreateResponse{
-   int64 orderId = 1[(validate.rules).int64.gt = 0];
+   int64 orderID = 1[(validate.rules).int64.gt = 0];
 }
 
 message OrderInfoRequest{
-  int64 orderId = 1[(validate.rules).int64.gt = 0];
+  int64 orderID = 1[(validate.rules).int64.gt = 0];
 }
 
 message OrderInfoResponse{
   string status = 1;
-  int64 orderId = 2;
+  int64 orderID = 2;
   repeated Items  items = 3;
 }
 
 message OrderPayRequest{
-  int64 orderId = 1[(validate.rules).int64.gt = 0];
+  int64 orderID = 1[(validate.rules).int64.gt = 0];
 }
 
 message OrderPayResponse{
 }
 
 message OrderCancelRequest{
-  int64 orderId = 1[(validate.rules).int64.gt = 0];
+  int64 orderID = 1[(validate.rules).int64.gt = 0];
 }
 
 message OrderCancelResponse{

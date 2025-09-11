@@ -9,7 +9,7 @@ import (
 )
 
 func (s Server) OrderPay(ctx context.Context, request *lomspb.OrderPayRequest) (*lomspb.OrderPayResponse, error) {
-	err := s.lomsServise.OrderPay(ctx, request.OrderId)
+	err := s.lomsServise.OrderPay(ctx, request.OrderID)
 	if err != nil {
 		return nil, err
 	}
