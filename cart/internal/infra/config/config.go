@@ -17,6 +17,11 @@ type Config struct {
 		Port  string `yaml:"port"`
 		Token string `yaml:"token"`
 	} `yaml:"product_service"`
+
+	LomsService struct {
+		Host string `yaml:"host"`
+		Port string `yaml:"port"`
+	} `yaml:"loms_service"`
 }
 
 func LoadConfig(filename string) (*Config, error) {

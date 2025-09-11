@@ -22,8 +22,9 @@ func Test_AddItemHandler(t *testing.T) {
 
 	cartRepositoryMock := mock2.NewCartsRepositoryMock(ctrl)
 	productServiceMock := mock2.NewProductServiceMock(ctrl)
+	lomsServiceMock := mock2.NewLomsServiceMock(ctrl)
 
-	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock)
+	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock, lomsServiceMock)
 
 	handler := NewServer(cartService)
 
@@ -33,6 +34,9 @@ func Test_AddItemHandler(t *testing.T) {
 
 		cartRepositoryMock.AddItemMock.When(ctx, userID, item).Then(&item, nil)
 		cartRepositoryMock.AddItemMock.When(ctx, userID, item2).Then(&item2, nil)
+
+		lomsServiceMock.StockInfoMock.When(ctx, sku).Then(265, nil)
+		lomsServiceMock.StockInfoMock.When(ctx, sku2).Then(300, nil)
 
 		request, err := getAddItemRequest(addItemRequest, userID, sku)
 		require.ErrorIs(t, nil, err)
@@ -99,6 +103,22 @@ func Test_AddItemHandler(t *testing.T) {
 		response := writer.Result()
 
 		require.Equal(t, http.StatusPreconditionFailed, response.StatusCode)
+	})
 
+	t.Run("Добавление sku в корзину. Не хватает остатка", func(t *testing.T) {
+		productServiceMock.GetProductBySkuMock.When(ctx, 139275865).Then(product, nil)
+
+		lomsServiceMock.StockInfoMock.When(ctx, 139275865).Then(0, nil)
+
+		request, err := getAddItemRequest(addItemRequest, userID, 139275865)
+		require.ErrorIs(t, nil, err)
+
+		writer := httptest.NewRecorder()
+
+		handler.AddItem(writer, request)
+
+		response := writer.Result()
+
+		require.Equal(t, http.StatusPreconditionFailed, response.StatusCode)
 	})
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"route256/cart/internal/app/server"
 	cartsRepository "route256/cart/internal/domain/repository/inmemoryrepository"
+	lomsservice "route256/cart/internal/domain/repository/lomsrepository"
 	productservice "route256/cart/internal/domain/repository/productservicerepository"
 	cartsService "route256/cart/internal/domain/service"
 	"route256/cart/internal/infra/config"
@@ -60,9 +61,13 @@ func (app *App) bootstrapHandlers() http.Handler {
 		fmt.Sprintf("%s:%s", app.config.ProductService.Host, app.config.ProductService.Port),
 	)
 
+	lomsService := lomsservice.NewLomsService(
+		fmt.Sprintf("%s:%s", app.config.LomsService.Host, app.config.LomsService.Port),
+	)
+
 	const reviewsCap = 100
 	cartRepository := cartsRepository.NewCartInMemoryRepository(reviewsCap)
-	cartService := cartsService.NewCartsService(cartRepository, productService)
+	cartService := cartsService.NewCartsService(cartRepository, productService, lomsService)
 
 	s := server.NewServer(cartService)
 
@@ -71,6 +76,7 @@ func (app *App) bootstrapHandlers() http.Handler {
 	mux.HandleFunc("GET /user/{user_id}/cart", s.GetCart)
 	mux.HandleFunc("DELETE /user/{user_id}/cart/{sku_id}", s.DeleteItem)
 	mux.HandleFunc("DELETE /user/{user_id}/cart", s.ClearCart)
+	mux.HandleFunc("DELETE /checkout/{user_id}", s.Checkout)
 
 	timerMux := middlewares.NewTimeMux(mux)
 	logMux := middlewares.NewLogMux(timerMux)

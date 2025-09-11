@@ -23,8 +23,9 @@ func Test_GetCartHandler(t *testing.T) {
 
 	cartRepositoryMock := mock2.NewCartsRepositoryMock(ctrl)
 	productServiceMock := mock2.NewProductServiceMock(ctrl)
+	lomsServiceMock := mock2.NewLomsServiceMock(ctrl)
 
-	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock)
+	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock, lomsServiceMock)
 
 	handler := NewServer(cartService)
 
