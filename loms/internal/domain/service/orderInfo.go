@@ -7,13 +7,13 @@ import (
 	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
 )
 
-func (s *LomsService) OrderInfo(ctx context.Context, orderId int64) (*model.Order, error) {
-	if orderId < 1 {
+func (s *LomsService) OrderInfo(ctx context.Context, orderID int64) (*model.Order, error) {
+	if orderID < 1 {
 
 		return nil, ErrOrderIDIsNotValid
 	}
 
-	order, err := s.orderRepository.GetByID(ctx, orderId)
+	order, err := s.orderRepository.GetByID(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, orderrepo.ErrOrderDoesntExist) {
 			return nil, ErrOrderDoesntExist

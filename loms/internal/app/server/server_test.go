@@ -1,11 +1,9 @@
 package server
 
 import (
-	"sync/atomic"
 	"testing"
 )
 
-var counter atomic.Int64
 var (
 	tp = struct {
 		sku          int64
@@ -15,7 +13,7 @@ var (
 		count2       uint32
 		count3       uint32
 		countInStock uint32
-		userId       int64
+		userID       int64
 	}{
 		sku:          139275865,
 		sku2:         2956315,
@@ -24,7 +22,7 @@ var (
 		count2:       3,
 		count3:       15,
 		countInStock: 65534,
-		userId:       1000,
+		userID:       1000,
 	}
 )
 

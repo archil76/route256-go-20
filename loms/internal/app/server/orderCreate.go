@@ -18,12 +18,12 @@ func (s Server) OrderCreate(ctx context.Context, request *lomspb.OrderCreateRequ
 			Count: reqItem.Count})
 	}
 
-	orderId, err := s.lomsServise.OrderCreate(ctx, request.UserId, items)
+	orderID, err := s.lomsServise.OrderCreate(ctx, request.UserId, items)
 	if err != nil {
 		return nil, err
 	}
 
 	return &lomspb.OrderCreateResponse{
-		OrderId: orderId,
+		OrderId: orderID,
 	}, status.Errorf(codes.OK, "")
 }

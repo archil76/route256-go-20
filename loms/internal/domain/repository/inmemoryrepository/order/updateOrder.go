@@ -13,12 +13,12 @@ func (r *Repository) UpdateOrder(ctx context.Context, order model.Order) (*model
 }
 
 func (r *Repository) updateOrder(ctx context.Context, order model.Order) (*model.Order, error) {
-	_, err := r.getOrder(ctx, order.OrderId)
+	_, err := r.getOrder(ctx, order.OrderID)
 	if err != nil {
 		return nil, err
 	}
 
-	r.storage[order.OrderId] = order
+	r.storage[order.OrderID] = order
 
 	return &order, nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 //go:embed stock-data.json
-var stock_data string
+var stockData string
 
 var (
 	ErrStockDoesntExist = errors.New("stock doesn't exist")
@@ -31,7 +31,7 @@ type Repository struct {
 }
 
 func loadSource() ([]StockData, error) {
-	jsonData := []byte(stock_data)
+	jsonData := []byte(stockData)
 	var stockData []StockData
 	if err := json.Unmarshal(jsonData, &stockData); err != nil {
 		return nil, err

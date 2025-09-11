@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"net"
 
@@ -65,12 +66,12 @@ func (app *App) ListenAndServe() error {
 	}
 
 	go func() {
-		conn, err := grpc.NewClient(
+		conn, err1 := grpc.NewClient(
 			fmt.Sprintf(":%s", app.config.Server.GrpcPort),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
-		if err != nil {
-			panic(err)
+		if err1 != nil {
+			panic(err1)
 		}
 		ctx := context.Background()
 
@@ -78,17 +79,23 @@ func (app *App) ListenAndServe() error {
 			runtime.WithIncomingHeaderMatcher(headerMatcher),
 		)
 
-		if err = desc.RegisterLomsHandler(ctx, gwmux, conn); err != nil {
-			panic(err)
+		if err1 = desc.RegisterLomsHandler(ctx, gwmux, conn); err1 != nil {
+			panic(err1)
 		}
 
 		gwServer := &http.Server{
-			Addr:    fmt.Sprintf(":%s", app.config.Server.HttpPort),
-			Handler: gwmux,
+			Addr:                         fmt.Sprintf(":%s", app.config.Server.HttpPort),
+			Handler:                      gwmux,
+			DisableGeneralOptionsHandler: false,
+			TLSConfig:                    nil,
+			ReadTimeout:                  10 * time.Second,
+			ReadHeaderTimeout:            10 * time.Second,
+			WriteTimeout:                 10 * time.Second,
+			IdleTimeout:                  10 * time.Second,
 		}
 
-		if err = gwServer.ListenAndServe(); err != nil {
-			panic(err)
+		if err1 = gwServer.ListenAndServe(); err1 != nil {
+			panic(err1)
 		}
 	}()
 

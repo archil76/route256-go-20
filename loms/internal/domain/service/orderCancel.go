@@ -20,7 +20,7 @@ func (s *LomsService) OrderCancel(ctx context.Context, orderId int64) error {
 		return err
 	}
 
-	if order.Status == model.CANCELED || order.Status == model.NEW_STATUS {
+	if order.Status == model.CANCELED || order.Status == model.NEWSTATUS {
 		return nil // стоки увеличивать не надо
 	}
 

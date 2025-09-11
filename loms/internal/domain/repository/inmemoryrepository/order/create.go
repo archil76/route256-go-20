@@ -9,9 +9,9 @@ func (r *Repository) Create(_ context.Context, order model.Order) (*model.Order,
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	order.OrderId = r.sequenceGenerator.Add(1)
+	order.OrderID = r.sequenceGenerator.Add(1)
 
-	r.storage[order.OrderId] = order
+	r.storage[order.OrderID] = order
 
 	return &order, nil
 }

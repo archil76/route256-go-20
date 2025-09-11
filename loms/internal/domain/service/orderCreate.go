@@ -11,9 +11,9 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 	}
 
 	order := model.Order{
-		OrderId: 0,
+		OrderID: 0,
 		UserID:  userID,
-		Status:  model.NEW_STATUS,
+		Status:  model.NEWSTATUS,
 		Items:   items,
 	}
 
@@ -22,7 +22,7 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 		return 0, err
 	}
 
-	orderStatus := model.AWAITING_PAYMENT
+	orderStatus := model.AWAITINGPAYMENT
 
 	_, err = s.stockRepository.Reserve(ctx, items)
 	if err != nil {
@@ -31,8 +31,8 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 
 	err = s.orderRepository.SetStatus(ctx, *upOrder, orderStatus)
 	if err != nil {
-		return upOrder.OrderId, err // Заказ уже записан в статусе new. Так что id можно вернуть.
+		return upOrder.OrderID, err // Заказ уже записан в статусе new. Так что id можно вернуть.
 	}
 
-	return upOrder.OrderId, nil
+	return upOrder.OrderID, nil
 }

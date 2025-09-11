@@ -16,10 +16,10 @@ func (s Server) OrderInfo(ctx context.Context, request *desc.OrderInfoRequest) (
 
 	orderInfoResponse := desc.OrderInfoResponse{
 		Status:  string(order.Status),
-		OrderId: order.OrderId,
+		OrderId: order.OrderID,
 		Items:   []*desc.Items{},
 	}
-	orderInfoResponse.OrderId = order.OrderId
+	orderInfoResponse.OrderId = order.OrderID
 	for _, item := range order.Items {
 
 		orderInfoResponse.Items = append(orderInfoResponse.Items, &desc.Items{

@@ -23,7 +23,7 @@ func Test_OrderPay(t *testing.T) {
 	handler := NewServer(lomsServiseMock)
 
 	orderCreateRequest := desc.OrderCreateRequest{
-		UserId: tp.userId,
+		UserId: tp.userID,
 		Items: []*desc.Items{
 			{
 				Sku:   tp.sku,
@@ -45,7 +45,7 @@ func Test_OrderPay(t *testing.T) {
 	}
 
 	t.Run("Добавление Заказа. Успешный путь", func(t *testing.T) {
-		lomsServiseMock.OrderCreateMock.When(ctx, tp.userId, items).Then(orderID, nil)
+		lomsServiseMock.OrderCreateMock.When(ctx, tp.userID, items).Then(orderID, nil)
 
 		orderCreateResponse, err := handler.OrderCreate(ctx, &orderCreateRequest)
 

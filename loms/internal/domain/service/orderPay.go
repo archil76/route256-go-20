@@ -19,7 +19,7 @@ func (s *LomsService) OrderPay(ctx context.Context, orderId int64) error {
 		return nil // тут разногласия в спеке видимо если оплатили то будет аванс, а вот стоки уменьшать не надо
 	}
 
-	if order.Status != model.AWAITING_PAYMENT {
+	if order.Status != model.AWAITINGPAYMENT {
 		return ErrInvalidOrderStatus
 	}
 

@@ -16,7 +16,7 @@ var (
 
 type OrderRepository interface {
 	Create(ctx context.Context, order model.Order) (*model.Order, error)
-	GetByID(ctx context.Context, orderId int64) (*model.Order, error)
+	GetByID(ctx context.Context, orderID int64) (*model.Order, error)
 	UpdateOrder(ctx context.Context, order model.Order) (*model.Order, error)
 	SetStatus(ctx context.Context, order model.Order, status model.Status) error
 }

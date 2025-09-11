@@ -23,7 +23,7 @@ func Test_OrderInfo(t *testing.T) {
 	handler := NewServer(lomsServiseMock)
 
 	orderCreateRequest := desc.OrderCreateRequest{
-		UserId: tp.userId,
+		UserId: tp.userID,
 		Items: []*desc.Items{
 			{
 				Sku:   tp.sku,
@@ -34,7 +34,7 @@ func Test_OrderInfo(t *testing.T) {
 	orderID := int64(1)
 
 	orderInfoResponseExpected := desc.OrderInfoResponse{
-		Status:  string(model.AWAITING_PAYMENT),
+		Status:  string(model.AWAITINGPAYMENT),
 		OrderId: orderID,
 		Items: []*desc.Items{
 			{
@@ -45,9 +45,9 @@ func Test_OrderInfo(t *testing.T) {
 	}
 
 	orderExpected := model.Order{
-		OrderId: orderID,
-		UserID:  tp.userId,
-		Status:  model.AWAITING_PAYMENT,
+		OrderID: orderID,
+		UserID:  tp.userID,
+		Status:  model.AWAITINGPAYMENT,
 		Items: []model.Item{
 			{
 				Sku:   tp.sku,
@@ -68,7 +68,7 @@ func Test_OrderInfo(t *testing.T) {
 	}
 
 	t.Run("Добавление Заказа. Успешный путь", func(t *testing.T) {
-		lomsServiseMock.OrderCreateMock.When(ctx, tp.userId, items).Then(orderID, nil)
+		lomsServiseMock.OrderCreateMock.When(ctx, tp.userID, items).Then(orderID, nil)
 
 		orderCreateResponse, err := handler.OrderCreate(ctx, &orderCreateRequest)
 

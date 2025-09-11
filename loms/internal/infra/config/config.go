@@ -10,7 +10,7 @@ type Config struct {
 	Server struct {
 		Host     string `yaml:"host"`
 		GrpcPort string `yaml:"grpc_port"`
-		HttpPort string `yaml:"http_port"`
+		HttpPort string `yaml:"http_port"` //nolint:revive
 	} `yaml:"service"`
 
 	Source string `yaml:"source"`
