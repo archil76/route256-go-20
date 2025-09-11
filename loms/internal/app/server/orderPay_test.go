@@ -23,7 +23,7 @@ func Test_OrderPay(t *testing.T) {
 	handler := NewServer(lomsServiseMock)
 
 	orderCreateRequest := desc.OrderCreateRequest{
-		UserId: tp.userID,
+		UserID: tp.userID,
 		Items: []*desc.Items{
 			{
 				Sku:   tp.sku,
@@ -34,7 +34,7 @@ func Test_OrderPay(t *testing.T) {
 	orderID := int64(1)
 
 	orderPayRequest := desc.OrderPayRequest{
-		OrderId: orderID,
+		OrderID: orderID,
 	}
 
 	items := []model.Item{
@@ -50,7 +50,7 @@ func Test_OrderPay(t *testing.T) {
 		orderCreateResponse, err := handler.OrderCreate(ctx, &orderCreateRequest)
 
 		require.NoError(t, err)
-		require.Equal(t, orderID, orderCreateResponse.OrderId)
+		require.Equal(t, orderID, orderCreateResponse.OrderID)
 	})
 
 	t.Run("Оплата Заказа. Успешный путь", func(t *testing.T) {

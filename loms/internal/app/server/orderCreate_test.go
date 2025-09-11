@@ -23,7 +23,7 @@ func Test_OrderCreate(t *testing.T) {
 	handler := NewServer(lomsServiseMock)
 
 	orderCreateRequest := desc.OrderCreateRequest{
-		UserId: tp.userID,
+		UserID: tp.userID,
 		Items: []*desc.Items{
 			{
 				Sku:   tp.sku,
@@ -47,7 +47,7 @@ func Test_OrderCreate(t *testing.T) {
 		orderCreateResponse, err := handler.OrderCreate(ctx, &orderCreateRequest)
 
 		require.NoError(t, err)
-		require.Equal(t, orderID, orderCreateResponse.OrderId)
+		require.Equal(t, orderID, orderCreateResponse.OrderID)
 	})
 
 }
