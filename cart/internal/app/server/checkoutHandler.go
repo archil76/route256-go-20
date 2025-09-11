@@ -22,12 +22,9 @@ func (s *Server) Checkout(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	rawResponse, err := json.Marshal(
-		struct {
-			order_id int64 //nolint:revive
-		}{
-			orderID},
-	)
+	checkoutResponse := CheckoutResponse{OrderID: orderID}
+
+	rawResponse, err := json.Marshal(checkoutResponse)
 	if err != nil {
 		utils.WriteErrorToResponse(writer, request, err, "can't get Checkout. marshalling error", http.StatusBadRequest)
 		return
