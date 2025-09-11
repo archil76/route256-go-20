@@ -1,4 +1,5 @@
 .idea
+.env
 bin
 cart/testsignore
 cart/testsignore/sevice_test.go
