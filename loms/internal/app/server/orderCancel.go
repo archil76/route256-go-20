@@ -3,10 +3,11 @@ package server
 import (
 	"context"
 	"errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	lomspb "route256/loms/internal/api"
 	lomsServise "route256/loms/internal/domain/service"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s Server) OrderCancel(ctx context.Context, request *lomspb.OrderCancelRequest) (*lomspb.OrderCancelResponse, error) {
