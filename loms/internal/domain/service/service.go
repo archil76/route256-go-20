@@ -12,6 +12,7 @@ var (
 	ErrSkuIDIsNotValid    = errors.New("sku should be more than 0")
 	ErrOrderDoesntExist   = errors.New("order doesn't exist")
 	ErrInvalidOrderStatus = errors.New("order status should be PAYED")
+	ErrShortOfStock       = errors.New("available amount of stock isn't enough ")
 )
 
 type OrderRepository interface {

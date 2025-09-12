@@ -62,5 +62,4 @@ func Test_OrderCreate(t *testing.T) {
 		require.Equal(t, model.AWAITINGPAYMENT, order2.Status)
 
 	})
-
 }

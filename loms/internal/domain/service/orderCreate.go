@@ -34,5 +34,9 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 		return upOrder.OrderID, err // Заказ уже записан в статусе new. Так что id можно вернуть.
 	}
 
+	if orderStatus == model.FAILED {
+		return upOrder.OrderID, ErrShortOfStock // Заказ уже записан в статусе new. Так что id можно вернуть.
+	}
+
 	return upOrder.OrderID, nil
 }
