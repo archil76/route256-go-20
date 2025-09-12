@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_OrderCreate(t *testing.T) {
+func Test_OrderPay(t *testing.T) {
 	t.Parallel()
 	t.Helper()
 
@@ -28,6 +28,7 @@ func Test_OrderCreate(t *testing.T) {
 			Count: tp.count,
 		},
 	}
+
 	var orderID, orderID2 int64
 	t.Run("Добавление Заказа. Успешный путь", func(t *testing.T) {
 		var err error
@@ -41,26 +42,20 @@ func Test_OrderCreate(t *testing.T) {
 		require.NoError(t, err)
 		require.Greater(t, orderID2, orderID)
 
-		order1, err := handler.OrderInfo(ctx, orderID)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order1.Status)
+	})
 
-		order2, err := handler.OrderInfo(ctx, orderID2)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order2.Status)
+	t.Run("Оплата Заказа. Успешный путь", func(t *testing.T) {
 
+		err := handler.OrderPay(ctx, orderID)
+
+		require.NoError(t, err)
 	})
 
 	t.Run("Добавление Заказа. Проверка статуса", func(t *testing.T) {
 
-		order1, err := handler.OrderInfo(ctx, orderID)
+		order, err := handler.OrderInfo(ctx, orderID)
 		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order1.Status)
-
-		order2, err := handler.OrderInfo(ctx, orderID2)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order2.Status)
-
+		require.Equal(t, model.PAYED, order.Status)
 	})
 
 }

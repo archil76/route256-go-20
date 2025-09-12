@@ -25,9 +25,9 @@ var (
 )
 
 func TestHandler_All(t *testing.T) {
+	t.Run("Test_OrderCancel", Test_OrderCancel)
 	t.Run("Test_OrderCreate", Test_OrderCreate)
+	t.Run("Test_OrderInfo", Test_OrderInfo)
+	t.Run("Test_OrderPay", Test_OrderPay)
 	t.Run("Test_StockInfo", Test_StockInfo)
-	//t.Run("TestHandler_GetCart_Table", TestHandler_GetCart_Table)
-	//t.Run("TestHandler_DeleteItem_Table", TestHandler_DeleteItem_Table)
-	//t.Run("TestHandler_DeleteItems_Table", TestHandler_DeleteItems_Table)
 }

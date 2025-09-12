@@ -9,7 +9,7 @@ func (r *Repository) Reserve(ctx context.Context, items []model.Item) ([]model.S
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	stocks := make([]model.Stock, len(items))
+	var stocks []model.Stock
 	for _, item := range items {
 		upStock, err := r.getStock(ctx, item.Sku)
 		if err != nil {

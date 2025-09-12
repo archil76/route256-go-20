@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_OrderCreate(t *testing.T) {
+func Test_OrderInfo(t *testing.T) {
 	t.Parallel()
 	t.Helper()
 
@@ -51,15 +51,33 @@ func Test_OrderCreate(t *testing.T) {
 
 	})
 
-	t.Run("Добавление Заказа. Проверка статуса", func(t *testing.T) {
+	t.Run("Получение Заказа. Проверка", func(t *testing.T) {
+		orderExpected1 := model.Order{
+			OrderID: orderID,
+			UserID:  10000,
+			Status:  model.AWAITINGPAYMENT,
+			Items: []model.Item{
+				{Sku: tp.sku, Count: tp.count},
+			},
+		}
+
+		orderExpected2 := model.Order{
+			OrderID: orderID2,
+			UserID:  10000,
+			Status:  model.AWAITINGPAYMENT,
+			Items: []model.Item{
+				{Sku: tp.sku, Count: tp.count},
+			},
+		}
 
 		order1, err := handler.OrderInfo(ctx, orderID)
 		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order1.Status)
+
+		require.Equal(t, orderExpected1, *order1)
 
 		order2, err := handler.OrderInfo(ctx, orderID2)
 		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order2.Status)
+		require.Equal(t, orderExpected2, *order2)
 
 	})
 
