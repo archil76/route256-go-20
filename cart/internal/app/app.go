@@ -76,7 +76,7 @@ func (app *App) bootstrapHandlers() http.Handler {
 	mux.HandleFunc("GET /user/{user_id}/cart", s.GetCart)
 	mux.HandleFunc("DELETE /user/{user_id}/cart/{sku_id}", s.DeleteItem)
 	mux.HandleFunc("DELETE /user/{user_id}/cart", s.ClearCart)
-	mux.HandleFunc("DELETE /checkout/{user_id}", s.Checkout)
+	mux.HandleFunc("POST /checkout/{user_id}", s.Checkout)
 
 	timerMux := middlewares.NewTimeMux(mux)
 	logMux := middlewares.NewLogMux(timerMux)
