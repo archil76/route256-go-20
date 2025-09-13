@@ -1,0 +1,24 @@
+version: "1.0"
+
+services:
+  carts:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - products
+
+  products:
+    image: gitlab-registry.ozon.dev/go/classroom-20/students/homework-draft/products:latest
+    ports:
+      - "8082:8082"
+
+  loms-grps:
+    build: .
+    ports:
+      - "8083:8083"
+
+  loms-http:
+    build: .
+    ports:
+      - "8084:8084"

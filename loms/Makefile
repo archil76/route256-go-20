@@ -4,12 +4,16 @@ CONFIG_FILE=loms/configs/values_local.yaml
 
 PROTO_PATH := "./api"
 
-run:
-	export CONFIG_FILE
-	go run cmd/server/main.go
-
 bindir:
 	mkdir -p ${BINDIR}
+
+run:
+	export CONFIG_FILE=./loms/configs/values_local.yaml &&\
+	go run ./loms/cmd/server/main.go
+
+run-all: bindir
+	echo "build cart"
+	docker-compose up --build
 
 build: bindir
 	echo "build loms"

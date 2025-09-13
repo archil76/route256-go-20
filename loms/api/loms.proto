@@ -33,7 +33,6 @@ service Loms {
     };
   };
 
-  ;
   rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse){
     option(google.api.http) = {
       get: "/stock/info"

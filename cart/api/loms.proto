@@ -33,7 +33,6 @@ service Loms {
     };
   };
 
-  ;
   rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse){
     option(google.api.http) = {
       get: "/stock/info"
@@ -43,7 +42,7 @@ service Loms {
 
 message OrderCreateRequest{
   int64 userID = 1[(validate.rules).int64.gt = 0];
-  repeated Items  items = 2[(validate.rules).repeated.ignore_empty=false];
+  repeated Items  items = 2[(validate.rules).repeated.min_items=1];
 }
 
 message Items{
