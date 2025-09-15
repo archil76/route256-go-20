@@ -20,6 +20,7 @@ type CartService interface {
 	DeleteItem(ctx context.Context, userID model.UserID, skuID model.Sku) (model.Sku, error)
 	DeleteItemByUserID(ctx context.Context, userID model.UserID) (model.UserID, error)
 	GetItemsByUserID(ctx context.Context, userID model.UserID) (*model.ReportCart, error)
+	Checkout(ctx context.Context, userID model.UserID) (int64, error)
 }
 
 type Server struct {

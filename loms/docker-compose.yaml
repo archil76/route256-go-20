@@ -1,0 +1,11 @@
+version: "1.0"
+
+services:
+  loms-grps:
+    build: .
+    ports:
+      - "8083:8083"
+  loms-http:
+    build: .
+    ports:
+      - "8084:8084"

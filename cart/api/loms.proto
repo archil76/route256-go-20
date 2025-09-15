@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+option go_package = "./internal/api;loms";
+
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+
+service Loms {
+  rpc OrderCreate(OrderCreateRequest) returns (OrderCreateResponse){
+    option(google.api.http) = {
+      post: "/order/create"
+      body: "*"
+    };
+  };
+
+  rpc OrderInfo(OrderInfoRequest) returns (OrderInfoResponse){
+    option(google.api.http) = {
+      get: "/order/info"
+    };
+  };
+
+  rpc OrderPay(OrderPayRequest) returns (OrderPayResponse){
+    option(google.api.http) = {
+      post: "/order/pay"
+      body: "*"
+    };
+  };
+
+  rpc OrderCancel(OrderCancelRequest) returns (OrderCancelResponse){
+    option(google.api.http) = {
+      post: "/order/cancel"
+      body: "*"
+    };
+  };
+
+  rpc StocksInfo(StocksInfoRequest) returns (StocksInfoResponse){
+    option(google.api.http) = {
+      get: "/stock/info"
+    };
+  };
+};
+
+message OrderCreateRequest{
+  int64 userID = 1[(validate.rules).int64.gt = 0];
+  repeated Items  items = 2[(validate.rules).repeated.min_items=1];
+}
+
+message Items{
+  int64 sku = 1[(validate.rules).int64.gt = 0];
+  uint32  count  = 2[(validate.rules).uint32.gt=0];
+}
+
+message OrderCreateResponse{
+   int64 orderID = 1[(validate.rules).int64.gt = 0];
+}
+
+message OrderInfoRequest{
+  int64 orderID = 1[(validate.rules).int64.gt = 0];
+}
+
+message OrderInfoResponse{
+  string status = 1;
+  int64 orderID = 2;
+  repeated Items  items = 3;
+}
+
+message OrderPayRequest{
+  int64 orderID = 1[(validate.rules).int64.gt = 0];
+}
+
+message OrderPayResponse{
+}
+
+message OrderCancelRequest{
+  int64 orderID = 1[(validate.rules).int64.gt = 0];
+}
+
+message OrderCancelResponse{
+}
+
+message StocksInfoRequest{
+  int64 sku  = 1[(validate.rules).int64.gt = 0];
+}
+
+message StocksInfoResponse{
+  uint32  count  = 2;
+}
