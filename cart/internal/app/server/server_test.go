@@ -12,7 +12,7 @@ import (
 
 var (
 	sku        = model.Sku(1076963)
-	sku2       = model.Sku(1148162) // должен быть больше sku для проверки сортировки получаемой корзины
+	sku2       = model.Sku(1148162) // Должен быть больше sku для проверки сортировки получаемой корзины
 	name       = "Flashlight"
 	name2      = "Greenhouse"
 	count      = uint32(2)
@@ -39,6 +39,14 @@ var (
 	addItemRequest2 = AddItemRequest{
 		Count: int32(count2),
 	}
+
+	reportCart = model.ReportCart{
+		Items: []model.ItemInСart{
+			{SKU: sku, Count: count, Name: name, Price: price},
+			{SKU: sku2, Count: count2, Name: name2, Price: price2},
+		},
+		TotalPrice: totalPrice,
+	}
 )
 
 func TestHandler_All(t *testing.T) {
@@ -46,6 +54,7 @@ func TestHandler_All(t *testing.T) {
 	t.Run("Test_DeleteItemHandler", Test_DeleteItemHandler)
 	t.Run("Test_AddItemHandler", Test_AddItemHandler)
 	t.Run("Test_GetCartHandler", Test_GetCartHandler)
+	t.Run("Test_CheckoutHandler", Test_CheckoutHandler)
 }
 
 func getDeleteItemRequest(userID int64, sku model.Sku) (*http.Request, error) {
@@ -108,6 +117,22 @@ func getClearCartRequest(userID int64) (*http.Request, error) {
 	request, err := http.NewRequest(
 		http.MethodDelete,
 		"/user/{user_id]/cart",
+		http.NoBody,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+	request.SetPathValue("user_id", strconv.FormatInt(userID, 10))
+
+	return request, nil
+}
+
+func getCheckoutRequest(userID int64) (*http.Request, error) {
+	request, err := http.NewRequest(
+		http.MethodPost,
+		"/checkout/{user_id]",
 		http.NoBody,
 	)
 	if err != nil {

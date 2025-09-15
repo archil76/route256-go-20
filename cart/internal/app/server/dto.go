@@ -15,3 +15,7 @@ type ItemInСart struct {
 	Name  string `json:"name"`
 	Price int32  `json:"price"`
 }
+
+type CheckoutResponse struct {
+	OrderID int64 `json:"order_id"`
+}

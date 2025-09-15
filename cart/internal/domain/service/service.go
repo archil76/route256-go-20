@@ -22,11 +22,17 @@ type ProductService interface {
 	GetProductBySku(ctx context.Context, sku model.Sku) (*model.Product, error)
 }
 
+type LomsService interface {
+	OrderCreate(ctx context.Context, userID model.UserID, reportCart *model.ReportCart) (int64, error)
+	StockInfo(ctx context.Context, sku model.Sku) (uint32, error)
+}
+
 type CartService struct {
 	repository     CartsRepository
 	productService ProductService
+	lomsService    LomsService
 }
 
-func NewCartsService(repository CartsRepository, productService ProductService) *CartService {
-	return &CartService{repository: repository, productService: productService}
+func NewCartsService(repository CartsRepository, productService ProductService, lomsService LomsService) *CartService {
+	return &CartService{repository: repository, productService: productService, lomsService: lomsService}
 }
