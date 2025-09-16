@@ -16,3 +16,7 @@ run-all: bindir
 	echo "build loms"
 	export CONFIG_FILE=./loms/configs/values_local.yaml &&\
     go run ./loms/cmd/server/main.go
+
+up: bindir
+	docker-compose up --build
+
