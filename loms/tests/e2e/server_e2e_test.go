@@ -67,11 +67,11 @@ func (s *ServerE) TestServerE(t provider.T) {
 	t.Helper()
 
 	sku := int64(1076963)
-	sku2 := int64(1148162) // должен быть больше sku для проверки сортировки получаемой корзины
+	sku2 := int64(135717466) // должен быть больше sku для проверки сортировки получаемой корзины
 
-	count := uint32(2)
-	count2 := uint32(3)
-	userID := int64(1022222)
+	count := uint32(3)
+	count2 := uint32(2)
+	userID := int64(31337)
 
 	//countUint32 := uint32(count)   //nolint:gosec
 	//count2Uint32 := uint32(count2) //nolint:gosec
