@@ -15,5 +15,5 @@ product_service:
   burst: 10
 
 loms_service:
-  host: localhost
+  host: http://loms-service
   port: 8083
