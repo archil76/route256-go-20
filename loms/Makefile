@@ -11,9 +11,8 @@ run:
 	export CONFIG_FILE=./loms/configs/values_local.yaml &&\
 	go run ./loms/cmd/server/main.go
 
-run-all: bindir
-	echo "build cart"
-	docker-compose up --build
+run-all:
+	docker-compose up --build -d
 
 build: bindir
 	echo "build loms"
