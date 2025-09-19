@@ -2,9 +2,10 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
+	"route256/cart/internal/domain/model"
 	"route256/cart/internal/infra/utils"
 
 	gody "github.com/guiferpa/gody/v2"
@@ -60,8 +61,11 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	_, err = s.cartService.AddItem(request.Context(), userID, skuID, uint32(addItemRequest.Count))
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, fmt.Errorf("p: %w", err), "e:", http.StatusPreconditionFailed)
-
+		if errors.Is(err, model.ErrProductNotFound) {
+			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
+		} else {
+			utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+		}
 		return
 	}
 	utils.WriteStatusToResponse(writer, request, "", http.StatusOK)
