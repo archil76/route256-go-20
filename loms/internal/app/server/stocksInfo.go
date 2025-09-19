@@ -21,5 +21,5 @@ func (s Server) StocksInfo(ctx context.Context, request *lomspb.StocksInfoReques
 	return &lomspb.StocksInfoResponse{
 
 		Count: count,
-	}, status.Errorf(codes.OK, "")
+	}, status.Error(codes.OK, "")
 }

@@ -21,5 +21,5 @@ func (s Server) OrderPay(ctx context.Context, request *lomspb.OrderPayRequest) (
 		return nil, status.Error(codes.Internal, "")
 	}
 
-	return &lomspb.OrderPayResponse{}, status.Errorf(codes.OK, "")
+	return &lomspb.OrderPayResponse{}, status.Error(codes.OK, "")
 }

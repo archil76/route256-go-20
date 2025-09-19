@@ -33,5 +33,5 @@ func (s Server) OrderInfo(ctx context.Context, request *desc.OrderInfoRequest) (
 		})
 	}
 
-	return &orderInfoResponse, status.Errorf(codes.OK, "")
+	return &orderInfoResponse, status.Error(codes.OK, "")
 }

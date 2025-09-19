@@ -22,6 +22,6 @@ func (s Server) OrderCancel(ctx context.Context, request *lomspb.OrderCancelRequ
 		}
 		return nil, status.Error(codes.Internal, "")
 	}
-	return &lomspb.OrderCancelResponse{}, status.Errorf(codes.OK, "")
+	return &lomspb.OrderCancelResponse{}, status.Error(codes.OK, "")
 
 }

@@ -26,10 +26,10 @@ func (s Server) OrderCreate(ctx context.Context, request *lomspb.OrderCreateRequ
 
 			return nil, status.Errorf(codes.FailedPrecondition, "")
 		}
-		return nil, status.Errorf(codes.Internal, "")
+		return nil, status.Error(codes.Internal, "")
 	}
 
 	return &lomspb.OrderCreateResponse{
 		OrderID: orderID,
-	}, status.Errorf(codes.OK, "")
+	}, status.Error(codes.OK, "")
 }
