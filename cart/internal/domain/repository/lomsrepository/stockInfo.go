@@ -2,7 +2,6 @@ package lomsrepository
 
 import (
 	"context"
-	"fmt"
 	desc "route256/cart/internal/api"
 
 	"route256/cart/internal/domain/model"
@@ -26,8 +25,8 @@ func (s *LomsService) StockInfo(ctx context.Context, sku model.Sku) (uint32, err
 
 	stocksInfoResponse, err := client.StocksInfo(ctx, &stocksInfoRequest)
 	if err != nil {
-		//return 0, ErrSkuNotFoundInStock
-		return 0, fmt.Errorf("1: %v;", err)
+		return 0, ErrSkuNotFoundInStock
+		//return 0, fmt.Errorf("1: %v;", err)
 	}
 
 	return stocksInfoResponse.Count, nil
