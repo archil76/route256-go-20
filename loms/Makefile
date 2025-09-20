@@ -96,13 +96,3 @@ protoc-generate:
 	go mod tidy
 
 
-#protoc-generate: bin-deps
-#	protoc \
-#	-I ./api \
-#	--go_out=./internal/api \
-#	--go_opt=paths=source_relative \
-#	--go-grpc_out=./internal/api \
-#	--go-grpc_opt=paths=source_relative \
-#    --validate_out="lang=go,paths=source_relative:api" \
-#	api/loms.proto && \
-#	go mod tidy

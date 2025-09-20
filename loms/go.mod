@@ -18,7 +18,6 @@ require google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	golang.org/x/net v0.41.0 // indirect
