@@ -5,6 +5,5 @@ cart/testsignore
 cart/testsignore/sevice_test.go
 cart/testsignore/allure-results
 cart/tests/e2e/allure-results
-loms/tests/e2e/allure-results
 loms/vendor-proto
 cart/vendor-proto

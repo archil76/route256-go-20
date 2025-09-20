@@ -15,8 +15,9 @@ run:
 	export CONFIG_FILE=./cart/configs/values_local.yaml &&\
 	go run ./cart/cmd/server/main.go
 
-run-all:
-	docker-compose up --build -d
+run-all: bindir
+	echo "build cart"
+	docker-compose up --build
 
 .install-minimock:
 	go install github.com/gojuno/minimock/v3/cmd/minimock@v3.4.5

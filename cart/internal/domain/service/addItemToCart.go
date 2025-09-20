@@ -31,7 +31,6 @@ func (s *CartService) AddItem(ctx context.Context, userID model.UserID, skuID mo
 	countInStock, err := s.lomsService.StockInfo(ctx, skuID)
 	if err != nil || countInStock < count {
 		return 0, model.ErrProductNotFound
-		// return 0, fmt.Errorf("2: %v;", err)
 	}
 
 	_, err = s.repository.AddItem(ctx, userID, model.Item{Sku: skuID, Count: count})

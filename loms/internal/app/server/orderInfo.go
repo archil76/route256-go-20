@@ -2,10 +2,9 @@ package server
 
 import (
 	"context"
+	"errors"
 	desc "route256/loms/internal/api"
 	lomsServise "route256/loms/internal/domain/service"
-
-	"github.com/pkg/errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -34,5 +33,5 @@ func (s Server) OrderInfo(ctx context.Context, request *desc.OrderInfoRequest) (
 		})
 	}
 
-	return &orderInfoResponse, status.Error(codes.OK, "")
+	return &orderInfoResponse, status.Errorf(codes.OK, "")
 }

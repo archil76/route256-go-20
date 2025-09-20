@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
+	"errors"
 	lomspb "route256/loms/internal/api"
 	lomsServise "route256/loms/internal/domain/service"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -22,6 +22,6 @@ func (s Server) OrderCancel(ctx context.Context, request *lomspb.OrderCancelRequ
 		}
 		return nil, status.Error(codes.Internal, "")
 	}
-	return &lomspb.OrderCancelResponse{}, status.Error(codes.OK, "")
+	return &lomspb.OrderCancelResponse{}, status.Errorf(codes.OK, "")
 
 }

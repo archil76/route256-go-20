@@ -2,10 +2,9 @@ package server
 
 import (
 	"context"
+	"errors"
 	lomspb "route256/loms/internal/api"
 	lomsServise "route256/loms/internal/domain/service"
-
-	"github.com/pkg/errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,5 +21,5 @@ func (s Server) StocksInfo(ctx context.Context, request *lomspb.StocksInfoReques
 	return &lomspb.StocksInfoResponse{
 
 		Count: count,
-	}, status.Error(codes.OK, "")
+	}, status.Errorf(codes.OK, "")
 }
