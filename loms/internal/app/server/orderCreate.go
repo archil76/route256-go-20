@@ -6,7 +6,7 @@ import (
 	"route256/loms/internal/domain/model"
 	lomsServise "route256/loms/internal/domain/service"
 
-	"github.com/pkg/errors"
+	"errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
