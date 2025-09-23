@@ -26,3 +26,4 @@ kafka:
   port: 29092
   order_topic: loms.order-events
   brokers: kafka:29092
+
