@@ -3,3 +3,4 @@
 bin
 loms/vendor-proto
 cart/vendor-proto
+cart/tests/e2e/allure-results
