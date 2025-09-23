@@ -18,7 +18,7 @@ func (s Server) OrderPay(ctx context.Context, request *lomspb.OrderPayRequest) (
 		} else if errors.Is(err, lomsServise.ErrInvalidOrderStatus) {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
 		}
-		return nil, status.Error(codes.Internal, "")
+		return nil, status.Error(codes.Unknown, "")
 	}
 
 	return &lomspb.OrderPayResponse{}, status.Errorf(codes.OK, "")
