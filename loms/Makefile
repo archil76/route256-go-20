@@ -96,8 +96,8 @@ protoc-generate:
     --plugin=protoc-gen-openapiv2=$(BINDIR)/protoc-gen-openapiv2 \
     --openapiv2_out internal/${PROTO_PATH} \
     --openapiv2_opt logtostderr=true \
-	api/loms.proto && \
-	go mod tidy
+	api/loms.proto
+
 
 install-goose:
 	$(info Installing goose binary into [$(LOCAL_BIN)]...)
