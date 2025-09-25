@@ -9,7 +9,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.75.1
-	google.golang.org/protobuf v1.36.9 // indirect
+	google.golang.org/protobuf v1.36.9
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -18,8 +18,10 @@ require (
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/ozontech/allure-go/pkg/allure v0.7.4
 	github.com/ozontech/allure-go/pkg/framework v0.7.4
-	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
 )
+
+require github.com/envoyproxy/protoc-gen-validate v1.2.1
 
 require (
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
