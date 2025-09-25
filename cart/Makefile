@@ -51,9 +51,9 @@ lint:
 	golangci-lint run
 
 bin-deps:
-	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1 && \
+	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1 && \
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
-	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
+	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.3 && \
 	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \
     GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
 
@@ -112,5 +112,4 @@ protoc-generate:
     --plugin=protoc-gen-openapiv2=$(BINDIR)/protoc-gen-openapiv2 \
     --openapiv2_out internal/${PROTO_PATH} \
     --openapiv2_opt logtostderr=true \
-	api/loms.proto && \
-	go mod tidy
+	api/loms.proto

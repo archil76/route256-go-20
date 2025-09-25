@@ -15,12 +15,12 @@ func (r *Repository) GetByID(ctx context.Context, orderID int64) (*model.Order, 
 func (r *Repository) getOrder(_ context.Context, orderID int64) (*model.Order, error) {
 
 	if orderID < 1 {
-		return nil, ErrUserIDIsNotValid
+		return nil, model.ErrUserIDIsNotValid
 	}
 
 	stock, ok := r.storage[orderID]
 	if !ok {
-		return nil, ErrOrderDoesntExist
+		return nil, model.ErrOrderDoesntExist
 	}
 	return &stock, nil
 }
