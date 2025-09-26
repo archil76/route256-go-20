@@ -16,8 +16,6 @@ require (
 require (
 	github.com/cockroachdb/errors v1.12.0
 	github.com/jackc/pgx/v5 v5.7.6
-	github.com/ozontech/allure-go/pkg/allure v0.7.4
-	github.com/ozontech/allure-go/pkg/framework v0.7.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
 )
 
@@ -28,9 +26,7 @@ require (
 	github.com/cockroachdb/redact v1.1.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
-	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
