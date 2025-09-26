@@ -5,7 +5,9 @@ go 1.23.0
 toolchain go1.23.12
 
 require (
+	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/gojuno/minimock/v3 v3.4.7
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/guiferpa/gody/v2 v2.2.0
 	github.com/ozontech/allure-go/pkg/framework v0.7.3
 	github.com/stretchr/testify v1.11.1
@@ -15,8 +17,6 @@ require (
 )
 
 require (
-	github.com/envoyproxy/protoc-gen-validate v1.2.1
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/ozontech/allure-go/pkg/allure v0.7.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
 )
