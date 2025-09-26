@@ -12,8 +12,8 @@ build: bindir
 	docker-compose up --build
 
 run:
-	export CONFIG_FILE=./cart/configs/values_local.yaml &&\
-	go run ./cart/cmd/server/main.go
+	export CONFIG_FILE=./configs/values_local.yaml &&\
+	go run ./cmd/server/main.go
 
 run-all: bindir
 	echo "build cart"
@@ -51,7 +51,7 @@ lint:
 	golangci-lint run
 
 bin-deps:
-	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1 && \
+	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1 && \
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
 	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
 	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \

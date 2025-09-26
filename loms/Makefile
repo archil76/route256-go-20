@@ -15,7 +15,7 @@ run-all: bindir
 	echo "build cart"
 	docker-compose up --build
 
-build: bindir
+build: bindir bin-deps vendor-proto protoc-generate
 	echo "build loms"
 
 run-migrations:
