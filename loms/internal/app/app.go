@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"route256/loms/internal/infra/postgres"
 	"strings"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 	desc "route256/loms/internal/api"
 	"route256/loms/internal/app/server"
 	orderRepository "route256/loms/internal/domain/repository/inmemoryrepository/order"
-	stockRepository "route256/loms/internal/domain/repository/inmemoryrepository/stock"
+	stockRepository "route256/loms/internal/domain/repository/postgres/stock"
 	lomsService "route256/loms/internal/domain/service"
 	"route256/loms/internal/infra/config"
 	"sync/atomic"
@@ -45,7 +46,20 @@ func NewApp(configPath string) (*App, error) {
 	reflection.Register(grpcServer)
 
 	var sequenceGenerator atomic.Int64
-	service := lomsService.NewLomsService(orderRepository.NewOrderInMemoryRepository(100, &sequenceGenerator), stockRepository.NewStockInMemoryRepository(100))
+	newOrderRepository := orderRepository.NewOrderInMemoryRepository(100, &sequenceGenerator)
+
+	pool, err := postgres.NewPool(context.TODO(), c.PostgresDsn)
+	if err != nil {
+		return nil, fmt.Errorf("NewPool: %w", err)
+	}
+
+	newStockRepository, err := stockRepository.NewStockPostgresRepository(pool)
+	if err != nil {
+		return nil,
+			fmt.Errorf("NewPostgresRepo: %w", err)
+	}
+
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository)
 
 	lomsServer := server.NewServer(service)
 

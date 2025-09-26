@@ -13,7 +13,8 @@ type Config struct {
 		HttpPort string `yaml:"http_port"` //nolint:revive
 	} `yaml:"service"`
 
-	Source string `yaml:"source"`
+	Source      string `yaml:"source"`
+	PostgresDsn string `yaml:"postgres_dsn"`
 }
 
 func LoadConfig(filename string) (*Config, error) {

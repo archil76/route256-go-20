@@ -13,7 +13,7 @@ func (r *Repository) ReserveRemove(ctx context.Context, items []model.Item) erro
 	for _, item := range items {
 		upStock, err := r.getStock(ctx, item.Sku)
 		if err != nil {
-			return ErrStockDoesntExist
+			return model.ErrStockDoesntExist
 		}
 
 		stocks = append(stocks, model.Stock{
