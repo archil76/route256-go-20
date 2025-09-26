@@ -15,11 +15,16 @@ run:
 	go run ./cmd/server/main.go
 
 run-all: bindir
-	echo "build cart"
+	echo "build loms"
 	docker-compose up --build
+
 
 build: bindir bin-deps vendor-proto protoc-generate
 	echo "build loms"
+
+up: bindir
+	echo "build loms"
+	docker-compose up --build
 
 run-migrations:
 	echo "run migrations"
@@ -116,3 +121,10 @@ db-migrate-down:
 
 db:
 	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) create -s $(n) NewSchema sql
+
+rec:
+	rm -rf bin/* && rm -rf vendor-proto/* && rm -rf internal/api/**
+
+build: bindir bin-deps vendor-proto protoc-generate
+	echo "build loms"
+	go mod tidy

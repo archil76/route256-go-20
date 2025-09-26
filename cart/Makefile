@@ -7,8 +7,11 @@ PROTO_PATH := "./api"
 bindir:
 	mkdir -p ${BINDIR}
 
-build: bindir
+build: bindir bin-deps vendor-proto protoc-generate
 	echo "build cart"
+
+up: bindir
+	echo "build loms"
 	docker-compose up --build
 
 run:
@@ -90,7 +93,7 @@ vendor-proto/google/api:
 	mv vendor-proto/googleapis/google/api vendor-proto/google
 	rm -rf vendor-proto/googleapis
 
-vendor-proto: vendor-rm vendor-proto/google/protobuf vendor-proto/validate vendor-proto/google/api
+vendor-proto: vendor-rm vendor-proto vendor-proto vendor-proto
 
 protoc-generate:
 	protoc \
