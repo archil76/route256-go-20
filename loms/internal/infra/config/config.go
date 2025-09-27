@@ -13,8 +13,33 @@ type Config struct {
 		HttpPort string `yaml:"http_port"` //nolint:revive
 	} `yaml:"service"`
 
-	Source      string `yaml:"source"`
-	PostgresDsn string `yaml:"postgres_dsn"`
+	Jaeger struct {
+		Host string `yaml:"host"`
+		Port string `yaml:"port"`
+	} `yaml:"jaeger"`
+
+	DBMaster struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+		DBName   string `yaml:"db_name"`
+	} `yaml:"db_master"`
+
+	DBReplica struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+		DBName   string `yaml:"db_name"`
+	} `yaml:"db_replica"`
+
+	Kafka struct {
+		Host       string `yaml:"host"`
+		Port       string `yaml:"port"`
+		OrderTopic string `yaml:"order_topic"`
+		Brokers    string `yaml:"brokers"`
+	} `yaml:"kafka"`
 }
 
 func LoadConfig(filename string) (*Config, error) {

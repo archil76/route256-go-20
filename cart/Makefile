@@ -7,11 +7,8 @@ PROTO_PATH := "./api"
 bindir:
 	mkdir -p ${BINDIR}
 
-build: bindir bin-deps vendor-proto protoc-generate
+build: bindir
 	echo "build cart"
-
-up: bindir
-	echo "build loms"
 	docker-compose up --build
 
 run:
@@ -56,7 +53,7 @@ lint:
 bin-deps:
 	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1 && \
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
-	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.3 && \
+	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
 	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \
     GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
 
@@ -93,7 +90,7 @@ vendor-proto/google/api:
 	mv vendor-proto/googleapis/google/api vendor-proto/google
 	rm -rf vendor-proto/googleapis
 
-vendor-proto: vendor-rm vendor-proto vendor-proto vendor-proto
+vendor-proto: vendor-rm vendor-proto/google/protobuf vendor-proto/validate vendor-proto/google/api
 
 protoc-generate:
 	protoc \
@@ -115,4 +112,5 @@ protoc-generate:
     --plugin=protoc-gen-openapiv2=$(BINDIR)/protoc-gen-openapiv2 \
     --openapiv2_out internal/${PROTO_PATH} \
     --openapiv2_opt logtostderr=true \
-	api/loms.proto
+	api/loms.proto && \
+	go mod tidy

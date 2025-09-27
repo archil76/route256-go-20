@@ -6,11 +6,32 @@ import (
 )
 
 func (r *Repository) GetStock(ctx context.Context, sku int64) (*model.Stock, error) {
-
-	return nil, nil
+	return r.getStock(ctx, sku)
 }
 
-func (r *Repository) getStock(_ context.Context, sku int64) (*model.Stock, error) {
+func (r *Repository) getStock(ctx context.Context, sku int64) (*model.Stock, error) {
+	if sku < 1 {
+		return nil, model.ErrSkuIsNotValid
+	}
 
-	return nil, nil
+	const query = `select id, total_count, reserved from stocks where id = $1`
+
+	rows, err := r.pool.Query(ctx, query, sku)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	rows.Next()
+	var stock model.Stock
+	if err := rows.Scan(&stock.Sku, &stock.TotalCount, &stock.Reserved); err != nil {
+		return nil, err
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &stock, nil
 }

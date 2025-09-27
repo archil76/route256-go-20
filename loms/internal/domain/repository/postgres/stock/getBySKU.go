@@ -5,7 +5,7 @@ import (
 )
 
 func (r *Repository) GetBySKU(ctx context.Context, sku int64) (uint32, error) {
-	const query = `select id, total_count, reserved from stocks where id = $1`
+	const query = `select total_count-reserved from stocks where id = $1`
 
 	rows, err := r.pool.Query(ctx, query, sku)
 	if err != nil {

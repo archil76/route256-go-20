@@ -8,8 +8,8 @@ jaeger:
   port: 6831
 
 db_master:
-  host: postgres-master
-  port: 5432
+  host: localhost
+  port: 5433
   user: loms-user
   password: loms-password
   db_name: loms_db

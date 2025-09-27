@@ -7,12 +7,12 @@ import (
 
 func (s *LomsService) OrderPay(ctx context.Context, orderID int64) error {
 	if orderID < 1 {
-		return model.ErrOrderIDIsNotValid
+		return ErrOrderIDIsNotValid
 	}
 
 	order, err := s.OrderInfo(ctx, orderID)
 	if err != nil {
-		return model.ErrOrderDoesntExist
+		return ErrOrderDoesntExist
 	}
 
 	if order.Status == model.PAYED {
@@ -20,7 +20,7 @@ func (s *LomsService) OrderPay(ctx context.Context, orderID int64) error {
 	}
 
 	if order.Status != model.AWAITINGPAYMENT {
-		return model.ErrInvalidOrderStatus
+		return ErrInvalidOrderStatus
 	}
 
 	err = s.stockRepository.ReserveRemove(ctx, order.Items)

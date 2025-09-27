@@ -15,16 +15,11 @@ run:
 	go run ./cmd/server/main.go
 
 run-all: bindir
-	echo "build loms"
+	echo "build cart"
 	docker-compose up --build
-
 
 build: bindir bin-deps vendor-proto protoc-generate
 	echo "build loms"
-
-up: bindir
-	echo "build loms"
-	docker-compose up --build
 
 run-migrations:
 	echo "run migrations"
@@ -43,8 +38,7 @@ bin-deps:
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
 	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
 	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \
-    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1 && \
-    GOBIN=$(BINDIR) go install github.com/pressly/goose/v3/cmd/goose@v3.24.1
+    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
 
 vendor-rm:
 	rm -rf vendor-proto
@@ -101,15 +95,14 @@ protoc-generate:
     --plugin=protoc-gen-openapiv2=$(BINDIR)/protoc-gen-openapiv2 \
     --openapiv2_out internal/${PROTO_PATH} \
     --openapiv2_opt logtostderr=true \
-	api/loms.proto
-
+	api/loms.proto && \
+	go mod tidy
 
 install-goose:
-	$(info Installing goose binary into [$(LOCAL_BIN)]...)
 	GOBIN=$(BINDIR) go install github.com/pressly/goose/v3/cmd/goose@v3.24.1
 
-
 db-create-migration:
+	mkdir -p  migrations
 	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) create -s $(n) add_loms_table sql
 	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) create -s $(n) init_loms_table sql
 
@@ -119,12 +112,5 @@ db-migrate:
 db-migrate-down:
 	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) postgres "$(LOCAL_DB_DSN)" down
 
-db:
-	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) create -s $(n) NewSchema sql
 
-rec:
-	rm -rf bin/* && rm -rf vendor-proto/* && rm -rf internal/api/**
 
-build: bindir bin-deps vendor-proto protoc-generate
-	echo "build loms"
-	go mod tidy
