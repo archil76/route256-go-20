@@ -11,8 +11,8 @@ bindir:
 	mkdir -p ${BINDIR}
 
 run:
-	export CONFIG_FILE=./loms/configs/values_local.yaml &&\
-	go run ./loms/cmd/server/main.go
+	export CONFIG_FILE=./configs/values_local.yaml &&\
+	go run ./cmd/server/main.go
 
 run-all: bindir
 	echo "build cart"
