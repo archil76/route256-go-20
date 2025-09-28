@@ -21,6 +21,8 @@ services:
     ports:
       - "8083:8083"
       - "8084:8084"
+    depends_on:
+      - postgres-master
 
   postgres-master:
     image: gitlab-registry.ozon.dev/go/classroom-20/students/base/postgres:16
@@ -30,4 +32,4 @@ services:
       - POSTGRESQL_PASSWORD=loms-password
       - POSTGRESQL_DATABASE=loms_db
     ports:
-      - "5433:5432"
+      - "5432:5432"

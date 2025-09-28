@@ -21,7 +21,7 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 	}
 
 	reportCart := model.ReportCart{
-		Items:      []model.ItemInСart{},
+		Items:      []model.ItemInCart{},
 		TotalPrice: 0,
 	}
 
@@ -36,7 +36,7 @@ func (s *CartService) GetItemsByUserID(ctx context.Context, userID model.UserID)
 			price = product.Price
 		}
 
-		reportCart.Items = append(reportCart.Items, model.ItemInСart{
+		reportCart.Items = append(reportCart.Items, model.ItemInCart{
 			SKU:   sku,
 			Count: count,
 			Name:  name,

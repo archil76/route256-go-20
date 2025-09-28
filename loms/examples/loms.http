@@ -86,7 +86,7 @@ Content-Type: application/json
 
 
 ### check order status is failed (not necessary, because no orderID after creation if any fails)
-GET http://localhost:8084/order/info?orderID=2
+GET http://localhost:8084/order/info?orderID=1
 Content-Type: application/json
 
 ### expected: 200 (OK) {"status":"failed","userID":31337,"Items":[{"sku":404,"count":3}]}

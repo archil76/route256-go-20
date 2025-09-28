@@ -8,22 +8,22 @@ jaeger:
   port: 6831
 
 db_master:
-  host: 0.0.0.0
+  host: postgres-master
   port: 5432
   user: loms-user
   password: loms-password
   db_name: loms_db
 
 db_replica:
-  host: postgres-replica
-  port: 5432
+  host: localhost
+  port: 5433
   user: loms-user
   password: loms-password
   db_name: loms_db
 
 kafka:
-  host: kafka
+  host: localhost
   port: 29092
   order_topic: loms.order-events
-  brokers: kafka:29092
+  brokers: localhost:9092
 

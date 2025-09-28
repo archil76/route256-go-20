@@ -3,7 +3,7 @@ PACKAGE=route256/loms
 CONFIG_FILE=loms/configs/values_local.yaml
 
 MIGRATIONS_FOLDER := ./migrations/
-LOCAL_DB_DSN := postgresql://loms-user:loms-password@127.0.0.1:5433/loms_db?sslmode=disable
+LOCAL_DB_DSN := postgresql://loms-user:loms-password@postgres-master:5432/loms_db?sslmode=disable
 
 PROTO_PATH := "./api"
 
