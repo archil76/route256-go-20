@@ -47,8 +47,13 @@ func NewApp(configPath string) (*App, error) {
 
 	var sequenceGenerator atomic.Int64
 	newOrderRepository := orderRepository.NewOrderInMemoryRepository(100, &sequenceGenerator)
-	postgresDsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", c.DBMaster.User, c.DBMaster.Password,
-		c.DBMaster.Host, c.DBMaster.Port, c.DBMaster.DBName)
+
+	postgresDsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+		c.DBMaster.User,
+		c.DBMaster.Password,
+		c.DBMaster.Host,
+		c.DBMaster.Port,
+		c.DBMaster.DBName)
 	pool, err := postgres.NewPool(context.TODO(), postgresDsn)
 	if err != nil {
 		return nil, fmt.Errorf("NewPool: %w", err)
