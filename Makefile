@@ -11,6 +11,5 @@ up:
 down:
 	docker-compose down
 
-
 run-all:
 	docker-compose up --build -d

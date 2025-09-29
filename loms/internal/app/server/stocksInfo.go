@@ -17,6 +17,7 @@ func (s Server) StocksInfo(ctx context.Context, request *lomspb.StocksInfoReques
 			return nil, status.Error(codes.FailedPrecondition, "")
 		}
 		return nil, status.Error(codes.Internal, "")
+		//return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &lomspb.StocksInfoResponse{
 

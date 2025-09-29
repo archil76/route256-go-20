@@ -1,4 +1,4 @@
-version: "1.0"
+version: "3.7"
 
 services:
   cart:
@@ -22,7 +22,8 @@ services:
       - "8083:8083"
       - "8084:8084"
     depends_on:
-      - postgres-master
+      postgres-master:
+        condition: service_started
 
   postgres-master:
     image: gitlab-registry.ozon.dev/go/classroom-20/students/base/postgres:16
@@ -33,3 +34,17 @@ services:
       - POSTGRESQL_DATABASE=loms_db
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRESQL_USERNAME -d $$POSTGRESQL_DATABASE" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    image: gomicro/goose:3.7.0
+    depends_on:
+      postgres-master:
+        condition: service_healthy
+    volumes:
+      - ./loms/migrations:/migrations
+    command: [ "goose", "-dir", "/migrations", "postgres", "host=postgres-master user=loms-user password=loms-password dbname=loms_db sslmode=disable", "up" ]

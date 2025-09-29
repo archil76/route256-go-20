@@ -3,7 +3,7 @@ PACKAGE=route256/loms
 CONFIG_FILE=loms/configs/values_local.yaml
 
 MIGRATIONS_FOLDER := ./migrations/
-LOCAL_DB_DSN := postgresql://loms-user:loms-password@postgres-master:5432/loms_db?sslmode=disable
+LOCAL_DB_DSN := postgresql://loms-user:loms-password@localhost:5432/loms_db?sslmode=disable
 
 PROTO_PATH := "./api"
 
@@ -38,7 +38,8 @@ bin-deps:
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
 	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
 	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \
-    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
+    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1 && \
+	GOBIN=$(BINDIR) go install github.com/pressly/goose/v3/cmd/goose@v3.24.1
 
 vendor-rm:
 	rm -rf vendor-proto
