@@ -6,5 +6,26 @@ import (
 )
 
 func (r *Repository) ReserveCancel(ctx context.Context, items []model.Item) error {
+	var stocks []model.Stock
+	for _, item := range items {
+		upStock, err := r.getStock(ctx, item.Sku)
+		if err != nil {
+			return model.ErrStockDoesntExist
+		}
+
+		stocks = append(stocks, model.Stock{
+			Sku:        upStock.Sku,
+			TotalCount: upStock.TotalCount,
+			Reserved:   upStock.Reserved - item.Count,
+		})
+	}
+
+	for _, stock := range stocks {
+		_, err := r.updateStock(ctx, stock)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

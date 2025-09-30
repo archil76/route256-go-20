@@ -3,12 +3,24 @@ package postgres
 import (
 	"context"
 	"route256/loms/internal/domain/model"
+
+	"github.com/cockroachdb/errors"
 )
 
 func (r *Repository) UpdateStock(ctx context.Context, stock model.Stock) (*model.Stock, error) {
-	return nil, nil
+	return r.updateStock(ctx, stock)
 }
 
 func (r *Repository) updateStock(ctx context.Context, stock model.Stock) (*model.Stock, error) {
-	return nil, nil
+	const query = `UPDATE stocks SET total_count=$2, reserved=$3 from stocks where id = $1`
+
+	upStock := model.Stock{}
+	if err := r.pool.QueryRow(ctx, query, stock.Sku, stock.TotalCount, stock.Reserved).
+		Scan(&upStock.Sku); err != nil {
+		return nil, errors.Wrap(err, "pgx.QueryRow.Scan")
+	}
+	upStock.TotalCount = stock.TotalCount
+	upStock.Reserved = stock.Reserved
+
+	return &upStock, nil
 }
