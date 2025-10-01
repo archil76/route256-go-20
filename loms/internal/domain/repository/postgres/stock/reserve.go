@@ -6,7 +6,7 @@ import (
 )
 
 func (r *Repository) Reserve(ctx context.Context, items []model.Item) ([]model.Stock, error) {
-	const query = `SELECT id, total_count, reserved FROM stocks WHERE id = ANY($1)`
+	const query = `SELECT id, total_count, reserved FROM stocks WHERE id in $1`
 
 	listOfID := make([]int64, len(items))
 	itemsMap := map[int64]*model.Item{}
@@ -15,7 +15,7 @@ func (r *Repository) Reserve(ctx context.Context, items []model.Item) ([]model.S
 		itemsMap[item.Sku] = &item
 	}
 
-	rows, err := r.pool.Query(ctx, query, listOfID)
+	rows, err := r.pool.Query(ctx, query, &listOfID)
 	if err != nil {
 		return nil, err
 	}

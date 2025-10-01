@@ -8,14 +8,14 @@ CREATE TABLE stocks (
 
 CREATE TABLE orders (
                         id bigserial primary key,
-                        user_id bigint not null default 0
+                        user_id bigint not null default 0,
+                        status bpchar not null default ''
 );
 
 CREATE TABLE order_items (
-                             id bigserial primary key,
-                             order_id bigint not null,
-                             user_id integer not null default 0,
-                             status bpchar not null default ''
+                        order_id bigint REFERENCES orders(id) ON DELETE CASCADE,
+                        sku integer not null,
+                        count integer not null default 0
 );
 -- +goose StatementEnd
 

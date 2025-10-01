@@ -9,7 +9,7 @@ jaeger:
 
 db_master:
   host: localhost
-  port: 5433
+  port: 5432
   user: loms-user
   password: loms-password
   db_name: loms_db

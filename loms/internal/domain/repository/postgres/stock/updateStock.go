@@ -12,7 +12,7 @@ func (r *Repository) UpdateStock(ctx context.Context, stock model.Stock) (*model
 }
 
 func (r *Repository) updateStock(ctx context.Context, stock model.Stock) (*model.Stock, error) {
-	const query = `UPDATE stocks SET total_count=$2, reserved=$3 from stocks where id = $1`
+	const query = `UPDATE stocks SET total_count=$2, reserved=$3 where id = $1`
 
 	upStock := model.Stock{}
 	if err := r.pool.QueryRow(ctx, query, stock.Sku, stock.TotalCount, stock.Reserved).
