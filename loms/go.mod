@@ -17,6 +17,7 @@ require (
 require (
 	github.com/cockroachdb/errors v1.12.0
 	github.com/jackc/pgx/v5 v5.7.6
+	github.com/opentracing/opentracing-go v1.2.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250818200422-3122310a409c
 )
 

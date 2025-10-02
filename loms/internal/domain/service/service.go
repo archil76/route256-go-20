@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"route256/loms/internal/domain/model"
+	manager "route256/loms/internal/infra/postgres/transactions-manager"
 )
 
 var (
@@ -34,8 +35,9 @@ type StockRepository interface {
 type LomsService struct {
 	orderRepository OrderRepository
 	stockRepository StockRepository
+	txManager       *manager.TxManager
 }
 
-func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository) *LomsService {
-	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository}
+func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, txManager *manager.TxManager) *LomsService {
+	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, txManager: txManager}
 }

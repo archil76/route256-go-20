@@ -17,6 +17,7 @@ import (
 	lomsService "route256/loms/internal/domain/service"
 	"route256/loms/internal/infra/config"
 	"route256/loms/internal/infra/middlewares"
+	txmanager "route256/loms/internal/infra/postgres/transactions-manager"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -65,8 +66,8 @@ func NewApp(configPath string) (*App, error) {
 		return nil,
 			fmt.Errorf("NewOrderPostgresRepository: %w", err)
 	}
-
-	service := lomsService.NewLomsService(newOrderRepository, newStockRepository)
+	txManager := txmanager.NewTxManager(pool)
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, txManager)
 
 	lomsServer := server.NewServer(service)
 
