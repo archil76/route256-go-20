@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
-	stockrepo "route256/loms/internal/domain/repository/inmemoryrepository/stock"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,11 +13,7 @@ func Test_StockInfo(t *testing.T) {
 
 	ctx := context.Background()
 
-	orderRepository := orderrepo.NewOrderInMemoryRepository(10, &counter)
-
-	stockRepository := stockrepo.NewStockInMemoryRepository(10)
-
-	handler := NewLomsService(orderRepository, stockRepository)
+	handler := NewLomsServiceWithInMemoryRepository()
 
 	t.Run("Информация о стоке. Успешный путь", func(t *testing.T) {
 

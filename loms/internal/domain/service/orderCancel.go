@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"route256/loms/internal/domain/model"
-	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
 )
 
 func (s *LomsService) OrderCancel(ctx context.Context, orderID int64) error {
@@ -14,7 +13,7 @@ func (s *LomsService) OrderCancel(ctx context.Context, orderID int64) error {
 
 	order, err := s.orderRepository.GetByID(ctx, orderID)
 	if err != nil {
-		if errors.Is(err, orderrepo.ErrOrderDoesntExist) {
+		if errors.Is(err, model.ErrOrderDoesntExist) {
 			return ErrOrderDoesntExist
 		}
 		return err

@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"route256/loms/internal/domain/model"
-	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
-	stockrepo "route256/loms/internal/domain/repository/inmemoryrepository/stock"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,11 +14,7 @@ func Test_OrderPay(t *testing.T) {
 
 	ctx := context.Background()
 
-	orderRepository := orderrepo.NewOrderInMemoryRepository(10, &counter)
-
-	stockRepository := stockrepo.NewStockInMemoryRepository(10)
-
-	handler := NewLomsService(orderRepository, stockRepository)
+	handler := NewLomsServiceWithInMemoryRepository()
 
 	items := []model.Item{
 		{

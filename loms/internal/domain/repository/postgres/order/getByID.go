@@ -23,10 +23,10 @@ func (r *Repository) getOrder(ctx context.Context, orderID int64) (*model.Order,
 
 	if err := r.pool.QueryRow(ctx, queryOrders, orderID).
 		Scan(&upOrder.OrderID, &upOrder.UserID, &upOrder.Status); err != nil {
-		return nil, errors.Wrap(err, "pgx.QueryRow.Scan")
+		return nil, errors.Wrap(model.ErrOrderDoesntExist, "pgx.QueryRow.Scan")
 	}
 
-	const queryOrderItems = `SELECT order_id, sku, count FROM order_items where order_id = $1`
+	const queryOrderItems = `SELECT sku, count FROM order_items where order_id = $1`
 
 	rows, err := r.pool.Query(ctx, queryOrderItems, orderID)
 	if err != nil {

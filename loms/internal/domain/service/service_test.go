@@ -1,6 +1,8 @@
 package service
 
 import (
+	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
+	stockrepo "route256/loms/internal/domain/repository/inmemoryrepository/stock"
 	"sync/atomic"
 	"testing"
 )
@@ -23,6 +25,14 @@ var (
 		count3: 15,
 	}
 )
+
+func NewLomsServiceWithInMemoryRepository() *LomsService {
+	orderRepository := orderrepo.NewOrderInMemoryRepository(10, &counter)
+
+	stockRepository := stockrepo.NewStockInMemoryRepository(10)
+
+	return NewLomsService(orderRepository, stockRepository, nil)
+}
 
 func TestHandler_All(t *testing.T) {
 	t.Run("Test_OrderCancel", Test_OrderCancel)

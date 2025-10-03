@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"route256/loms/internal/domain/model"
-	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
 )
 
 func (s *LomsService) OrderInfo(ctx context.Context, orderID int64) (*model.Order, error) {
@@ -15,7 +14,7 @@ func (s *LomsService) OrderInfo(ctx context.Context, orderID int64) (*model.Orde
 
 	order, err := s.orderRepository.GetByID(ctx, orderID)
 	if err != nil {
-		if errors.Is(err, orderrepo.ErrOrderDoesntExist) {
+		if errors.Is(err, model.ErrOrderDoesntExist) {
 			return nil, ErrOrderDoesntExist
 		}
 		return nil, err
