@@ -9,13 +9,13 @@ import (
 func (s *LomsService) OrderInfo(ctx context.Context, orderID int64) (*model.Order, error) {
 	if orderID < 1 {
 
-		return nil, ErrOrderIDIsNotValid
+		return nil, model.ErrOrderIDIsNotValid
 	}
 
 	order, err := s.orderRepository.GetByID(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, model.ErrOrderDoesntExist) {
-			return nil, ErrOrderDoesntExist
+			return nil, model.ErrOrderDoesntExist
 		}
 		return nil, err
 	}

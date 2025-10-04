@@ -1,4 +1,4 @@
-package inmemoryrepository
+package postgres
 
 import (
 	"context"

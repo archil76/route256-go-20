@@ -29,6 +29,8 @@ run-migrations:
 
 gen-mock:
 	minimock -i ./internal/app/server.LomsServise -o ./internal/app/server/mock/loms_servise_mock.go
+	minimock -i ./internal/domain/service.OrderRepository -o ./internal/domain/service/mock/order_repository_mock.go
+	minimock -i ./internal/domain/service.StockRepository -o ./internal/domain/service/mock/stock_repository_mock.go
 
 test-all:
 	go test -cover ./internal/app/server ./internal/domain/service

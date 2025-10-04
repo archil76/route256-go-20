@@ -14,46 +14,29 @@ func Test_OrderCreate(t *testing.T) {
 
 	ctx := context.Background()
 
-	handler := NewLomsServiceWithInMemoryRepository()
+	testHandler := NewLomsServiceWithMock(t)
 
-	items := []model.Item{
-		{
-			Sku:   tp.sku,
-			Count: tp.count,
-		},
-	}
-	var orderID, orderID2 int64
 	t.Run("Добавление Заказа. Успешный путь", func(t *testing.T) {
 		var err error
-		orderID, err = handler.OrderCreate(ctx, 10000, items)
+		var orderIDRes, orderID2Res int64
+
+		testHandler.orderRepositoryMock.CreateMock.When(ctx, newOrder).Then(&order, nil)
+		testHandler.stockRepositoryMock.ReserveMock.When(ctx, items).Then(stocks, nil)
+		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, order, model.AWAITINGPAYMENT).Then(nil)
+
+		handler := testHandler.handler
+
+		orderIDRes, err = handler.OrderCreate(ctx, tp.userID, items)
 
 		require.NoError(t, err)
-		require.NotEqual(t, 0, orderID)
+		require.Equal(t, tp.orderID, orderIDRes)
 
-		orderID2, err = handler.OrderCreate(ctx, 10000, items)
+		testHandler.orderRepositoryMock.CreateMock.When(ctx, newOrder2).Then(&order2, nil)
+		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, order2, model.AWAITINGPAYMENT).Then(nil)
+
+		orderID2Res, err = handler.OrderCreate(ctx, tp.userID2, items)
 
 		require.NoError(t, err)
-		require.Greater(t, orderID2, orderID)
-
-		order1, err := handler.OrderInfo(ctx, orderID)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order1.Status)
-
-		order2, err := handler.OrderInfo(ctx, orderID2)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order2.Status)
-
-	})
-
-	t.Run("Добавление Заказа. Проверка статуса", func(t *testing.T) {
-
-		order1, err := handler.OrderInfo(ctx, orderID)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order1.Status)
-
-		order2, err := handler.OrderInfo(ctx, orderID2)
-		require.NoError(t, err)
-		require.Equal(t, model.AWAITINGPAYMENT, order2.Status)
-
+		require.Equal(t, tp.orderID2, orderID2Res)
 	})
 }

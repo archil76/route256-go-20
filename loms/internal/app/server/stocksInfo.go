@@ -5,7 +5,6 @@ import (
 	"errors"
 	lomspb "route256/loms/internal/api"
 	"route256/loms/internal/domain/model"
-	lomsServise "route256/loms/internal/domain/service"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +13,7 @@ import (
 func (s Server) StocksInfo(ctx context.Context, request *lomspb.StocksInfoRequest) (*lomspb.StocksInfoResponse, error) {
 	count, err := s.lomsServise.StocksInfo(ctx, request.Sku)
 	if err != nil {
-		if errors.Is(err, lomsServise.ErrShortOfStock) {
+		if errors.Is(err, model.ErrShortOfStock) {
 			return nil, status.Error(codes.FailedPrecondition, "")
 		}
 		if errors.Is(err, model.ErrStockDoesntExist) {

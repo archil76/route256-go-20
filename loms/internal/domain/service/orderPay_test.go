@@ -14,42 +14,28 @@ func Test_OrderPay(t *testing.T) {
 
 	ctx := context.Background()
 
-	handler := NewLomsServiceWithInMemoryRepository()
-
-	items := []model.Item{
-		{
-			Sku:   tp.sku,
-			Count: tp.count,
-		},
-	}
-
-	var orderID, orderID2 int64
-	t.Run("Добавление Заказа. Успешный путь", func(t *testing.T) {
-		var err error
-		orderID, err = handler.OrderCreate(ctx, 10000, items)
-
-		require.NoError(t, err)
-		require.NotEqual(t, 0, orderID)
-
-		orderID2, err = handler.OrderCreate(ctx, 10000, items)
-
-		require.NoError(t, err)
-		require.Greater(t, orderID2, orderID)
-
-	})
+	testHandler := NewLomsServiceWithMock(t)
 
 	t.Run("Оплата Заказа. Успешный путь", func(t *testing.T) {
+		testHandler.orderRepositoryMock.GetByIDMock.When(ctx, tp.orderID).Then(&awaitingPaymentOrder, nil)
+		testHandler.stockRepositoryMock.ReserveRemoveMock.When(ctx, items).Then(nil)
+		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, awaitingPaymentOrder, model.PAYED).Then(nil)
 
-		err := handler.OrderPay(ctx, orderID)
+		handler := testHandler.handler
+
+		err := handler.OrderPay(ctx, tp.orderID)
 
 		require.NoError(t, err)
 	})
 
-	t.Run("Добавление Заказа. Проверка статуса", func(t *testing.T) {
+	t.Run("Оплата отмененного заказа.", func(t *testing.T) {
+		testHandler.orderRepositoryMock.GetByIDMock.When(ctx, tp.orderID2).Then(&canceledOrder, nil)
 
-		order, err := handler.OrderInfo(ctx, orderID)
-		require.NoError(t, err)
-		require.Equal(t, model.PAYED, order.Status)
+		handler := testHandler.handler
+
+		err := handler.OrderPay(ctx, tp.orderID2)
+
+		require.ErrorIs(t, model.ErrInvalidOrderStatus, err)
 	})
 
 }

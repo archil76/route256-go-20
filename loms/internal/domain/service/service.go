@@ -2,18 +2,7 @@ package service
 
 import (
 	"context"
-	"errors"
 	"route256/loms/internal/domain/model"
-	manager "route256/loms/internal/infra/postgres/transactions-manager"
-)
-
-var (
-	ErrUserIDIsNotValid   = errors.New("user ID should be more than 0")
-	ErrOrderIDIsNotValid  = errors.New("order ID should be more than 0")
-	ErrSkuIDIsNotValid    = errors.New("sku should be more than 0")
-	ErrOrderDoesntExist   = errors.New("order doesn't exist")
-	ErrInvalidOrderStatus = errors.New("order status should be PAYED")
-	ErrShortOfStock       = errors.New("available amount of stock isn't enough ")
 )
 
 type OrderRepository interface {
@@ -35,9 +24,8 @@ type StockRepository interface {
 type LomsService struct {
 	orderRepository OrderRepository
 	stockRepository StockRepository
-	txManager       *manager.TxManager
 }
 
-func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, txManager *manager.TxManager) *LomsService {
-	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, txManager: txManager}
+func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository) *LomsService {
+	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository}
 }

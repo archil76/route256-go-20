@@ -13,15 +13,17 @@ func Test_StockInfo(t *testing.T) {
 
 	ctx := context.Background()
 
-	handler := NewLomsServiceWithInMemoryRepository()
+	testHandler := NewLomsServiceWithMock(t)
 
-	t.Run("Информация о стоке. Успешный путь", func(t *testing.T) {
+	t.Run("Проверка статуса. Успешный путь", func(t *testing.T) {
+		handler := testHandler.handler
+		var count uint32
+		var err error
 
-		count, err := handler.StocksInfo(ctx, 139275865)
+		testHandler.stockRepositoryMock.GetBySKUMock.When(ctx, tp.sku).Then(tp.count, nil)
 
+		count, err = handler.StocksInfo(ctx, tp.sku)
 		require.NoError(t, err)
-		require.NotEqual(t, 0, count)
-
+		require.Equal(t, tp.count, count)
 	})
-
 }

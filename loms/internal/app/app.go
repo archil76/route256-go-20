@@ -55,19 +55,21 @@ func NewApp(configPath string) (*App, error) {
 		return nil, fmt.Errorf("NewPool: %w", err)
 	}
 
+	txManager := txmanager.NewTxManager(pool)
+
 	newStockRepository, err := stockRepository.NewStockPostgresRepository(pool)
 	if err != nil {
 		return nil,
 			fmt.Errorf("NewStockPostgresRepository: %w", err)
 	}
 
-	newOrderRepository, err := orderRepository.NewOrderPostgresRepository(pool)
+	newOrderRepository, err := orderRepository.NewOrderPostgresRepository(pool, txManager)
 	if err != nil {
 		return nil,
 			fmt.Errorf("NewOrderPostgresRepository: %w", err)
 	}
-	txManager := txmanager.NewTxManager(pool)
-	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, txManager)
+
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository)
 
 	lomsServer := server.NewServer(service)
 

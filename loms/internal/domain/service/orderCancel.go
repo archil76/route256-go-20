@@ -8,13 +8,13 @@ import (
 
 func (s *LomsService) OrderCancel(ctx context.Context, orderID int64) error {
 	if orderID < 1 {
-		return ErrOrderIDIsNotValid
+		return model.ErrOrderIDIsNotValid
 	}
 
 	order, err := s.orderRepository.GetByID(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, model.ErrOrderDoesntExist) {
-			return ErrOrderDoesntExist
+			return model.ErrOrderDoesntExist
 		}
 		return err
 	}
@@ -24,7 +24,7 @@ func (s *LomsService) OrderCancel(ctx context.Context, orderID int64) error {
 	}
 
 	if order.Status == model.PAYED || order.Status == model.FAILED {
-		return ErrInvalidOrderStatus
+		return model.ErrInvalidOrderStatus
 	}
 
 	err = s.stockRepository.ReserveCancel(ctx, order.Items)

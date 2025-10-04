@@ -25,6 +25,11 @@ func ctxWithTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, txKey{}, tx)
 }
 
+func (tx TxManager) GetPool() *pgxpool.Pool {
+	return tx.pool
+
+}
+
 // выполняет fn в транзакции с дефолтным уровнем изоляции.
 func (m *TxManager) WithTransaction(ctx context.Context, fn func(ctx context.Context) error) (err error) {
 	return m.WithTx(ctx, pgx.TxOptions{}, fn)
