@@ -280,5 +280,5 @@ func decodeResponseBody(response *http.Response) (testReportCart, error) {
 }
 
 func StatusCode(sCtx provider.StepCtx, expected, actual int) {
-	sCtx.Require().Equal(expected, actual, "Не совпадает статус код")
+	sCtx.Require().Equal(expected, actual, "Не совпадает статус кодр")
 }
