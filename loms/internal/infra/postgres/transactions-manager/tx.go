@@ -25,8 +25,8 @@ func ctxWithTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, txKey{}, tx)
 }
 
-func (tx TxManager) GetPool() *pgxpool.Pool {
-	return tx.pool
+func (m *TxManager) GetPool() *pgxpool.Pool {
+	return m.pool
 
 }
 
