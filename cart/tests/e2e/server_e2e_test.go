@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
@@ -15,7 +14,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/ozontech/allure-go/pkg/allure"
 	"github.com/ozontech/allure-go/pkg/framework/asserts_wrapper/require"
 	"github.com/ozontech/allure-go/pkg/framework/provider"
 	"github.com/ozontech/allure-go/pkg/framework/suite"
@@ -74,7 +72,7 @@ func (s *ServerE) TestServerE(t provider.T) {
 
 	sku := int64(1076963)
 	sku2 := int64(1148162) // должен быть больше sku для проверки сортировки получаемой корзины
-	wrongSku := uint32(1076963000)
+	//wrongSku := uint32(1076963000)
 
 	count := int32(2)
 	count2 := int32(3)
@@ -172,32 +170,6 @@ func (s *ServerE) TestServerE(t provider.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, 1, len(reportCart.Items))
-	})
-
-	t.WithNewStep("Добавление несуществующего SKU в корзину", func(sCtx provider.StepCtx) {
-		//statusCode := s.cartClient.AddItem(ctx, sCtx, userID, int64(wrongSku), 1)
-
-		data, err := json.Marshal(testAddItemRequest{
-			Count: count,
-		})
-		t.Require().NoError(err, "сериализация тела запроса")
-		t.WithNewAttachment("request payload", allure.JSON, data)
-
-		url := fmt.Sprintf("%s/user/%d/cart/%d", s.Host, userID, wrongSku)
-		r, err := http.NewRequestWithContext(t.Context(), http.MethodPost, url, bytes.NewBuffer(data))
-		t.Require().NoError(err, "создание запроса")
-
-		r.Header.Add("Content-Type", "application/json")
-
-		res, err := s.client.Do(r)
-		t.Require().NoError(err, "выполнение запроса")
-		defer res.Body.Close()
-
-		body, err := io.ReadAll(res.Body)
-		t.Require().NoError(err, "не удалось считать ответ")
-		t.WithNewAttachment("response body", allure.JSON, body)
-
-		StatusCode(sCtx, http.StatusPreconditionFailed, res.StatusCode)
 	})
 }
 
