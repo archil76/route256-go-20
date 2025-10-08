@@ -21,6 +21,7 @@ func (s Server) OrderInfo(ctx context.Context, request *desc.OrderInfoRequest) (
 
 	orderInfoResponse := desc.OrderInfoResponse{
 		Status:  string(order.Status),
+		UserID:  order.UserID,
 		OrderID: order.OrderID,
 		Items:   []*desc.Items{},
 	}

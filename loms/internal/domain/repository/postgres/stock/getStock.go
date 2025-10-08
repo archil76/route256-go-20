@@ -13,10 +13,11 @@ func (r *Repository) getStock(ctx context.Context, sku int64) (*model.Stock, err
 	if sku < 1 {
 		return nil, model.ErrSkuIsNotValid
 	}
+	pool := r.pooler.PickPool(ctx)
 
 	const query = `select id, total_count, reserved from stocks where id = $1`
 
-	rows, err := r.pool.Query(ctx, query, sku)
+	rows, err := pool.Query(ctx, query, sku)
 	if err != nil {
 		return nil, err
 	}

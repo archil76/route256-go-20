@@ -21,7 +21,7 @@ func (s Server) OrderCreate(ctx context.Context, request *lomspb.OrderCreateRequ
 
 	orderID, err := s.lomsServise.OrderCreate(ctx, request.UserID, items)
 	if err != nil {
-		if errors.Is(err, model.ErrShortOfStock) {
+		if errors.Is(err, model.ErrOutOfStock) {
 
 			return nil, status.Errorf(codes.FailedPrecondition, "")
 		}

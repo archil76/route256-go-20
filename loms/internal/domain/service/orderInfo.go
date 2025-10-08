@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"route256/loms/internal/domain/model"
+	"sort"
 )
 
 func (s *LomsService) OrderInfo(ctx context.Context, orderID int64) (*model.Order, error) {
@@ -19,6 +20,8 @@ func (s *LomsService) OrderInfo(ctx context.Context, orderID int64) (*model.Orde
 		}
 		return nil, err
 	}
+
+	sort.Slice(order.Items, func(i, j int) bool { return order.Items[i].Sku < order.Items[j].Sku })
 
 	return order, nil
 }

@@ -1,16 +1,16 @@
 package postgres
 
 import (
-	"github.com/jackc/pgx/v5/pgxpool"
+	"route256/loms/internal/infra/pgpooler"
 )
 
 type Repository struct {
-	pool *pgxpool.Pool
+	pooler *pgpooler.Pooler
 }
 
-func NewStockPostgresRepository(pool *pgxpool.Pool) (*Repository, error) {
+func NewStockPostgresRepository(pooler *pgpooler.Pooler) (*Repository, error) {
 	repository := &Repository{
-		pool: pool,
+		pooler: pooler,
 	}
 
 	return repository, nil

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"route256/loms/internal/infra/postgres"
+	"route256/loms/internal/infra/pgpooler"
 	"strings"
 	"time"
 
@@ -17,7 +17,6 @@ import (
 	lomsService "route256/loms/internal/domain/service"
 	"route256/loms/internal/infra/config"
 	"route256/loms/internal/infra/middlewares"
-	txmanager "route256/loms/internal/infra/postgres/transactions-manager"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -35,6 +34,7 @@ func NewApp(configPath string) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config.LoadConfig: %w", err)
 	}
+	ctx := context.Background()
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
@@ -50,20 +50,19 @@ func NewApp(configPath string) (*App, error) {
 		c.DBMaster.Host,
 		c.DBMaster.Port,
 		c.DBMaster.DBName)
-	pool, err := postgres.NewPool(context.TODO(), postgresDsn)
+
+	pooler, err := pgpooler.NewPooler(ctx, postgresDsn)
 	if err != nil {
 		return nil, fmt.Errorf("NewPool: %w", err)
 	}
 
-	txManager := txmanager.NewTxManager(pool)
-
-	newStockRepository, err := stockRepository.NewStockPostgresRepository(pool)
+	newStockRepository, err := stockRepository.NewStockPostgresRepository(pooler)
 	if err != nil {
 		return nil,
 			fmt.Errorf("NewStockPostgresRepository: %w", err)
 	}
 
-	newOrderRepository, err := orderRepository.NewOrderPostgresRepository(pool, txManager)
+	newOrderRepository, err := orderRepository.NewOrderPostgresRepository(pooler)
 	if err != nil {
 		return nil,
 			fmt.Errorf("NewOrderPostgresRepository: %w", err)

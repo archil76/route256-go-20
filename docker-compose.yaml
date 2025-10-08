@@ -21,11 +21,12 @@ services:
       - "8084:8084"
     depends_on:
       postgres-master:
-        condition: service_started
+        condition:
+          service_started
 
   postgres-master:
     image: gitlab-registry.ozon.dev/go/classroom-20/students/base/postgres:16
-    container_name: postgres-master
+    container_name: postgresmaster
     environment:
       - POSTGRESQL_USERNAME=loms-user
       - POSTGRESQL_PASSWORD=loms-password

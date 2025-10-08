@@ -3,7 +3,7 @@ POST http://localhost:8084/order/create
 Content-Type: application/json
 
 {
-  "userID": 31337,
+  "userId": 31337,
   "items": [
     {
       "sku": 1076963,
@@ -15,11 +15,11 @@ Content-Type: application/json
     }
   ]
 }
-### expected: 200 (OK) {"orderID":1}
+### expected: 200 (OK) {"orderId":1}
 
 
 ### get info, assert status="awaiting payment"
-GET http://localhost:8084/order/info?orderID=1
+GET http://localhost:8084/order/info?orderId=1
 Content-Type: application/json
 
 ### expected: 200 (OK) {"status":"awaiting payment","user":31337,"Items":[{"sku":1076963,"count":3},{"sku":135717466,"count":2}]}
@@ -30,13 +30,13 @@ POST http://localhost:8084/order/pay
 Content-Type: application/json
 
 {
-  "orderID": 1
+  "orderId": 6
 }
 ### expected: 200 (OK) {}
 
 
 ### check actual status is "paid"
-GET http://localhost:8084/order/info?orderID=1
+GET http://localhost:8084/order/info?orderId=1
 Content-Type: application/json
 
 ### expected: 200 (OK) {"status":"paid","user":31337,"Items":[{"sku":1076963,"count":3},{"sku":135717466,"count":2}]}
@@ -47,13 +47,13 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderID": 1
+  "orderId": 1
 }
 ### expected: 400 (Bad Request) {"code":9, ... }
 
 
 ### get unknown order
-GET http://localhost:8084/order/info?orderID=404
+GET http://localhost:8084/order/info?orderId=404
 Content-Type: application/json
 
 ### expected: 404 (Not Found) {"code": 5, ... }
@@ -64,7 +64,7 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderID": 404
+  "orderId": 404
 }
 ### expected: 404 (Not Found) {"code": 5, ... }
 
@@ -74,7 +74,7 @@ POST http://localhost:8084/order/create
 Content-Type: application/json
 
 {
-  "userID": 31337,
+  "userId": 31337,
   "items": [
     {
       "sku": 404,
@@ -85,18 +85,18 @@ Content-Type: application/json
 ### expected: 400 (Bad Request) {"code":9, ... }
 
 
-### check order status is failed (not necessary, because no orderID after creation if any fails)
-GET http://localhost:8084/order/info?orderID=1
+### check order status is failed (not necessary, because no orderId after creation if any fails)
+GET http://localhost:8084/order/info?orderId=2
 Content-Type: application/json
 
-### expected: 200 (OK) {"status":"failed","userID":31337,"Items":[{"sku":404,"count":3}]}
+### expected: 200 (OK) {"status":"failed","userId":31337,"Items":[{"sku":404,"count":3}]}
 
 ### cancel failed order
 POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderID": 2
+  "orderId": 2
 }
 ###  expected: 400 (Bad Request) {"code":9, ... }
 
@@ -120,7 +120,7 @@ POST http://localhost:8084/order/create
 Content-Type: application/json
 
 {
-  "userID": 31337,
+  "userId": 31337,
   "items": [
     {
       "sku": 135717466,
@@ -141,7 +141,7 @@ POST http://localhost:8084/order/create
 Content-Type: application/json
 
 {
-  "userID": 31337,
+  "userId": 31337,
   "items": [
     {
       "sku": 135717466,
@@ -149,7 +149,7 @@ Content-Type: application/json
     }
   ]
 }
-### expected: 200 (OK) {"orderID":4}
+### expected: 200 (OK) {"orderId":4}
 
 
 ### cancel order
@@ -157,20 +157,21 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderID": 4
+  "orderId": 4
 }
 ### expected: 200 (OK)
 
 
 ### check canceled order status
-GET http://localhost:8084/order/info?orderID=4
+GET http://localhost:8084/order/info?orderId=4
 Content-Type: application/json
 
-### expected: 200 OK {"status":"cancelled","user":31337,"Items":[{"sku":135717466,"count":2}]}
+### expected: {"status":"cancelled","user":31337,"Items":[{"sku":135717466,"count":2}]}
 
 
 ### check stocks returns
 GET http://localhost:8084/stock/info?sku=135717466
 Content-Type: application/json
 
-### expected: 200 OK {"count":78};
+### expected: {"count":78}; 200 OK
+

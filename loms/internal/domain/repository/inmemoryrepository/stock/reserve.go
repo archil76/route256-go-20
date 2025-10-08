@@ -18,7 +18,7 @@ func (r *Repository) Reserve(ctx context.Context, items []model.Item) ([]model.S
 
 		available := upStock.TotalCount - upStock.Reserved
 		if available < item.Count {
-			return nil, model.ErrShortOfStock
+			return nil, model.ErrOutOfStock
 		}
 
 		stocks = append(stocks, model.Stock{

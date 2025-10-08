@@ -13,7 +13,7 @@ import (
 func (s Server) StocksInfo(ctx context.Context, request *lomspb.StocksInfoRequest) (*lomspb.StocksInfoResponse, error) {
 	count, err := s.lomsServise.StocksInfo(ctx, request.Sku)
 	if err != nil {
-		if errors.Is(err, model.ErrShortOfStock) {
+		if errors.Is(err, model.ErrOutOfStock) {
 			return nil, status.Error(codes.FailedPrecondition, "")
 		}
 		if errors.Is(err, model.ErrStockDoesntExist) {

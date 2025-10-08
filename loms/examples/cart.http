@@ -30,7 +30,7 @@ Content-Type: application/json
 
 
 ### check orderID in LOMS
-GET http://localhost:8084/order/info?orderID=5
+GET http://localhost:8084/order/info?orderId=1
 Content-Type: application/json
 ### expected: 200 (OK) {"status":"awaiting payment","user":31337,"Items":[{"sku":1076963,"count":1}]}
 
@@ -67,3 +67,4 @@ POST http://localhost:8080/checkout/31337
 Content-Type: application/json
 
 ### expected: 404 (Not Found) {}
+

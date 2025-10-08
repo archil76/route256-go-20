@@ -23,4 +23,7 @@ VALUES
 -- +goose Down
 -- +goose StatementBegin
 TRUNCATE TABLE stocks;
+TRUNCATE TABLE order_items;
+TRUNCATE TABLE orders;
+
 -- +goose StatementEnd

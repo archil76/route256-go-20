@@ -563,6 +563,8 @@ func (m *OrderInfoResponse) validate(all bool) error {
 
 	// no validation rules for OrderID
 
+	// no validation rules for UserID
+
 	for idx, item := range m.GetItems() {
 		_, _ = idx, item
 

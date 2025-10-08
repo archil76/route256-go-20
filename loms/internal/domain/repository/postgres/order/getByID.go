@@ -16,19 +16,19 @@ func (r *Repository) getOrder(ctx context.Context, orderID int64) (*model.Order,
 	if orderID < 1 {
 		return nil, model.ErrUserIDIsNotValid
 	}
-
+	pool := r.pooler.PickPool(ctx)
 	const queryOrders = `SELECT id, user_id, status FROM orders where id = $1`
 
 	upOrder := model.Order{}
 
-	if err := r.pool.QueryRow(ctx, queryOrders, orderID).
+	if err := pool.QueryRow(ctx, queryOrders, orderID).
 		Scan(&upOrder.OrderID, &upOrder.UserID, &upOrder.Status); err != nil {
 		return nil, errors.Wrap(model.ErrOrderDoesntExist, "pgx.QueryRow.Scan")
 	}
 
 	const queryOrderItems = `SELECT sku, count FROM order_items where order_id = $1`
 
-	rows, err := r.pool.Query(ctx, queryOrderItems, orderID)
+	rows, err := pool.Query(ctx, queryOrderItems, orderID)
 	if err != nil {
 		return nil, err
 	}

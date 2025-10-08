@@ -22,6 +22,6 @@ CREATE TABLE order_items (
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE stocks;
-DROP TABLE orders;
 DROP TABLE order_items;
+DROP TABLE orders;
 -- +goose StatementEnd
