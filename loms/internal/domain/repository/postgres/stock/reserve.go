@@ -18,7 +18,7 @@ func (r *Repository) Reserve(ctx context.Context, items []model.Item) ([]model.S
 	var err error
 	var stocks []model.Stock
 
-	err = r.pooler.InTx(ctx, "RW", func(ctx context.Context) error {
+	err = r.pooler.InTx(ctx, func(ctx context.Context) error {
 		pool := r.pooler.PickPool(ctx)
 
 		const query = `SELECT id, total_count, reserved FROM stocks WHERE id = ANY($1::bigint[]) FOR UPDATE`

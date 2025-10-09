@@ -11,7 +11,7 @@ import (
 func (r *Repository) Create(ctx context.Context, order model.Order) (*model.Order, error) {
 	var err error
 
-	err = r.pooler.InTx(ctx, "R", func(ctx context.Context) error {
+	err = r.pooler.InTx(ctx, func(ctx context.Context) error {
 		pool := r.pooler.PickPool(ctx)
 
 		const queryOrders = `INSERT INTO orders (user_id, status) VALUES ($1, $2) returning id`
@@ -29,13 +29,13 @@ func (r *Repository) Create(ctx context.Context, order model.Order) (*model.Orde
 		br := pool.SendBatch(ctx, batch)
 		defer br.Close()
 
-		//for i := 0; i < batch.Len(); i++ {
-		//	_, err = br.Exec()
-		//	if err != nil {
-		//		err = errors.Wrap(err, "pgx.QueryRow.Scan")
-		//		return err
-		//	}
-		//}
+		for i := 0; i < batch.Len(); i++ {
+			_, err = br.Exec()
+			if err != nil {
+				err = errors.Wrap(err, "pgx.QueryRow.Scan")
+				return err
+			}
+		}
 
 		return nil
 	})

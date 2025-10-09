@@ -13,8 +13,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /server ./cmd/server/main.go
 
 FROM scratch
 COPY --from=builder server /bin/server
-COPY configs/values_ci.yaml /bin/config/values_ci.yaml
+COPY configs/values_local_docer.yaml /bin/config/values_local_docer.yaml
 
-ENV CONFIG_FILE=/bin/config/values_ci.yaml
+ENV CONFIG_FILE=/bin/config/values_local_docer.yaml
 
 ENTRYPOINT ["/bin/server"]
