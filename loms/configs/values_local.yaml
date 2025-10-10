@@ -15,14 +15,14 @@ db_master:
   db_name: loms_db
 
 db_replica:
-  host: localhost
-  port: 5433
+  host: postgres-replica
+  port: 5432
   user: loms-user
   password: loms-password
   db_name: loms_db
 
 kafka:
-  host: localhost
+  host: kafka
   port: 29092
   order_topic: loms.order-events
-  brokers: localhost:9092
+  brokers: kafka:29092

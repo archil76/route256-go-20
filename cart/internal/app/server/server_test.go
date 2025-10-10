@@ -41,7 +41,7 @@ var (
 	}
 
 	reportCart = model.ReportCart{
-		Items: []model.ItemInСart{
+		Items: []model.ItemInCart{
 			{SKU: sku, Count: count, Name: name, Price: price},
 			{SKU: sku2, Count: count2, Name: name2, Price: price2},
 		},

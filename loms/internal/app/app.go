@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"route256/loms/internal/infra/pgpooler"
 	"strings"
 	"time"
 
@@ -11,12 +12,10 @@ import (
 
 	desc "route256/loms/internal/api"
 	"route256/loms/internal/app/server"
-	orderRepository "route256/loms/internal/domain/repository/inmemoryrepository/order"
-	stockRepository "route256/loms/internal/domain/repository/inmemoryrepository/stock"
+	orderRepository "route256/loms/internal/domain/repository/postgres/order"
+	stockRepository "route256/loms/internal/domain/repository/postgres/stock"
 	lomsService "route256/loms/internal/domain/service"
 	"route256/loms/internal/infra/config"
-	"sync/atomic"
-
 	"route256/loms/internal/infra/middlewares"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -35,6 +34,7 @@ func NewApp(configPath string) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config.LoadConfig: %w", err)
 	}
+	ctx := context.Background()
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
@@ -44,8 +44,31 @@ func NewApp(configPath string) (*App, error) {
 
 	reflection.Register(grpcServer)
 
-	var sequenceGenerator atomic.Int64
-	service := lomsService.NewLomsService(orderRepository.NewOrderInMemoryRepository(100, &sequenceGenerator), stockRepository.NewStockInMemoryRepository(100))
+	postgresDsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+		c.DBMaster.User,
+		c.DBMaster.Password,
+		c.DBMaster.Host,
+		c.DBMaster.Port,
+		c.DBMaster.DBName)
+
+	pooler, err := pgpooler.NewPooler(ctx, postgresDsn)
+	if err != nil {
+		return nil, fmt.Errorf("NewPool: %w", err)
+	}
+
+	newStockRepository, err := stockRepository.NewStockPostgresRepository(pooler)
+	if err != nil {
+		return nil,
+			fmt.Errorf("NewStockPostgresRepository: %w", err)
+	}
+
+	newOrderRepository, err := orderRepository.NewOrderPostgresRepository(pooler)
+	if err != nil {
+		return nil,
+			fmt.Errorf("NewOrderPostgresRepository: %w", err)
+	}
+
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository)
 
 	lomsServer := server.NewServer(service)
 

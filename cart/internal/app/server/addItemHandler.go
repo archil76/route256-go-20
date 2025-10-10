@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"route256/cart/internal/domain/model"
@@ -64,7 +65,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 		if errors.Is(err, model.ErrProductNotFound) {
 			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
 		} else {
-			utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+			utils.WriteErrorToResponse(writer, request, fmt.Errorf("3: %v;", err), "0", http.StatusBadRequest)
 		}
 		return
 	}

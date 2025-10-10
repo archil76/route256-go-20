@@ -15,12 +15,12 @@ func (r *Repository) GetStock(ctx context.Context, sku int64) (*model.Stock, err
 func (r *Repository) getStock(_ context.Context, sku int64) (*model.Stock, error) {
 
 	if sku < 1 {
-		return nil, ErrSkuIsNotValid
+		return nil, model.ErrSkuIsNotValid
 	}
 
 	stock, ok := r.storage[sku]
 	if !ok {
-		return nil, ErrStockDoesntExist
+		return nil, model.ErrStockDoesntExist
 	}
 
 	return &stock, nil

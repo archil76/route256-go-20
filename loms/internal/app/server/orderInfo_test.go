@@ -36,6 +36,7 @@ func Test_OrderInfo(t *testing.T) {
 	orderInfoResponseExpected := desc.OrderInfoResponse{
 		Status:  string(model.AWAITINGPAYMENT),
 		OrderID: orderID,
+		UserID:  tp.userID,
 		Items: []*desc.Items{
 			{
 				Sku:   tp.sku,

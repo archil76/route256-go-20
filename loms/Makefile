@@ -2,20 +2,23 @@ BINDIR=${CURDIR}/bin
 PACKAGE=route256/loms
 CONFIG_FILE=loms/configs/values_local.yaml
 
+MIGRATIONS_FOLDER := ./migrations/
+LOCAL_DB_DSN := postgresql://loms-user:loms-password@localhost:5432/loms_db?sslmode=disable
+
 PROTO_PATH := "./api"
 
 bindir:
 	mkdir -p ${BINDIR}
 
 run:
-	export CONFIG_FILE=./loms/configs/values_local.yaml &&\
-	go run ./loms/cmd/server/main.go
+	export CONFIG_FILE=./configs/values_local.yaml &&\
+	go run ./cmd/server/main.go
 
 run-all: bindir
 	echo "build cart"
 	docker-compose up --build
 
-build: bindir
+build: bindir bin-deps vendor-proto protoc-generate
 	echo "build loms"
 
 run-migrations:
@@ -26,6 +29,8 @@ run-migrations:
 
 gen-mock:
 	minimock -i ./internal/app/server.LomsServise -o ./internal/app/server/mock/loms_servise_mock.go
+	minimock -i ./internal/domain/service.OrderRepository -o ./internal/domain/service/mock/order_repository_mock.go
+	minimock -i ./internal/domain/service.StockRepository -o ./internal/domain/service/mock/stock_repository_mock.go
 
 test-all:
 	go test -cover ./internal/app/server ./internal/domain/service
@@ -35,7 +40,8 @@ bin-deps:
 	GOBIN=$(BINDIR) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0 && \
 	GOBIN=$(BINDIR) go install github.com/envoyproxy/protoc-gen-validate@v1.0.4 && \
 	GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1 && \
-    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
+    GOBIN=$(BINDIR) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1 && \
+	GOBIN=$(BINDIR) go install github.com/pressly/goose/v3/cmd/goose@v3.24.1
 
 vendor-rm:
 	rm -rf vendor-proto
@@ -95,14 +101,19 @@ protoc-generate:
 	api/loms.proto && \
 	go mod tidy
 
+install-goose:
+	GOBIN=$(BINDIR) go install github.com/pressly/goose/v3/cmd/goose@v3.24.1
 
-#protoc-generate: bin-deps
-#	protoc \
-#	-I ./api \
-#	--go_out=./internal/api \
-#	--go_opt=paths=source_relative \
-#	--go-grpc_out=./internal/api \
-#	--go-grpc_opt=paths=source_relative \
-#    --validate_out="lang=go,paths=source_relative:api" \
-#	api/loms.proto && \
-#	go mod tidy
+db-create-migration:
+	mkdir -p  migrations
+	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) create -s $(n) add_loms_table sql
+	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) create -s $(n) init_loms_table sql
+
+db-migrate:
+	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) postgres "$(LOCAL_DB_DSN)" up
+
+db-migrate-down:
+	$(BINDIR)/goose -dir $(MIGRATIONS_FOLDER) postgres "$(LOCAL_DB_DSN)" down
+
+
+

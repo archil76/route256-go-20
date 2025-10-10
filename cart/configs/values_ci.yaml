@@ -17,3 +17,4 @@ product_service:
 loms_service:
   host: localhost
   port: 8083
+

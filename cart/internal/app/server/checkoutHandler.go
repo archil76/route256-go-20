@@ -18,7 +18,7 @@ func (s *Server) Checkout(writer http.ResponseWriter, request *http.Request) {
 
 	orderID, err := s.cartService.Checkout(request.Context(), userID)
 	if err != nil {
-		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusBadRequest)
+		utils.WriteErrorToResponse(writer, request, ErrOther, "", http.StatusNotFound)
 		return
 	}
 

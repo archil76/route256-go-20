@@ -3,19 +3,12 @@ package inmemoryrepository
 import (
 	_ "embed"
 	"encoding/json"
-	"errors"
 	"route256/loms/internal/domain/model"
 	"sync"
 )
 
 //go:embed stock-data.json
 var stockData string
-
-var (
-	ErrStockDoesntExist = errors.New("stock doesn't exist")
-	ErrSkuIsNotValid    = errors.New("sku should be more than 0")
-	ErrShortOfStock     = errors.New("available amount of stock isn't enough ")
-)
 
 type StockData struct {
 	Sku        int64  `json:"sku"`

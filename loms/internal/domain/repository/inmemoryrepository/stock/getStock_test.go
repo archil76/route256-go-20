@@ -34,13 +34,13 @@ func TestHandler_GetStock_Table(t *testing.T) {
 			name: "Не успешное получение стока с отрицательным ID",
 			sku:  0,
 
-			wantedErr: ErrSkuIsNotValid,
+			wantedErr: model.ErrSkuIsNotValid,
 		},
 		{
 			name: "Не успешное получение валидно пустого стока",
 			sku:  tp.sku3,
 
-			wantedErr: ErrStockDoesntExist,
+			wantedErr: model.ErrStockDoesntExist,
 		},
 	}
 

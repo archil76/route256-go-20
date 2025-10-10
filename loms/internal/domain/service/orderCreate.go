@@ -7,7 +7,7 @@ import (
 
 func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []model.Item) (int64, error) {
 	if userID < 1 {
-		return 0, ErrUserIDIsNotValid
+		return 0, model.ErrUserIDIsNotValid
 	}
 
 	order := model.Order{
@@ -35,7 +35,7 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 	}
 
 	if orderStatus == model.FAILED {
-		return upOrder.OrderID, ErrShortOfStock // Заказ уже записан в статусе new. Так что id можно вернуть.
+		return upOrder.OrderID, model.ErrOutOfStock // Заказ уже записан в статусе new. Так что id можно вернуть.
 	}
 
 	return upOrder.OrderID, nil
