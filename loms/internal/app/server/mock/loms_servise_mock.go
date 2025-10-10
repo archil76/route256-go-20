@@ -19,9 +19,9 @@ type LomsServiseMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcOrderCancel          func(ctx context.Context, orderId int64) (err error)
+	funcOrderCancel          func(ctx context.Context, orderID int64) (err error)
 	funcOrderCancelOrigin    string
-	inspectFuncOrderCancel   func(ctx context.Context, orderId int64)
+	inspectFuncOrderCancel   func(ctx context.Context, orderID int64)
 	afterOrderCancelCounter  uint64
 	beforeOrderCancelCounter uint64
 	OrderCancelMock          mLomsServiseMockOrderCancel
@@ -33,16 +33,16 @@ type LomsServiseMock struct {
 	beforeOrderCreateCounter uint64
 	OrderCreateMock          mLomsServiseMockOrderCreate
 
-	funcOrderInfo          func(ctx context.Context, orderId int64) (op1 *model.Order, err error)
+	funcOrderInfo          func(ctx context.Context, orderID int64) (op1 *model.Order, err error)
 	funcOrderInfoOrigin    string
-	inspectFuncOrderInfo   func(ctx context.Context, orderId int64)
+	inspectFuncOrderInfo   func(ctx context.Context, orderID int64)
 	afterOrderInfoCounter  uint64
 	beforeOrderInfoCounter uint64
 	OrderInfoMock          mLomsServiseMockOrderInfo
 
-	funcOrderPay          func(ctx context.Context, orderId int64) (err error)
+	funcOrderPay          func(ctx context.Context, orderID int64) (err error)
 	funcOrderPayOrigin    string
-	inspectFuncOrderPay   func(ctx context.Context, orderId int64)
+	inspectFuncOrderPay   func(ctx context.Context, orderID int64)
 	afterOrderPayCounter  uint64
 	beforeOrderPayCounter uint64
 	OrderPayMock          mLomsServiseMockOrderPay
@@ -110,13 +110,13 @@ type LomsServiseMockOrderCancelExpectation struct {
 // LomsServiseMockOrderCancelParams contains parameters of the LomsServise.OrderCancel
 type LomsServiseMockOrderCancelParams struct {
 	ctx     context.Context
-	orderId int64
+	orderID int64
 }
 
 // LomsServiseMockOrderCancelParamPtrs contains pointers to parameters of the LomsServise.OrderCancel
 type LomsServiseMockOrderCancelParamPtrs struct {
 	ctx     *context.Context
-	orderId *int64
+	orderID *int64
 }
 
 // LomsServiseMockOrderCancelResults contains results of the LomsServise.OrderCancel
@@ -128,7 +128,7 @@ type LomsServiseMockOrderCancelResults struct {
 type LomsServiseMockOrderCancelExpectationOrigins struct {
 	origin        string
 	originCtx     string
-	originOrderId string
+	originOrderID string
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -142,7 +142,7 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) Optional() *mLomsServiseMockOr
 }
 
 // Expect sets up expected params for LomsServise.OrderCancel
-func (mmOrderCancel *mLomsServiseMockOrderCancel) Expect(ctx context.Context, orderId int64) *mLomsServiseMockOrderCancel {
+func (mmOrderCancel *mLomsServiseMockOrderCancel) Expect(ctx context.Context, orderID int64) *mLomsServiseMockOrderCancel {
 	if mmOrderCancel.mock.funcOrderCancel != nil {
 		mmOrderCancel.mock.t.Fatalf("LomsServiseMock.OrderCancel mock is already set by Set")
 	}
@@ -155,7 +155,7 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) Expect(ctx context.Context, or
 		mmOrderCancel.mock.t.Fatalf("LomsServiseMock.OrderCancel mock is already set by ExpectParams functions")
 	}
 
-	mmOrderCancel.defaultExpectation.params = &LomsServiseMockOrderCancelParams{ctx, orderId}
+	mmOrderCancel.defaultExpectation.params = &LomsServiseMockOrderCancelParams{ctx, orderID}
 	mmOrderCancel.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmOrderCancel.expectations {
 		if minimock.Equal(e.params, mmOrderCancel.defaultExpectation.params) {
@@ -189,8 +189,8 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) ExpectCtxParam1(ctx context.Co
 	return mmOrderCancel
 }
 
-// ExpectOrderIdParam2 sets up expected param orderId for LomsServise.OrderCancel
-func (mmOrderCancel *mLomsServiseMockOrderCancel) ExpectOrderIdParam2(orderId int64) *mLomsServiseMockOrderCancel {
+// ExpectOrderIDParam2 sets up expected param orderID for LomsServise.OrderCancel
+func (mmOrderCancel *mLomsServiseMockOrderCancel) ExpectOrderIDParam2(orderID int64) *mLomsServiseMockOrderCancel {
 	if mmOrderCancel.mock.funcOrderCancel != nil {
 		mmOrderCancel.mock.t.Fatalf("LomsServiseMock.OrderCancel mock is already set by Set")
 	}
@@ -206,14 +206,14 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) ExpectOrderIdParam2(orderId in
 	if mmOrderCancel.defaultExpectation.paramPtrs == nil {
 		mmOrderCancel.defaultExpectation.paramPtrs = &LomsServiseMockOrderCancelParamPtrs{}
 	}
-	mmOrderCancel.defaultExpectation.paramPtrs.orderId = &orderId
-	mmOrderCancel.defaultExpectation.expectationOrigins.originOrderId = minimock.CallerInfo(1)
+	mmOrderCancel.defaultExpectation.paramPtrs.orderID = &orderID
+	mmOrderCancel.defaultExpectation.expectationOrigins.originOrderID = minimock.CallerInfo(1)
 
 	return mmOrderCancel
 }
 
 // Inspect accepts an inspector function that has same arguments as the LomsServise.OrderCancel
-func (mmOrderCancel *mLomsServiseMockOrderCancel) Inspect(f func(ctx context.Context, orderId int64)) *mLomsServiseMockOrderCancel {
+func (mmOrderCancel *mLomsServiseMockOrderCancel) Inspect(f func(ctx context.Context, orderID int64)) *mLomsServiseMockOrderCancel {
 	if mmOrderCancel.mock.inspectFuncOrderCancel != nil {
 		mmOrderCancel.mock.t.Fatalf("Inspect function is already set for LomsServiseMock.OrderCancel")
 	}
@@ -238,7 +238,7 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) Return(err error) *LomsServise
 }
 
 // Set uses given function f to mock the LomsServise.OrderCancel method
-func (mmOrderCancel *mLomsServiseMockOrderCancel) Set(f func(ctx context.Context, orderId int64) (err error)) *LomsServiseMock {
+func (mmOrderCancel *mLomsServiseMockOrderCancel) Set(f func(ctx context.Context, orderID int64) (err error)) *LomsServiseMock {
 	if mmOrderCancel.defaultExpectation != nil {
 		mmOrderCancel.mock.t.Fatalf("Default expectation is already set for the LomsServise.OrderCancel method")
 	}
@@ -254,14 +254,14 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) Set(f func(ctx context.Context
 
 // When sets expectation for the LomsServise.OrderCancel which will trigger the result defined by the following
 // Then helper
-func (mmOrderCancel *mLomsServiseMockOrderCancel) When(ctx context.Context, orderId int64) *LomsServiseMockOrderCancelExpectation {
+func (mmOrderCancel *mLomsServiseMockOrderCancel) When(ctx context.Context, orderID int64) *LomsServiseMockOrderCancelExpectation {
 	if mmOrderCancel.mock.funcOrderCancel != nil {
 		mmOrderCancel.mock.t.Fatalf("LomsServiseMock.OrderCancel mock is already set by Set")
 	}
 
 	expectation := &LomsServiseMockOrderCancelExpectation{
 		mock:               mmOrderCancel.mock,
-		params:             &LomsServiseMockOrderCancelParams{ctx, orderId},
+		params:             &LomsServiseMockOrderCancelParams{ctx, orderID},
 		expectationOrigins: LomsServiseMockOrderCancelExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmOrderCancel.expectations = append(mmOrderCancel.expectations, expectation)
@@ -296,17 +296,17 @@ func (mmOrderCancel *mLomsServiseMockOrderCancel) invocationsDone() bool {
 }
 
 // OrderCancel implements mm_server.LomsServise
-func (mmOrderCancel *LomsServiseMock) OrderCancel(ctx context.Context, orderId int64) (err error) {
+func (mmOrderCancel *LomsServiseMock) OrderCancel(ctx context.Context, orderID int64) (err error) {
 	mm_atomic.AddUint64(&mmOrderCancel.beforeOrderCancelCounter, 1)
 	defer mm_atomic.AddUint64(&mmOrderCancel.afterOrderCancelCounter, 1)
 
 	mmOrderCancel.t.Helper()
 
 	if mmOrderCancel.inspectFuncOrderCancel != nil {
-		mmOrderCancel.inspectFuncOrderCancel(ctx, orderId)
+		mmOrderCancel.inspectFuncOrderCancel(ctx, orderID)
 	}
 
-	mm_params := LomsServiseMockOrderCancelParams{ctx, orderId}
+	mm_params := LomsServiseMockOrderCancelParams{ctx, orderID}
 
 	// Record call args
 	mmOrderCancel.OrderCancelMock.mutex.Lock()
@@ -325,7 +325,7 @@ func (mmOrderCancel *LomsServiseMock) OrderCancel(ctx context.Context, orderId i
 		mm_want := mmOrderCancel.OrderCancelMock.defaultExpectation.params
 		mm_want_ptrs := mmOrderCancel.OrderCancelMock.defaultExpectation.paramPtrs
 
-		mm_got := LomsServiseMockOrderCancelParams{ctx, orderId}
+		mm_got := LomsServiseMockOrderCancelParams{ctx, orderID}
 
 		if mm_want_ptrs != nil {
 
@@ -334,9 +334,9 @@ func (mmOrderCancel *LomsServiseMock) OrderCancel(ctx context.Context, orderId i
 					mmOrderCancel.OrderCancelMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
 			}
 
-			if mm_want_ptrs.orderId != nil && !minimock.Equal(*mm_want_ptrs.orderId, mm_got.orderId) {
-				mmOrderCancel.t.Errorf("LomsServiseMock.OrderCancel got unexpected parameter orderId, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmOrderCancel.OrderCancelMock.defaultExpectation.expectationOrigins.originOrderId, *mm_want_ptrs.orderId, mm_got.orderId, minimock.Diff(*mm_want_ptrs.orderId, mm_got.orderId))
+			if mm_want_ptrs.orderID != nil && !minimock.Equal(*mm_want_ptrs.orderID, mm_got.orderID) {
+				mmOrderCancel.t.Errorf("LomsServiseMock.OrderCancel got unexpected parameter orderID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmOrderCancel.OrderCancelMock.defaultExpectation.expectationOrigins.originOrderID, *mm_want_ptrs.orderID, mm_got.orderID, minimock.Diff(*mm_want_ptrs.orderID, mm_got.orderID))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
@@ -351,9 +351,9 @@ func (mmOrderCancel *LomsServiseMock) OrderCancel(ctx context.Context, orderId i
 		return (*mm_results).err
 	}
 	if mmOrderCancel.funcOrderCancel != nil {
-		return mmOrderCancel.funcOrderCancel(ctx, orderId)
+		return mmOrderCancel.funcOrderCancel(ctx, orderID)
 	}
-	mmOrderCancel.t.Fatalf("Unexpected call to LomsServiseMock.OrderCancel. %v %v", ctx, orderId)
+	mmOrderCancel.t.Fatalf("Unexpected call to LomsServiseMock.OrderCancel. %v %v", ctx, orderID)
 	return
 }
 
@@ -826,13 +826,13 @@ type LomsServiseMockOrderInfoExpectation struct {
 // LomsServiseMockOrderInfoParams contains parameters of the LomsServise.OrderInfo
 type LomsServiseMockOrderInfoParams struct {
 	ctx     context.Context
-	orderId int64
+	orderID int64
 }
 
 // LomsServiseMockOrderInfoParamPtrs contains pointers to parameters of the LomsServise.OrderInfo
 type LomsServiseMockOrderInfoParamPtrs struct {
 	ctx     *context.Context
-	orderId *int64
+	orderID *int64
 }
 
 // LomsServiseMockOrderInfoResults contains results of the LomsServise.OrderInfo
@@ -845,7 +845,7 @@ type LomsServiseMockOrderInfoResults struct {
 type LomsServiseMockOrderInfoExpectationOrigins struct {
 	origin        string
 	originCtx     string
-	originOrderId string
+	originOrderID string
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -859,7 +859,7 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) Optional() *mLomsServiseMockOrderI
 }
 
 // Expect sets up expected params for LomsServise.OrderInfo
-func (mmOrderInfo *mLomsServiseMockOrderInfo) Expect(ctx context.Context, orderId int64) *mLomsServiseMockOrderInfo {
+func (mmOrderInfo *mLomsServiseMockOrderInfo) Expect(ctx context.Context, orderID int64) *mLomsServiseMockOrderInfo {
 	if mmOrderInfo.mock.funcOrderInfo != nil {
 		mmOrderInfo.mock.t.Fatalf("LomsServiseMock.OrderInfo mock is already set by Set")
 	}
@@ -872,7 +872,7 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) Expect(ctx context.Context, orderI
 		mmOrderInfo.mock.t.Fatalf("LomsServiseMock.OrderInfo mock is already set by ExpectParams functions")
 	}
 
-	mmOrderInfo.defaultExpectation.params = &LomsServiseMockOrderInfoParams{ctx, orderId}
+	mmOrderInfo.defaultExpectation.params = &LomsServiseMockOrderInfoParams{ctx, orderID}
 	mmOrderInfo.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmOrderInfo.expectations {
 		if minimock.Equal(e.params, mmOrderInfo.defaultExpectation.params) {
@@ -906,8 +906,8 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) ExpectCtxParam1(ctx context.Contex
 	return mmOrderInfo
 }
 
-// ExpectOrderIdParam2 sets up expected param orderId for LomsServise.OrderInfo
-func (mmOrderInfo *mLomsServiseMockOrderInfo) ExpectOrderIdParam2(orderId int64) *mLomsServiseMockOrderInfo {
+// ExpectOrderIDParam2 sets up expected param orderID for LomsServise.OrderInfo
+func (mmOrderInfo *mLomsServiseMockOrderInfo) ExpectOrderIDParam2(orderID int64) *mLomsServiseMockOrderInfo {
 	if mmOrderInfo.mock.funcOrderInfo != nil {
 		mmOrderInfo.mock.t.Fatalf("LomsServiseMock.OrderInfo mock is already set by Set")
 	}
@@ -923,14 +923,14 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) ExpectOrderIdParam2(orderId int64)
 	if mmOrderInfo.defaultExpectation.paramPtrs == nil {
 		mmOrderInfo.defaultExpectation.paramPtrs = &LomsServiseMockOrderInfoParamPtrs{}
 	}
-	mmOrderInfo.defaultExpectation.paramPtrs.orderId = &orderId
-	mmOrderInfo.defaultExpectation.expectationOrigins.originOrderId = minimock.CallerInfo(1)
+	mmOrderInfo.defaultExpectation.paramPtrs.orderID = &orderID
+	mmOrderInfo.defaultExpectation.expectationOrigins.originOrderID = minimock.CallerInfo(1)
 
 	return mmOrderInfo
 }
 
 // Inspect accepts an inspector function that has same arguments as the LomsServise.OrderInfo
-func (mmOrderInfo *mLomsServiseMockOrderInfo) Inspect(f func(ctx context.Context, orderId int64)) *mLomsServiseMockOrderInfo {
+func (mmOrderInfo *mLomsServiseMockOrderInfo) Inspect(f func(ctx context.Context, orderID int64)) *mLomsServiseMockOrderInfo {
 	if mmOrderInfo.mock.inspectFuncOrderInfo != nil {
 		mmOrderInfo.mock.t.Fatalf("Inspect function is already set for LomsServiseMock.OrderInfo")
 	}
@@ -955,7 +955,7 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) Return(op1 *model.Order, err error
 }
 
 // Set uses given function f to mock the LomsServise.OrderInfo method
-func (mmOrderInfo *mLomsServiseMockOrderInfo) Set(f func(ctx context.Context, orderId int64) (op1 *model.Order, err error)) *LomsServiseMock {
+func (mmOrderInfo *mLomsServiseMockOrderInfo) Set(f func(ctx context.Context, orderID int64) (op1 *model.Order, err error)) *LomsServiseMock {
 	if mmOrderInfo.defaultExpectation != nil {
 		mmOrderInfo.mock.t.Fatalf("Default expectation is already set for the LomsServise.OrderInfo method")
 	}
@@ -971,14 +971,14 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) Set(f func(ctx context.Context, or
 
 // When sets expectation for the LomsServise.OrderInfo which will trigger the result defined by the following
 // Then helper
-func (mmOrderInfo *mLomsServiseMockOrderInfo) When(ctx context.Context, orderId int64) *LomsServiseMockOrderInfoExpectation {
+func (mmOrderInfo *mLomsServiseMockOrderInfo) When(ctx context.Context, orderID int64) *LomsServiseMockOrderInfoExpectation {
 	if mmOrderInfo.mock.funcOrderInfo != nil {
 		mmOrderInfo.mock.t.Fatalf("LomsServiseMock.OrderInfo mock is already set by Set")
 	}
 
 	expectation := &LomsServiseMockOrderInfoExpectation{
 		mock:               mmOrderInfo.mock,
-		params:             &LomsServiseMockOrderInfoParams{ctx, orderId},
+		params:             &LomsServiseMockOrderInfoParams{ctx, orderID},
 		expectationOrigins: LomsServiseMockOrderInfoExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmOrderInfo.expectations = append(mmOrderInfo.expectations, expectation)
@@ -1013,17 +1013,17 @@ func (mmOrderInfo *mLomsServiseMockOrderInfo) invocationsDone() bool {
 }
 
 // OrderInfo implements mm_server.LomsServise
-func (mmOrderInfo *LomsServiseMock) OrderInfo(ctx context.Context, orderId int64) (op1 *model.Order, err error) {
+func (mmOrderInfo *LomsServiseMock) OrderInfo(ctx context.Context, orderID int64) (op1 *model.Order, err error) {
 	mm_atomic.AddUint64(&mmOrderInfo.beforeOrderInfoCounter, 1)
 	defer mm_atomic.AddUint64(&mmOrderInfo.afterOrderInfoCounter, 1)
 
 	mmOrderInfo.t.Helper()
 
 	if mmOrderInfo.inspectFuncOrderInfo != nil {
-		mmOrderInfo.inspectFuncOrderInfo(ctx, orderId)
+		mmOrderInfo.inspectFuncOrderInfo(ctx, orderID)
 	}
 
-	mm_params := LomsServiseMockOrderInfoParams{ctx, orderId}
+	mm_params := LomsServiseMockOrderInfoParams{ctx, orderID}
 
 	// Record call args
 	mmOrderInfo.OrderInfoMock.mutex.Lock()
@@ -1042,7 +1042,7 @@ func (mmOrderInfo *LomsServiseMock) OrderInfo(ctx context.Context, orderId int64
 		mm_want := mmOrderInfo.OrderInfoMock.defaultExpectation.params
 		mm_want_ptrs := mmOrderInfo.OrderInfoMock.defaultExpectation.paramPtrs
 
-		mm_got := LomsServiseMockOrderInfoParams{ctx, orderId}
+		mm_got := LomsServiseMockOrderInfoParams{ctx, orderID}
 
 		if mm_want_ptrs != nil {
 
@@ -1051,9 +1051,9 @@ func (mmOrderInfo *LomsServiseMock) OrderInfo(ctx context.Context, orderId int64
 					mmOrderInfo.OrderInfoMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
 			}
 
-			if mm_want_ptrs.orderId != nil && !minimock.Equal(*mm_want_ptrs.orderId, mm_got.orderId) {
-				mmOrderInfo.t.Errorf("LomsServiseMock.OrderInfo got unexpected parameter orderId, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmOrderInfo.OrderInfoMock.defaultExpectation.expectationOrigins.originOrderId, *mm_want_ptrs.orderId, mm_got.orderId, minimock.Diff(*mm_want_ptrs.orderId, mm_got.orderId))
+			if mm_want_ptrs.orderID != nil && !minimock.Equal(*mm_want_ptrs.orderID, mm_got.orderID) {
+				mmOrderInfo.t.Errorf("LomsServiseMock.OrderInfo got unexpected parameter orderID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmOrderInfo.OrderInfoMock.defaultExpectation.expectationOrigins.originOrderID, *mm_want_ptrs.orderID, mm_got.orderID, minimock.Diff(*mm_want_ptrs.orderID, mm_got.orderID))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
@@ -1068,9 +1068,9 @@ func (mmOrderInfo *LomsServiseMock) OrderInfo(ctx context.Context, orderId int64
 		return (*mm_results).op1, (*mm_results).err
 	}
 	if mmOrderInfo.funcOrderInfo != nil {
-		return mmOrderInfo.funcOrderInfo(ctx, orderId)
+		return mmOrderInfo.funcOrderInfo(ctx, orderID)
 	}
-	mmOrderInfo.t.Fatalf("Unexpected call to LomsServiseMock.OrderInfo. %v %v", ctx, orderId)
+	mmOrderInfo.t.Fatalf("Unexpected call to LomsServiseMock.OrderInfo. %v %v", ctx, orderID)
 	return
 }
 
@@ -1169,13 +1169,13 @@ type LomsServiseMockOrderPayExpectation struct {
 // LomsServiseMockOrderPayParams contains parameters of the LomsServise.OrderPay
 type LomsServiseMockOrderPayParams struct {
 	ctx     context.Context
-	orderId int64
+	orderID int64
 }
 
 // LomsServiseMockOrderPayParamPtrs contains pointers to parameters of the LomsServise.OrderPay
 type LomsServiseMockOrderPayParamPtrs struct {
 	ctx     *context.Context
-	orderId *int64
+	orderID *int64
 }
 
 // LomsServiseMockOrderPayResults contains results of the LomsServise.OrderPay
@@ -1187,7 +1187,7 @@ type LomsServiseMockOrderPayResults struct {
 type LomsServiseMockOrderPayExpectationOrigins struct {
 	origin        string
 	originCtx     string
-	originOrderId string
+	originOrderID string
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -1201,7 +1201,7 @@ func (mmOrderPay *mLomsServiseMockOrderPay) Optional() *mLomsServiseMockOrderPay
 }
 
 // Expect sets up expected params for LomsServise.OrderPay
-func (mmOrderPay *mLomsServiseMockOrderPay) Expect(ctx context.Context, orderId int64) *mLomsServiseMockOrderPay {
+func (mmOrderPay *mLomsServiseMockOrderPay) Expect(ctx context.Context, orderID int64) *mLomsServiseMockOrderPay {
 	if mmOrderPay.mock.funcOrderPay != nil {
 		mmOrderPay.mock.t.Fatalf("LomsServiseMock.OrderPay mock is already set by Set")
 	}
@@ -1214,7 +1214,7 @@ func (mmOrderPay *mLomsServiseMockOrderPay) Expect(ctx context.Context, orderId 
 		mmOrderPay.mock.t.Fatalf("LomsServiseMock.OrderPay mock is already set by ExpectParams functions")
 	}
 
-	mmOrderPay.defaultExpectation.params = &LomsServiseMockOrderPayParams{ctx, orderId}
+	mmOrderPay.defaultExpectation.params = &LomsServiseMockOrderPayParams{ctx, orderID}
 	mmOrderPay.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmOrderPay.expectations {
 		if minimock.Equal(e.params, mmOrderPay.defaultExpectation.params) {
@@ -1248,8 +1248,8 @@ func (mmOrderPay *mLomsServiseMockOrderPay) ExpectCtxParam1(ctx context.Context)
 	return mmOrderPay
 }
 
-// ExpectOrderIdParam2 sets up expected param orderId for LomsServise.OrderPay
-func (mmOrderPay *mLomsServiseMockOrderPay) ExpectOrderIdParam2(orderId int64) *mLomsServiseMockOrderPay {
+// ExpectOrderIDParam2 sets up expected param orderID for LomsServise.OrderPay
+func (mmOrderPay *mLomsServiseMockOrderPay) ExpectOrderIDParam2(orderID int64) *mLomsServiseMockOrderPay {
 	if mmOrderPay.mock.funcOrderPay != nil {
 		mmOrderPay.mock.t.Fatalf("LomsServiseMock.OrderPay mock is already set by Set")
 	}
@@ -1265,14 +1265,14 @@ func (mmOrderPay *mLomsServiseMockOrderPay) ExpectOrderIdParam2(orderId int64) *
 	if mmOrderPay.defaultExpectation.paramPtrs == nil {
 		mmOrderPay.defaultExpectation.paramPtrs = &LomsServiseMockOrderPayParamPtrs{}
 	}
-	mmOrderPay.defaultExpectation.paramPtrs.orderId = &orderId
-	mmOrderPay.defaultExpectation.expectationOrigins.originOrderId = minimock.CallerInfo(1)
+	mmOrderPay.defaultExpectation.paramPtrs.orderID = &orderID
+	mmOrderPay.defaultExpectation.expectationOrigins.originOrderID = minimock.CallerInfo(1)
 
 	return mmOrderPay
 }
 
 // Inspect accepts an inspector function that has same arguments as the LomsServise.OrderPay
-func (mmOrderPay *mLomsServiseMockOrderPay) Inspect(f func(ctx context.Context, orderId int64)) *mLomsServiseMockOrderPay {
+func (mmOrderPay *mLomsServiseMockOrderPay) Inspect(f func(ctx context.Context, orderID int64)) *mLomsServiseMockOrderPay {
 	if mmOrderPay.mock.inspectFuncOrderPay != nil {
 		mmOrderPay.mock.t.Fatalf("Inspect function is already set for LomsServiseMock.OrderPay")
 	}
@@ -1297,7 +1297,7 @@ func (mmOrderPay *mLomsServiseMockOrderPay) Return(err error) *LomsServiseMock {
 }
 
 // Set uses given function f to mock the LomsServise.OrderPay method
-func (mmOrderPay *mLomsServiseMockOrderPay) Set(f func(ctx context.Context, orderId int64) (err error)) *LomsServiseMock {
+func (mmOrderPay *mLomsServiseMockOrderPay) Set(f func(ctx context.Context, orderID int64) (err error)) *LomsServiseMock {
 	if mmOrderPay.defaultExpectation != nil {
 		mmOrderPay.mock.t.Fatalf("Default expectation is already set for the LomsServise.OrderPay method")
 	}
@@ -1313,14 +1313,14 @@ func (mmOrderPay *mLomsServiseMockOrderPay) Set(f func(ctx context.Context, orde
 
 // When sets expectation for the LomsServise.OrderPay which will trigger the result defined by the following
 // Then helper
-func (mmOrderPay *mLomsServiseMockOrderPay) When(ctx context.Context, orderId int64) *LomsServiseMockOrderPayExpectation {
+func (mmOrderPay *mLomsServiseMockOrderPay) When(ctx context.Context, orderID int64) *LomsServiseMockOrderPayExpectation {
 	if mmOrderPay.mock.funcOrderPay != nil {
 		mmOrderPay.mock.t.Fatalf("LomsServiseMock.OrderPay mock is already set by Set")
 	}
 
 	expectation := &LomsServiseMockOrderPayExpectation{
 		mock:               mmOrderPay.mock,
-		params:             &LomsServiseMockOrderPayParams{ctx, orderId},
+		params:             &LomsServiseMockOrderPayParams{ctx, orderID},
 		expectationOrigins: LomsServiseMockOrderPayExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmOrderPay.expectations = append(mmOrderPay.expectations, expectation)
@@ -1355,17 +1355,17 @@ func (mmOrderPay *mLomsServiseMockOrderPay) invocationsDone() bool {
 }
 
 // OrderPay implements mm_server.LomsServise
-func (mmOrderPay *LomsServiseMock) OrderPay(ctx context.Context, orderId int64) (err error) {
+func (mmOrderPay *LomsServiseMock) OrderPay(ctx context.Context, orderID int64) (err error) {
 	mm_atomic.AddUint64(&mmOrderPay.beforeOrderPayCounter, 1)
 	defer mm_atomic.AddUint64(&mmOrderPay.afterOrderPayCounter, 1)
 
 	mmOrderPay.t.Helper()
 
 	if mmOrderPay.inspectFuncOrderPay != nil {
-		mmOrderPay.inspectFuncOrderPay(ctx, orderId)
+		mmOrderPay.inspectFuncOrderPay(ctx, orderID)
 	}
 
-	mm_params := LomsServiseMockOrderPayParams{ctx, orderId}
+	mm_params := LomsServiseMockOrderPayParams{ctx, orderID}
 
 	// Record call args
 	mmOrderPay.OrderPayMock.mutex.Lock()
@@ -1384,7 +1384,7 @@ func (mmOrderPay *LomsServiseMock) OrderPay(ctx context.Context, orderId int64) 
 		mm_want := mmOrderPay.OrderPayMock.defaultExpectation.params
 		mm_want_ptrs := mmOrderPay.OrderPayMock.defaultExpectation.paramPtrs
 
-		mm_got := LomsServiseMockOrderPayParams{ctx, orderId}
+		mm_got := LomsServiseMockOrderPayParams{ctx, orderID}
 
 		if mm_want_ptrs != nil {
 
@@ -1393,9 +1393,9 @@ func (mmOrderPay *LomsServiseMock) OrderPay(ctx context.Context, orderId int64) 
 					mmOrderPay.OrderPayMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
 			}
 
-			if mm_want_ptrs.orderId != nil && !minimock.Equal(*mm_want_ptrs.orderId, mm_got.orderId) {
-				mmOrderPay.t.Errorf("LomsServiseMock.OrderPay got unexpected parameter orderId, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmOrderPay.OrderPayMock.defaultExpectation.expectationOrigins.originOrderId, *mm_want_ptrs.orderId, mm_got.orderId, minimock.Diff(*mm_want_ptrs.orderId, mm_got.orderId))
+			if mm_want_ptrs.orderID != nil && !minimock.Equal(*mm_want_ptrs.orderID, mm_got.orderID) {
+				mmOrderPay.t.Errorf("LomsServiseMock.OrderPay got unexpected parameter orderID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmOrderPay.OrderPayMock.defaultExpectation.expectationOrigins.originOrderID, *mm_want_ptrs.orderID, mm_got.orderID, minimock.Diff(*mm_want_ptrs.orderID, mm_got.orderID))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
@@ -1410,9 +1410,9 @@ func (mmOrderPay *LomsServiseMock) OrderPay(ctx context.Context, orderId int64) 
 		return (*mm_results).err
 	}
 	if mmOrderPay.funcOrderPay != nil {
-		return mmOrderPay.funcOrderPay(ctx, orderId)
+		return mmOrderPay.funcOrderPay(ctx, orderID)
 	}
-	mmOrderPay.t.Fatalf("Unexpected call to LomsServiseMock.OrderPay. %v %v", ctx, orderId)
+	mmOrderPay.t.Fatalf("Unexpected call to LomsServiseMock.OrderPay. %v %v", ctx, orderID)
 	return
 }
 

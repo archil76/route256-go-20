@@ -99,7 +99,7 @@
         },
         "parameters": [
           {
-            "name": "orderID",
+            "name": "orderId",
             "in": "query",
             "required": false,
             "type": "string",
@@ -192,7 +192,7 @@
     "OrderCancelRequest": {
       "type": "object",
       "properties": {
-        "orderID": {
+        "orderId": {
           "type": "string",
           "format": "int64"
         }
@@ -204,7 +204,7 @@
     "OrderCreateRequest": {
       "type": "object",
       "properties": {
-        "userID": {
+        "userId": {
           "type": "string",
           "format": "int64"
         },
@@ -220,7 +220,7 @@
     "OrderCreateResponse": {
       "type": "object",
       "properties": {
-        "orderID": {
+        "orderId": {
           "type": "string",
           "format": "int64"
         }
@@ -232,7 +232,11 @@
         "status": {
           "type": "string"
         },
-        "orderID": {
+        "orderId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "userId": {
           "type": "string",
           "format": "int64"
         },
@@ -248,7 +252,7 @@
     "OrderPayRequest": {
       "type": "object",
       "properties": {
-        "orderID": {
+        "orderId": {
           "type": "string",
           "format": "int64"
         }

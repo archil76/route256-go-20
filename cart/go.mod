@@ -7,7 +7,7 @@ toolchain go1.23.12
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/gojuno/minimock/v3 v3.4.7
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1
 	github.com/guiferpa/gody/v2 v2.2.0
 	github.com/ozontech/allure-go/pkg/framework v0.7.3
 	github.com/stretchr/testify v1.11.1
@@ -29,5 +29,4 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c // indirect
-
 )

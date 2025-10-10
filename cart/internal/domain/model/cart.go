@@ -6,11 +6,11 @@ type Cart struct {
 }
 
 type ReportCart struct {
-	Items      []ItemInСart
+	Items      []ItemInCart
 	TotalPrice uint32
 }
 
-type ItemInСart struct {
+type ItemInCart struct {
 	SKU   Sku
 	Count uint32
 	Name  string

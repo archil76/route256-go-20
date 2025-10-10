@@ -13,12 +13,12 @@ func (r *Repository) Reserve(ctx context.Context, items []model.Item) ([]model.S
 	for _, item := range items {
 		upStock, err := r.getStock(ctx, item.Sku)
 		if err != nil {
-			return nil, ErrStockDoesntExist
+			return nil, model.ErrStockDoesntExist
 		}
 
 		available := upStock.TotalCount - upStock.Reserved
 		if available < item.Count {
-			return nil, ErrShortOfStock
+			return nil, model.ErrOutOfStock
 		}
 
 		stocks = append(stocks, model.Stock{

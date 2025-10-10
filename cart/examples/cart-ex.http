@@ -1,0 +1,253 @@
+# Добавление в корзину ----------------------------------
+### Добавление валидного SKU в корзину
+POST http://localhost:8080/user/628594270478096874/cart/1076963000
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 200 OK; must add 1 item
+
+### Добавление валидного SKU в корзину повторно
+POST http://localhost:8080/user/628594270478096874/cart/1076963
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Добавление другого валидного SKU в корзину
+POST http://localhost:8080/user/628594270478096874/cart/2618151
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Добавление  товара в другую корзину
+POST http://localhost:8080/user/41447/cart/2618151
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Проверка корзины пользователя 628594270478096874
+GET http://localhost:8080/user/628594270478096874/cart
+Content-Type: application/json
+### expected {json} 200 OK;
+
+### Проверка корзины пользователя 41447
+GET http://localhost:8080/user/41447/cart
+Content-Type: application/json
+### expected {json} 200 OK;
+
+### Добавление валидного SKU для пользователя (user_id) с отрицательным значением
+POST http://localhost:8080/user/-1/cart/1076963000
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 400 OK;
+
+### Добавление валидного SKU для пользователя (user_id) с нулевым значением
+POST http://localhost:8080/user/0/cart/1076963000
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 400 OK;
+
+### Добавление SKU с нулевым значением
+POST http://localhost:8080/user/628594270478096874/cart/0
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 400 OK;
+
+### Добавление SKU с отрицательным значением
+POST http://localhost:8080/user/628594270478096874/cart/-1254
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 400 OK;
+
+###Добавление несуществующего SKU в корзину
+POST http://localhost:8080/user/3577830775032301166/cart/1076963000
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 412 OK;
+
+### Добавление  товара  корзину
+POST http://localhost:8080/user/3577830775032301166/cart/2618151
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Проверка корзины пользователя 3577830775032301166 после попытки добавления
+GET http://localhost:8080/user/3577830775032301166/cart
+Content-Type: application/json
+### expected {json} 200 OK; должен быть только товар 2618151
+
+# Очистка корзины ----------------------------------
+### Очистка полной корзины
+DELETE http://localhost:8080/user/3577830775032301166/cart
+Content-Type: application/json
+### expected {} 204 OK;
+
+### Проверка что корзина пуста
+GET http://localhost:8080/user/3577830775032301166/cart
+Content-Type: application/json
+### expected {} 400 OK;
+
+### Очистка несуществующей корзины
+DELETE http://localhost:8080/user/555555/cart
+Content-Type: application/json
+### expected {} 204 OK;
+
+### Очистка пустой корзины
+DELETE http://localhost:8080/user/3577830775032301166/cart
+Content-Type: application/json
+### expected {} 204 OK;
+
+### Очистка корзины корзины с нулевым пользователем
+DELETE http://localhost:8080/user/0/cart
+Content-Type: application/json
+### expected {} 400 OK;
+
+### Очистка корзины корзины с отрицательным пользователем
+DELETE http://localhost:8080/user/-3577830775032301166/cart
+Content-Type: application/json
+### expected {} 400 OK;
+
+# Удаление товара из корзины ----------------------------------
+# подготовка
+### Очистка корзины
+DELETE http://localhost:8080/user/628594270478096874/cart
+Content-Type: application/json
+### expected {} 204 OK;
+
+### Добавление валидного SKU в корзину
+POST http://localhost:8080/user/628594270478096874/cart/1076963
+Content-Type: application/json
+
+{
+  "count": 4
+}
+### expected {} 200 OK;
+
+### Добавление другого валидного SKU в корзину
+POST http://localhost:8080/user/628594270478096874/cart/2618151
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Проверка корзины пользователя 628594270478096874
+GET http://localhost:8080/user/628594270478096874/cart
+Content-Type: application/json
+### expected {json} 200 OK; 2 позиции 7 штук
+
+# Проверка
+### Удаление товара из корзины
+DELETE http://localhost:8080/user/628594270478096874/cart/1076963
+Content-Type: application/json
+### expected {} 200 OK;
+
+### Проверка корзины пользователя 628594270478096874
+GET http://localhost:8080/user/628594270478096874/cart
+Content-Type: application/json
+### expected {json} 200 OK; 1 позициия 4 штуки
+
+### Удаление товара из корзины повторно. Товара там нет
+DELETE http://localhost:8080/user/628594270478096874/cart/1076963
+Content-Type: application/json
+### expected {} 200 OK;
+
+### Удаление товара из корзины  с отрицательным пользователем
+DELETE http://localhost:8080/user/-1/cart/1076963
+Content-Type: application/json
+### expected {} 400 OK;
+
+### Удаление товара из корзины  с нулевым пользователем
+DELETE http://localhost:8080/user/0/cart/1076963
+Content-Type: application/json
+### expected {} 400 OK;
+
+
+### Удаление товара из корзины  с нулевым SKU
+DELETE http://localhost:8080/user/628594270478096874/cart/0
+Content-Type: application/json
+### expected {} 400 OK;
+
+### Удаление товара из корзины  с отрицательным SKU
+DELETE http://localhost:8080/user/628594270478096874/cart/-1076963
+Content-Type: application/json
+### expected {} 400 OK;
+
+# Получение товара из корзины ----------------------------------
+# Подготовка
+
+### Очистка полной корзины
+DELETE http://localhost:8080/user/628594270478096874/cart
+Content-Type: application/json
+### expected {} 204 OK;
+
+### Добавление валидного SKU в корзину
+POST http://localhost:8080/user/628594270478096874/cart/1076963
+Content-Type: application/json
+
+{
+  "count": 1
+}
+### expected {} 200 OK; must add 1 item
+
+### Добавление валидного SKU в корзину повторно
+POST http://localhost:8080/user/628594270478096874/cart/1076963
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Добавление другого валидного SKU в корзину
+POST http://localhost:8080/user/628594270478096874/cart/2618151
+Content-Type: application/json
+
+{
+  "count": 3
+}
+### expected {} 200 OK;
+
+### Проверка корзины пользователя 628594270478096874
+GET http://localhost:8080/user/628594270478096874/cart
+Content-Type: application/json
+### expected {json} 200 OK;
+
+### Проверка корзины отрицательного пользователя
+GET http://localhost:8080/user/-628594270478096874/cart
+Content-Type: application/json
+### expected {json} 400 OK;
+
+### Проверка корзины нулевого пользователя
+GET http://localhost:8080/user/0/cart
+Content-Type: application/json
+### expected {json} 400 OK;

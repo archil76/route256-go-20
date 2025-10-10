@@ -41,7 +41,7 @@ service Loms {
 };
 
 message OrderCreateRequest{
-  int64 userID = 1[(validate.rules).int64.gt = 0];
+  int64 userID = 1[(validate.rules).int64.gt = 0, json_name = "userId"];
   repeated Items  items = 2[(validate.rules).repeated.min_items=1];
 }
 
@@ -51,28 +51,29 @@ message Items{
 }
 
 message OrderCreateResponse{
-   int64 orderID = 1[(validate.rules).int64.gt = 0];
+   int64 orderID = 1[(validate.rules).int64.gt = 0, json_name = "orderId"];
 }
 
 message OrderInfoRequest{
-  int64 orderID = 1[(validate.rules).int64.gt = 0];
+  int64 orderID = 1[(validate.rules).int64.gt = 0, json_name = "orderId"];
 }
 
 message OrderInfoResponse{
   string status = 1;
-  int64 orderID = 2;
-  repeated Items  items = 3;
+  int64 orderID = 2[json_name = "orderId"];
+  int64 userID = 3[json_name = "userId"];
+  repeated Items  items = 4;
 }
 
 message OrderPayRequest{
-  int64 orderID = 1[(validate.rules).int64.gt = 0];
+  int64 orderID = 1[(validate.rules).int64.gt = 0, json_name = "orderId"];
 }
 
 message OrderPayResponse{
 }
 
 message OrderCancelRequest{
-  int64 orderID = 1[(validate.rules).int64.gt = 0];
+  int64 orderID = 1[(validate.rules).int64.gt = 0, json_name = "orderId"];
 }
 
 message OrderCancelResponse{

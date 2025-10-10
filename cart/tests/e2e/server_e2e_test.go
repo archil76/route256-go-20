@@ -72,6 +72,7 @@ func (s *ServerE) TestServerE(t provider.T) {
 
 	sku := int64(1076963)
 	sku2 := int64(1148162) // должен быть больше sku для проверки сортировки получаемой корзины
+	//wrongSku := uint32(1076963000)
 
 	count := int32(2)
 	count2 := int32(3)
@@ -248,4 +249,8 @@ func decodeResponseBody(response *http.Response) (testReportCart, error) {
 	err := decoder.Decode(&reportCart)
 
 	return reportCart, err
+}
+
+func StatusCode(sCtx provider.StepCtx, expected, actual int) {
+	sCtx.Require().Equal(expected, actual, "Не совпадает статус кодр")
 }

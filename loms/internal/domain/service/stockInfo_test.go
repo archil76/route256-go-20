@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
-	stockrepo "route256/loms/internal/domain/repository/inmemoryrepository/stock"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,19 +13,17 @@ func Test_StockInfo(t *testing.T) {
 
 	ctx := context.Background()
 
-	orderRepository := orderrepo.NewOrderInMemoryRepository(10, &counter)
+	testHandler := NewLomsServiceWithMock(t)
 
-	stockRepository := stockrepo.NewStockInMemoryRepository(10)
+	t.Run("Проверка статуса. Успешный путь", func(t *testing.T) {
+		handler := testHandler.handler
+		var count uint32
+		var err error
 
-	handler := NewLomsService(orderRepository, stockRepository)
+		testHandler.stockRepositoryMock.GetBySKUMock.When(ctx, tp.sku).Then(tp.count, nil)
 
-	t.Run("Информация о стоке. Успешный путь", func(t *testing.T) {
-
-		count, err := handler.StocksInfo(ctx, 139275865)
-
+		count, err = handler.StocksInfo(ctx, tp.sku)
 		require.NoError(t, err)
-		require.NotEqual(t, 0, count)
-
+		require.Equal(t, tp.count, count)
 	})
-
 }
