@@ -1,6 +1,6 @@
 # Добавление в корзину ----------------------------------
 ### Добавление валидного SKU в корзину
-POST http://localhost:8080/user/628594270478096874/cart/1076963
+POST http://localhost:8080/user/628594270478096874/cart/2956315
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
 ### expected {} 200 OK;
 
 ### Проверка корзины пользователя 628594270478096874
-GET http://localhost:8080/user/628594270478096874/cart
+GET http://localhost:8080/user/9022222/cart
 Content-Type: application/json
 ### expected {json} 200 OK;
 
