@@ -28,15 +28,15 @@ func TestServerE(t *testing.T) {
 }
 
 func (s *ServerE) BeforeAll(t provider.T) {
-	env_var := os.Getenv("CONFIG_FILE")
-	if env_var == "" {
+	envVar := os.Getenv("CONFIG_FILE")
+	if envVar == "" {
 		t.Fatalf("Не задана переменная окружения CONFIG_FILE")
 		return
 	}
 
 	c, err := config.LoadConfig(os.Getenv("CONFIG_FILE"))
 	if err != nil {
-		t.Fatalf("Неверный формат конфига по адресу: %s", env_var)
+		t.Fatalf("Неверный формат конфига по адресу: %s", envVar)
 		return
 	}
 
@@ -198,21 +198,6 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 
 }
 
-func getDeleteItemRequest(host string, userID int64, sku int64) (*http.Request, error) {
-	request, err := http.NewRequest(
-		http.MethodDelete,
-		fmt.Sprintf("%s/user/%s/cart/%s", host, strconv.FormatInt(userID, 10), strconv.FormatInt(sku, 10)),
-		http.NoBody,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	request.Header.Add("Content-Type", "application/json")
-
-	return request, nil
-}
-
 func getAddItemRequest(host string, addItemRequest testAddItemRequest, userID int64, sku int64) (*http.Request, error) {
 	body, err := json.Marshal(addItemRequest)
 	if err != nil {
@@ -274,8 +259,4 @@ func decodeResponseBody(response *http.Response) (testReportCart, error) {
 	err := decoder.Decode(&reportCart)
 
 	return reportCart, err
-}
-
-func StatusCode(sCtx provider.StepCtx, expected, actual int) {
-	sCtx.Require().Equal(expected, actual, "Не совпадает статус кодр")
 }
