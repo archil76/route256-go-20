@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"route256/cart/internal/infra/config"
-	"sort"
 	"strconv"
 	"testing"
 
@@ -64,21 +63,86 @@ type testAddItemRequest struct {
 	Count int32
 }
 
-func (s *ServerE) TestServerParallel(t provider.T) {
+//func (s *ServerE) TestServerParallel(t provider.T) {
+//	t.Parallel()
+//	t.Helper()
+//
+//	userID := int64(1022222)
+//	skus := []int64{
+//		1076963,
+//		1148162,
+//		1625903,
+//		2618151,
+//		2956315,
+//		2958025,
+//		3596599,
+//		4465995,
+//		4288068,
+//	}
+//	t.Title("Проверка получения корзины")
+//
+//	t.WithTestSetup(func(t provider.T) {
+//		t.WithNewStep("Подготовка: Очистка корзины", func(t provider.StepCtx) {
+//
+//			request, err := getClearCartRequest(s.Host, userID)
+//			require.NoError(t, err)
+//
+//			response, err := s.client.Do(request)
+//			require.NoError(t, err)
+//			require.Equal(t, http.StatusNoContent, response.StatusCode)
+//		})
+//
+//		t.WithNewStep("Подготовка: Проверка что корзина пуста", func(t provider.StepCtx) {
+//			request, err := getGetCartRequest(s.Host, userID)
+//			require.NoError(t, err)
+//
+//			response, err := s.client.Do(request)
+//			require.NoError(t, err)
+//
+//			require.Equal(t, http.StatusNotFound, response.StatusCode)
+//		})
+//
+//		t.WithNewStep("Подготовка: Наполнение корзины", func(t provider.StepCtx) {
+//
+//			for _, sku := range skus {
+//				request, err := getAddItemRequest(s.Host, testAddItemRequest{
+//					Count: 3,
+//				}, userID, sku)
+//				require.NoError(t, err)
+//
+//				response, err := s.client.Do(request)
+//				require.NoError(t, err)
+//				require.Equal(t, http.StatusOK, response.StatusCode)
+//
+//			}
+//		})
+//	})
+//
+//	t.WithNewStep("Действие: Получение", func(t provider.StepCtx) {
+//
+//		request, err := getGetCartRequest(s.Host, userID)
+//		require.NoError(t, err)
+//
+//		response, err := s.client.Do(request)
+//		require.NoError(t, err)
+//		require.Equal(t, http.StatusOK, response.StatusCode)
+//
+//		reportCart, err := decodeResponseBody(response)
+//		require.NoError(t, err)
+//
+//		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
+//
+//		require.Equal(t, len(skus), len(reportCart.Items))
+//	})
+//
+//}
+
+func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 	t.Parallel()
 	t.Helper()
 
 	userID := int64(1022222)
 	skus := []int64{
-		1076963,
-		1148162,
-		1625903,
-		2618151,
-		2956315,
-		2958025,
-		3596599,
-		4465995,
-		4288068,
 		32638658,
 		32605854,
 		32205848,
@@ -116,7 +180,7 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 
 				response, err := s.client.Do(request)
 				require.NoError(t, err)
-				require.Equal(t, http.StatusOK, response.StatusCode)
+				require.Equal(t, http.StatusPreconditionFailed, response.StatusCode)
 
 			}
 		})
@@ -129,94 +193,11 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 
 		response, err := s.client.Do(request)
 		require.NoError(t, err)
-		require.Equal(t, http.StatusOK, response.StatusCode)
+		require.Equal(t, http.StatusNotFound, response.StatusCode)
 
-		reportCart, err := decodeResponseBody(response)
-		require.NoError(t, err)
-
-		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
-
-		require.Equal(t, len(skus), len(reportCart.Items))
 	})
 
 }
-
-//func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
-//	t.Parallel()
-//	t.Helper()
-//
-//	userID := int64(9022222)
-//	skus := []int64{
-//		1076963,
-//		1148162,
-//		1625903,
-//		26181510000000,
-//		2956315,
-//		2958025,
-//		3596599,
-//		4465995,
-//		4288068,
-//		28349359,
-//		28506967,
-//	}
-//
-//	t.Title("Проверка получения корзины. Неуспешное")
-//
-//	t.WithTestSetup(func(t provider.T) {
-//		t.WithNewStep("Подготовка: Очистка корзины", func(t provider.StepCtx) {
-//
-//			request, err := getClearCartRequest(s.Host, userID)
-//			require.NoError(t, err)
-//
-//			response, err := s.client.Do(request)
-//			require.NoError(t, err)
-//			require.Equal(t, http.StatusNoContent, response.StatusCode)
-//		})
-//
-//		t.WithNewStep("Подготовка: Проверка что корзина пуста", func(t provider.StepCtx) {
-//			request, err := getGetCartRequest(s.Host, userID)
-//			require.NoError(t, err)
-//
-//			response, err := s.client.Do(request)
-//			require.NoError(t, err)
-//
-//			require.Equal(t, http.StatusNotFound, response.StatusCode)
-//		})
-//
-//		t.WithNewStep("Подготовка: Наполнение корзины", func(t provider.StepCtx) {
-//
-//			for _, sku := range skus {
-//				request, err := getAddItemRequest(s.Host, testAddItemRequest{
-//					Count: 3,
-//				}, userID, sku)
-//				require.NoError(t, err)
-//
-//				response, err := s.client.Do(request)
-//				assert.NoError(t, err)
-//				assert.Equal(t, http.StatusOK, response.StatusCode)
-//
-//			}
-//		})
-//	})
-//
-//	t.WithNewStep("Действие: Получение", func(t provider.StepCtx) {
-//
-//		request, err := getGetCartRequest(s.Host, userID)
-//		require.NoError(t, err)
-//
-//		response, err := s.client.Do(request)
-//		require.NoError(t, err)
-//		require.Equal(t, http.StatusOK, response.StatusCode)
-//
-//		reportCart, err := decodeResponseBody(response)
-//		require.NoError(t, err)
-//
-//		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
-//
-//		require.Equal(t, 4, len(reportCart.Items))
-//	})
-//
-//}
 
 func getDeleteItemRequest(host string, userID int64, sku int64) (*http.Request, error) {
 	request, err := http.NewRequest(

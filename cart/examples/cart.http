@@ -36,7 +36,7 @@ Content-Type: application/json
 ### expected {} 200 OK;
 
 ### Проверка корзины пользователя 628594270478096874
-GET http://localhost:8080/user/9022222/cart
+GET http://localhost:8080/user/1022222/cart
 Content-Type: application/json
 ### expected {json} 200 OK;
 
