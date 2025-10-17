@@ -25,6 +25,13 @@ type ProductServiceMock struct {
 	afterGetProductBySkuCounter  uint64
 	beforeGetProductBySkuCounter uint64
 	GetProductBySkuMock          mProductServiceMockGetProductBySku
+
+	funcGetProductsBySkus          func(ctx context.Context, skus []model.Sku) (pa1 []model.Product, err error)
+	funcGetProductsBySkusOrigin    string
+	inspectFuncGetProductsBySkus   func(ctx context.Context, skus []model.Sku)
+	afterGetProductsBySkusCounter  uint64
+	beforeGetProductsBySkusCounter uint64
+	GetProductsBySkusMock          mProductServiceMockGetProductsBySkus
 }
 
 // NewProductServiceMock returns a mock for mm_service.ProductService
@@ -37,6 +44,9 @@ func NewProductServiceMock(t minimock.Tester) *ProductServiceMock {
 
 	m.GetProductBySkuMock = mProductServiceMockGetProductBySku{mock: m}
 	m.GetProductBySkuMock.callArgs = []*ProductServiceMockGetProductBySkuParams{}
+
+	m.GetProductsBySkusMock = mProductServiceMockGetProductsBySkus{mock: m}
+	m.GetProductsBySkusMock.callArgs = []*ProductServiceMockGetProductsBySkusParams{}
 
 	t.Cleanup(m.MinimockFinish)
 
@@ -386,11 +396,356 @@ func (m *ProductServiceMock) MinimockGetProductBySkuInspect() {
 	}
 }
 
+type mProductServiceMockGetProductsBySkus struct {
+	optional           bool
+	mock               *ProductServiceMock
+	defaultExpectation *ProductServiceMockGetProductsBySkusExpectation
+	expectations       []*ProductServiceMockGetProductsBySkusExpectation
+
+	callArgs []*ProductServiceMockGetProductsBySkusParams
+	mutex    sync.RWMutex
+
+	expectedInvocations       uint64
+	expectedInvocationsOrigin string
+}
+
+// ProductServiceMockGetProductsBySkusExpectation specifies expectation struct of the ProductService.GetProductsBySkus
+type ProductServiceMockGetProductsBySkusExpectation struct {
+	mock               *ProductServiceMock
+	params             *ProductServiceMockGetProductsBySkusParams
+	paramPtrs          *ProductServiceMockGetProductsBySkusParamPtrs
+	expectationOrigins ProductServiceMockGetProductsBySkusExpectationOrigins
+	results            *ProductServiceMockGetProductsBySkusResults
+	returnOrigin       string
+	Counter            uint64
+}
+
+// ProductServiceMockGetProductsBySkusParams contains parameters of the ProductService.GetProductsBySkus
+type ProductServiceMockGetProductsBySkusParams struct {
+	ctx  context.Context
+	skus []model.Sku
+}
+
+// ProductServiceMockGetProductsBySkusParamPtrs contains pointers to parameters of the ProductService.GetProductsBySkus
+type ProductServiceMockGetProductsBySkusParamPtrs struct {
+	ctx  *context.Context
+	skus *[]model.Sku
+}
+
+// ProductServiceMockGetProductsBySkusResults contains results of the ProductService.GetProductsBySkus
+type ProductServiceMockGetProductsBySkusResults struct {
+	pa1 []model.Product
+	err error
+}
+
+// ProductServiceMockGetProductsBySkusOrigins contains origins of expectations of the ProductService.GetProductsBySkus
+type ProductServiceMockGetProductsBySkusExpectationOrigins struct {
+	origin     string
+	originCtx  string
+	originSkus string
+}
+
+// Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
+// the test will fail minimock's automatic final call check if the mocked method was not called at least once.
+// Optional() makes method check to work in '0 or more' mode.
+// It is NOT RECOMMENDED to use this option unless you really need it, as default behaviour helps to
+// catch the problems when the expected method call is totally skipped during test run.
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Optional() *mProductServiceMockGetProductsBySkus {
+	mmGetProductsBySkus.optional = true
+	return mmGetProductsBySkus
+}
+
+// Expect sets up expected params for ProductService.GetProductsBySkus
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Expect(ctx context.Context, skus []model.Sku) *mProductServiceMockGetProductsBySkus {
+	if mmGetProductsBySkus.mock.funcGetProductsBySkus != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Set")
+	}
+
+	if mmGetProductsBySkus.defaultExpectation == nil {
+		mmGetProductsBySkus.defaultExpectation = &ProductServiceMockGetProductsBySkusExpectation{}
+	}
+
+	if mmGetProductsBySkus.defaultExpectation.paramPtrs != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by ExpectParams functions")
+	}
+
+	mmGetProductsBySkus.defaultExpectation.params = &ProductServiceMockGetProductsBySkusParams{ctx, skus}
+	mmGetProductsBySkus.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
+	for _, e := range mmGetProductsBySkus.expectations {
+		if minimock.Equal(e.params, mmGetProductsBySkus.defaultExpectation.params) {
+			mmGetProductsBySkus.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetProductsBySkus.defaultExpectation.params)
+		}
+	}
+
+	return mmGetProductsBySkus
+}
+
+// ExpectCtxParam1 sets up expected param ctx for ProductService.GetProductsBySkus
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) ExpectCtxParam1(ctx context.Context) *mProductServiceMockGetProductsBySkus {
+	if mmGetProductsBySkus.mock.funcGetProductsBySkus != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Set")
+	}
+
+	if mmGetProductsBySkus.defaultExpectation == nil {
+		mmGetProductsBySkus.defaultExpectation = &ProductServiceMockGetProductsBySkusExpectation{}
+	}
+
+	if mmGetProductsBySkus.defaultExpectation.params != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Expect")
+	}
+
+	if mmGetProductsBySkus.defaultExpectation.paramPtrs == nil {
+		mmGetProductsBySkus.defaultExpectation.paramPtrs = &ProductServiceMockGetProductsBySkusParamPtrs{}
+	}
+	mmGetProductsBySkus.defaultExpectation.paramPtrs.ctx = &ctx
+	mmGetProductsBySkus.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmGetProductsBySkus
+}
+
+// ExpectSkusParam2 sets up expected param skus for ProductService.GetProductsBySkus
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) ExpectSkusParam2(skus []model.Sku) *mProductServiceMockGetProductsBySkus {
+	if mmGetProductsBySkus.mock.funcGetProductsBySkus != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Set")
+	}
+
+	if mmGetProductsBySkus.defaultExpectation == nil {
+		mmGetProductsBySkus.defaultExpectation = &ProductServiceMockGetProductsBySkusExpectation{}
+	}
+
+	if mmGetProductsBySkus.defaultExpectation.params != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Expect")
+	}
+
+	if mmGetProductsBySkus.defaultExpectation.paramPtrs == nil {
+		mmGetProductsBySkus.defaultExpectation.paramPtrs = &ProductServiceMockGetProductsBySkusParamPtrs{}
+	}
+	mmGetProductsBySkus.defaultExpectation.paramPtrs.skus = &skus
+	mmGetProductsBySkus.defaultExpectation.expectationOrigins.originSkus = minimock.CallerInfo(1)
+
+	return mmGetProductsBySkus
+}
+
+// Inspect accepts an inspector function that has same arguments as the ProductService.GetProductsBySkus
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Inspect(f func(ctx context.Context, skus []model.Sku)) *mProductServiceMockGetProductsBySkus {
+	if mmGetProductsBySkus.mock.inspectFuncGetProductsBySkus != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("Inspect function is already set for ProductServiceMock.GetProductsBySkus")
+	}
+
+	mmGetProductsBySkus.mock.inspectFuncGetProductsBySkus = f
+
+	return mmGetProductsBySkus
+}
+
+// Return sets up results that will be returned by ProductService.GetProductsBySkus
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Return(pa1 []model.Product, err error) *ProductServiceMock {
+	if mmGetProductsBySkus.mock.funcGetProductsBySkus != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Set")
+	}
+
+	if mmGetProductsBySkus.defaultExpectation == nil {
+		mmGetProductsBySkus.defaultExpectation = &ProductServiceMockGetProductsBySkusExpectation{mock: mmGetProductsBySkus.mock}
+	}
+	mmGetProductsBySkus.defaultExpectation.results = &ProductServiceMockGetProductsBySkusResults{pa1, err}
+	mmGetProductsBySkus.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
+	return mmGetProductsBySkus.mock
+}
+
+// Set uses given function f to mock the ProductService.GetProductsBySkus method
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Set(f func(ctx context.Context, skus []model.Sku) (pa1 []model.Product, err error)) *ProductServiceMock {
+	if mmGetProductsBySkus.defaultExpectation != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("Default expectation is already set for the ProductService.GetProductsBySkus method")
+	}
+
+	if len(mmGetProductsBySkus.expectations) > 0 {
+		mmGetProductsBySkus.mock.t.Fatalf("Some expectations are already set for the ProductService.GetProductsBySkus method")
+	}
+
+	mmGetProductsBySkus.mock.funcGetProductsBySkus = f
+	mmGetProductsBySkus.mock.funcGetProductsBySkusOrigin = minimock.CallerInfo(1)
+	return mmGetProductsBySkus.mock
+}
+
+// When sets expectation for the ProductService.GetProductsBySkus which will trigger the result defined by the following
+// Then helper
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) When(ctx context.Context, skus []model.Sku) *ProductServiceMockGetProductsBySkusExpectation {
+	if mmGetProductsBySkus.mock.funcGetProductsBySkus != nil {
+		mmGetProductsBySkus.mock.t.Fatalf("ProductServiceMock.GetProductsBySkus mock is already set by Set")
+	}
+
+	expectation := &ProductServiceMockGetProductsBySkusExpectation{
+		mock:               mmGetProductsBySkus.mock,
+		params:             &ProductServiceMockGetProductsBySkusParams{ctx, skus},
+		expectationOrigins: ProductServiceMockGetProductsBySkusExpectationOrigins{origin: minimock.CallerInfo(1)},
+	}
+	mmGetProductsBySkus.expectations = append(mmGetProductsBySkus.expectations, expectation)
+	return expectation
+}
+
+// Then sets up ProductService.GetProductsBySkus return parameters for the expectation previously defined by the When method
+func (e *ProductServiceMockGetProductsBySkusExpectation) Then(pa1 []model.Product, err error) *ProductServiceMock {
+	e.results = &ProductServiceMockGetProductsBySkusResults{pa1, err}
+	return e.mock
+}
+
+// Times sets number of times ProductService.GetProductsBySkus should be invoked
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Times(n uint64) *mProductServiceMockGetProductsBySkus {
+	if n == 0 {
+		mmGetProductsBySkus.mock.t.Fatalf("Times of ProductServiceMock.GetProductsBySkus mock can not be zero")
+	}
+	mm_atomic.StoreUint64(&mmGetProductsBySkus.expectedInvocations, n)
+	mmGetProductsBySkus.expectedInvocationsOrigin = minimock.CallerInfo(1)
+	return mmGetProductsBySkus
+}
+
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) invocationsDone() bool {
+	if len(mmGetProductsBySkus.expectations) == 0 && mmGetProductsBySkus.defaultExpectation == nil && mmGetProductsBySkus.mock.funcGetProductsBySkus == nil {
+		return true
+	}
+
+	totalInvocations := mm_atomic.LoadUint64(&mmGetProductsBySkus.mock.afterGetProductsBySkusCounter)
+	expectedInvocations := mm_atomic.LoadUint64(&mmGetProductsBySkus.expectedInvocations)
+
+	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
+}
+
+// GetProductsBySkus implements mm_service.ProductService
+func (mmGetProductsBySkus *ProductServiceMock) GetProductsBySkus(ctx context.Context, skus []model.Sku) (pa1 []model.Product, err error) {
+	mm_atomic.AddUint64(&mmGetProductsBySkus.beforeGetProductsBySkusCounter, 1)
+	defer mm_atomic.AddUint64(&mmGetProductsBySkus.afterGetProductsBySkusCounter, 1)
+
+	mmGetProductsBySkus.t.Helper()
+
+	if mmGetProductsBySkus.inspectFuncGetProductsBySkus != nil {
+		mmGetProductsBySkus.inspectFuncGetProductsBySkus(ctx, skus)
+	}
+
+	mm_params := ProductServiceMockGetProductsBySkusParams{ctx, skus}
+
+	// Record call args
+	mmGetProductsBySkus.GetProductsBySkusMock.mutex.Lock()
+	mmGetProductsBySkus.GetProductsBySkusMock.callArgs = append(mmGetProductsBySkus.GetProductsBySkusMock.callArgs, &mm_params)
+	mmGetProductsBySkus.GetProductsBySkusMock.mutex.Unlock()
+
+	for _, e := range mmGetProductsBySkus.GetProductsBySkusMock.expectations {
+		if minimock.Equal(*e.params, mm_params) {
+			mm_atomic.AddUint64(&e.Counter, 1)
+			return e.results.pa1, e.results.err
+		}
+	}
+
+	if mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.Counter, 1)
+		mm_want := mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.params
+		mm_want_ptrs := mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.paramPtrs
+
+		mm_got := ProductServiceMockGetProductsBySkusParams{ctx, skus}
+
+		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmGetProductsBySkus.t.Errorf("ProductServiceMock.GetProductsBySkus got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
+
+			if mm_want_ptrs.skus != nil && !minimock.Equal(*mm_want_ptrs.skus, mm_got.skus) {
+				mmGetProductsBySkus.t.Errorf("ProductServiceMock.GetProductsBySkus got unexpected parameter skus, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.expectationOrigins.originSkus, *mm_want_ptrs.skus, mm_got.skus, minimock.Diff(*mm_want_ptrs.skus, mm_got.skus))
+			}
+
+		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
+			mmGetProductsBySkus.t.Errorf("ProductServiceMock.GetProductsBySkus got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+				mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+		}
+
+		mm_results := mmGetProductsBySkus.GetProductsBySkusMock.defaultExpectation.results
+		if mm_results == nil {
+			mmGetProductsBySkus.t.Fatal("No results are set for the ProductServiceMock.GetProductsBySkus")
+		}
+		return (*mm_results).pa1, (*mm_results).err
+	}
+	if mmGetProductsBySkus.funcGetProductsBySkus != nil {
+		return mmGetProductsBySkus.funcGetProductsBySkus(ctx, skus)
+	}
+	mmGetProductsBySkus.t.Fatalf("Unexpected call to ProductServiceMock.GetProductsBySkus. %v %v", ctx, skus)
+	return
+}
+
+// GetProductsBySkusAfterCounter returns a count of finished ProductServiceMock.GetProductsBySkus invocations
+func (mmGetProductsBySkus *ProductServiceMock) GetProductsBySkusAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetProductsBySkus.afterGetProductsBySkusCounter)
+}
+
+// GetProductsBySkusBeforeCounter returns a count of ProductServiceMock.GetProductsBySkus invocations
+func (mmGetProductsBySkus *ProductServiceMock) GetProductsBySkusBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetProductsBySkus.beforeGetProductsBySkusCounter)
+}
+
+// Calls returns a list of arguments used in each call to ProductServiceMock.GetProductsBySkus.
+// The list is in the same order as the calls were made (i.e. recent calls have a higher index)
+func (mmGetProductsBySkus *mProductServiceMockGetProductsBySkus) Calls() []*ProductServiceMockGetProductsBySkusParams {
+	mmGetProductsBySkus.mutex.RLock()
+
+	argCopy := make([]*ProductServiceMockGetProductsBySkusParams, len(mmGetProductsBySkus.callArgs))
+	copy(argCopy, mmGetProductsBySkus.callArgs)
+
+	mmGetProductsBySkus.mutex.RUnlock()
+
+	return argCopy
+}
+
+// MinimockGetProductsBySkusDone returns true if the count of the GetProductsBySkus invocations corresponds
+// the number of defined expectations
+func (m *ProductServiceMock) MinimockGetProductsBySkusDone() bool {
+	if m.GetProductsBySkusMock.optional {
+		// Optional methods provide '0 or more' call count restriction.
+		return true
+	}
+
+	for _, e := range m.GetProductsBySkusMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			return false
+		}
+	}
+
+	return m.GetProductsBySkusMock.invocationsDone()
+}
+
+// MinimockGetProductsBySkusInspect logs each unmet expectation
+func (m *ProductServiceMock) MinimockGetProductsBySkusInspect() {
+	for _, e := range m.GetProductsBySkusMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			m.t.Errorf("Expected call to ProductServiceMock.GetProductsBySkus at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
+		}
+	}
+
+	afterGetProductsBySkusCounter := mm_atomic.LoadUint64(&m.afterGetProductsBySkusCounter)
+	// if default expectation was set then invocations count should be greater than zero
+	if m.GetProductsBySkusMock.defaultExpectation != nil && afterGetProductsBySkusCounter < 1 {
+		if m.GetProductsBySkusMock.defaultExpectation.params == nil {
+			m.t.Errorf("Expected call to ProductServiceMock.GetProductsBySkus at\n%s", m.GetProductsBySkusMock.defaultExpectation.returnOrigin)
+		} else {
+			m.t.Errorf("Expected call to ProductServiceMock.GetProductsBySkus at\n%s with params: %#v", m.GetProductsBySkusMock.defaultExpectation.expectationOrigins.origin, *m.GetProductsBySkusMock.defaultExpectation.params)
+		}
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcGetProductsBySkus != nil && afterGetProductsBySkusCounter < 1 {
+		m.t.Errorf("Expected call to ProductServiceMock.GetProductsBySkus at\n%s", m.funcGetProductsBySkusOrigin)
+	}
+
+	if !m.GetProductsBySkusMock.invocationsDone() && afterGetProductsBySkusCounter > 0 {
+		m.t.Errorf("Expected %d calls to ProductServiceMock.GetProductsBySkus at\n%s but found %d calls",
+			mm_atomic.LoadUint64(&m.GetProductsBySkusMock.expectedInvocations), m.GetProductsBySkusMock.expectedInvocationsOrigin, afterGetProductsBySkusCounter)
+	}
+}
+
 // MinimockFinish checks that all mocked methods have been called the expected number of times
 func (m *ProductServiceMock) MinimockFinish() {
 	m.finishOnce.Do(func() {
 		if !m.minimockDone() {
 			m.MinimockGetProductBySkuInspect()
+
+			m.MinimockGetProductsBySkusInspect()
 		}
 	})
 }
@@ -414,5 +769,6 @@ func (m *ProductServiceMock) MinimockWait(timeout mm_time.Duration) {
 func (m *ProductServiceMock) minimockDone() bool {
 	done := true
 	return done &&
-		m.MinimockGetProductBySkuDone()
+		m.MinimockGetProductBySkuDone() &&
+		m.MinimockGetProductsBySkusDone()
 }
