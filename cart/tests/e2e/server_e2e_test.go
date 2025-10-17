@@ -29,15 +29,15 @@ func TestServerE(t *testing.T) {
 }
 
 func (s *ServerE) BeforeAll(t provider.T) {
-	env_var := os.Getenv("CONFIG_FILE")
-	if env_var == "" {
+	envVar := os.Getenv("CONFIG_FILE")
+	if envVar == "" {
 		t.Fatalf("Не задана переменная окружения CONFIG_FILE")
 		return
 	}
 
 	c, err := config.LoadConfig(os.Getenv("CONFIG_FILE"))
 	if err != nil {
-		t.Fatalf("Неверный формат конфига по адресу: %s", env_var)
+		t.Fatalf("Неверный формат конфига по адресу: %s", envVar)
 		return
 	}
 
