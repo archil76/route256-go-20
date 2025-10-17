@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/Shopify/toxiproxy v2.1.4+incompatible
 	github.com/avast/retry-go/v4 v4.6.1
 	github.com/cockroachdb/errors v1.12.0
 	github.com/jackc/pgx/v5 v5.7.6

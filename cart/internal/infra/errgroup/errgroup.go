@@ -26,6 +26,7 @@ func WithContext(ctx context.Context, limit, bufferSize int) (*Group, context.Co
 	}, ctx
 }
 func (g *Group) RunWorker() {
+
 	for i := 0; i < g.limit; i++ {
 		g.wg.Add(1)
 		go worker(g.wg, g.chIn, g.chOut)
@@ -34,21 +35,6 @@ func (g *Group) RunWorker() {
 
 func (g *Group) Go(f func() error) {
 	g.chIn <- f
-}
-
-func worker(wg *sync.WaitGroup, jobs <-chan func() error, res chan<- error) {
-	defer wg.Done()
-	for {
-		select {
-		case job, ok := <-jobs:
-			if !ok {
-				return
-			}
-			res <- job()
-		default:
-			time.Sleep(10 * time.Millisecond)
-		}
-	}
 }
 
 func (g *Group) Wait() error {
@@ -65,4 +51,19 @@ func (g *Group) Wait() error {
 	}
 
 	return nil
+}
+
+func worker(wg *sync.WaitGroup, jobs <-chan func() error, res chan<- error) {
+	defer wg.Done()
+	for {
+		select {
+		case job, ok := <-jobs:
+			if !ok {
+				return
+			}
+			res <- job()
+		default:
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
 }

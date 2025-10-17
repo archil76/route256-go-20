@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"route256/cart/internal/infra/errgroup"
+	"sync"
 	"time"
 
 	"route256/cart/internal/domain/model"
@@ -74,6 +76,34 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 		Price: uint32(resp.Price),
 		Sku:   resp.Sku,
 	}, nil
+}
+
+func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
+	mu := &sync.Mutex{}
+	group, ctx := errgroup.WithContext(ctx, 10, len(skus))
+	group.RunWorker()
+
+	products := make([]model.Product, 0, len(skus))
+	for _, sku := range skus {
+		group.Go(func() error {
+
+			product, err := s.GetProductBySku(ctx, sku)
+			if err != nil {
+				ctx.Done()
+				return err
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			products = append(products, *product)
+			return nil
+		})
+	}
+
+	if err := group.Wait(); err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }
 
 type GetProductResponse struct {

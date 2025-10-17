@@ -20,6 +20,7 @@ type CartsRepository interface {
 
 type ProductService interface {
 	GetProductBySku(ctx context.Context, sku model.Sku) (*model.Product, error)
+	GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error)
 }
 
 type LomsService interface {
