@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"route256/cart/internal/domain/model"
 	repo "route256/cart/internal/domain/repository/inmemoryrepository"
 	cartsService "route256/cart/internal/domain/service"
 	mock2 "route256/cart/internal/domain/service/mock"
@@ -26,15 +27,16 @@ func Test_GetCartHandler(t *testing.T) {
 	lomsServiceMock := mock2.NewLomsServiceMock(ctrl)
 
 	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock, lomsServiceMock)
+	skus := []model.Sku{sku, sku2}
+	products := []model.Product{*product, *product2}
 
 	handler := NewServer(cartService)
 
 	t.Run("Получение корзины. Успешный путь", func(t *testing.T) {
 		t.Helper()
 
-		productServiceMock.GetProductBySkuMock.When(ctx, sku).Then(product, nil)
-		productServiceMock.GetProductBySkuMock.When(ctx, sku2).Then(product2, nil)
-		productServiceMock.GetProductBySkuMock.Optional()
+		productServiceMock.GetProductsBySkusMock.When(ctx, skus).Then(products, nil)
+		productServiceMock.GetProductsBySkusMock.Optional()
 
 		cartRepositoryMock.GetCartMock.Expect(ctx, userID).Return(cart, nil)
 
