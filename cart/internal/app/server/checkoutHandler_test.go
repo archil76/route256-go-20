@@ -7,6 +7,7 @@ import (
 	"route256/cart/internal/domain/model"
 	cartsService "route256/cart/internal/domain/service"
 	mock2 "route256/cart/internal/domain/service/mock"
+	"sort"
 	"testing"
 
 	"github.com/gojuno/minimock/v3"
@@ -26,6 +27,8 @@ func Test_CheckoutHandler(t *testing.T) {
 
 	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock, lomsServiceMock)
 	skus := []model.Sku{sku, sku2}
+	sort.Slice(skus, func(i, j int) bool { return skus[i] < skus[j] })
+
 	products := []model.Product{*product, *product2}
 
 	handler := NewServer(cartService)

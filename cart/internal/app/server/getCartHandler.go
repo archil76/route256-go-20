@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"route256/cart/internal/infra/utils"
+	"sort"
 )
 
 func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
@@ -37,6 +38,8 @@ func (s *Server) GetCart(writer http.ResponseWriter, request *http.Request) {
 			Price: price32,
 		})
 	}
+
+	sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
 
 	rawResponse, err := json.Marshal(reportCart)
 	if err != nil {

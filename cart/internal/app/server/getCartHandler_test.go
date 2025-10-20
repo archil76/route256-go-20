@@ -28,6 +28,8 @@ func Test_GetCartHandler(t *testing.T) {
 
 	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock, lomsServiceMock)
 	skus := []model.Sku{sku, sku2}
+	sort.Slice(skus, func(i, j int) bool { return skus[i] < skus[j] })
+
 	products := []model.Product{*product, *product2}
 
 	handler := NewServer(cartService)
