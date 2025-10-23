@@ -80,7 +80,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
 	mu := &sync.Mutex{}
-	group, ctx := errgroup.WithContext(ctx, 10, len(skus))
+	group, ctx := errgroup.WithContext(ctx, 10, len(skus), time.Second)
 	group.RunWorker()
 
 	products := make([]model.Product, 0, len(skus))

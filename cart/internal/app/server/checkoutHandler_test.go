@@ -26,15 +26,18 @@ func Test_CheckoutHandler(t *testing.T) {
 	lomsServiceMock := mock2.NewLomsServiceMock(ctrl)
 
 	cartService := cartsService.NewCartsService(cartRepositoryMock, productServiceMock, lomsServiceMock)
-	skus := []model.Sku{sku, sku2}
-	sort.Slice(skus, func(i, j int) bool { return skus[i] < skus[j] })
+	skusASC := []model.Sku{sku, sku2}
+	sort.Slice(skusASC, func(i, j int) bool { return skusASC[i] < skusASC[j] })
+	skusDESC := []model.Sku{sku, sku2}
+	sort.Slice(skusDESC, func(i, j int) bool { return skusDESC[i] >= skusDESC[j] })
 
 	products := []model.Product{*product, *product2}
 
 	handler := NewServer(cartService)
 
 	t.Run("Оформление заказа по корзине. Успешный путь", func(t *testing.T) {
-		productServiceMock.GetProductsBySkusMock.When(ctx, skus).Then(products, nil)
+		productServiceMock.GetProductsBySkusMock.When(ctx, skusASC).Then(products, nil)
+		productServiceMock.GetProductsBySkusMock.When(ctx, skusDESC).Then(products, nil)
 		productServiceMock.GetProductsBySkusMock.Optional()
 
 		cartRepositoryMock.GetCartMock.Expect(ctx, userID).Return(cart, nil)

@@ -8,29 +8,30 @@ import (
 )
 
 type Group struct {
-	wg    *sync.WaitGroup
-	limit int
-	chIn  chan func() error
-	chOut chan error
+	ctx      context.Context
+	wg       *sync.WaitGroup
+	limit    int
+	duration time.Duration
+	chIn     chan func() error
+	chOut    chan error
 }
 
-func WithContext(ctx context.Context, limit, bufferSize int) (*Group, context.Context) {
+func WithContext(ctx context.Context, limit, bufferSize int, duration time.Duration) (*Group, context.Context) {
 	chIn := make(chan func() error, bufferSize)
 	chOut := make(chan error, bufferSize)
 
 	return &Group{
-		wg:    &sync.WaitGroup{},
-		limit: limit,
-		chIn:  chIn,
-		chOut: chOut,
+		ctx:      ctx,
+		wg:       &sync.WaitGroup{},
+		limit:    limit,
+		duration: duration,
+		chIn:     chIn,
+		chOut:    chOut,
 	}, ctx
 }
 func (g *Group) RunWorker() {
-
-	for i := 0; i < g.limit; i++ {
-		g.wg.Add(1)
-		go worker(g.wg, g.chIn, g.chOut)
-	}
+	g.wg.Add(1)
+	go worker(g.ctx, g.wg, g.limit, g.duration, g.chIn, g.chOut)
 }
 
 func (g *Group) Go(f func() error) {
@@ -53,17 +54,28 @@ func (g *Group) Wait() error {
 	return nil
 }
 
-func worker(wg *sync.WaitGroup, jobs <-chan func() error, res chan<- error) {
+func worker(ctx context.Context, wg *sync.WaitGroup, limit int, duration time.Duration, jobs <-chan func() error, res chan<- error) {
+	ticker := time.NewTicker(duration)
+
 	defer wg.Done()
+	defer ticker.Stop()
+
 	for {
 		select {
-		case job, ok := <-jobs:
-			if !ok {
-				return
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			for range limit {
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					job, ok := <-jobs
+					if !ok {
+						return
+					}
+					res <- job()
+				}()
 			}
-			res <- job()
-		default:
-			time.Sleep(10 * time.Millisecond)
 		}
 	}
 }
