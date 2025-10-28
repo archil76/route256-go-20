@@ -80,21 +80,24 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
 	mu := &sync.Mutex{}
-	group, ctx := errgroup.WithContext(ctx, 10, len(skus), time.Second)
+	group, ctx := errgroup.WithContext(ctx, min(10, len(skus)), len(skus), time.Second)
 	group.RunWorker()
 
 	products := make([]model.Product, 0, len(skus))
 	for _, sku := range skus {
+		fmt.Printf("\n Обработка SKU %d\n", sku)
 		group.Go(func() error {
-
 			product, err := s.GetProductBySku(ctx, sku)
 			if err != nil {
+				fmt.Printf("\n Ошибка %w\n", err)
 				ctx.Done()
 				return err
 			}
+
 			mu.Lock()
 			defer mu.Unlock()
 			products = append(products, *product)
+			fmt.Printf("\n Обработана SKU %d\n", sku)
 			return nil
 		})
 	}

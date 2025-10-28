@@ -1,5 +1,3 @@
-//go:build e2e_test
-
 package e2e
 
 import (
@@ -66,7 +64,7 @@ type testAddItemRequest struct {
 }
 
 func (s *ServerE) TestServerParallel(t provider.T) {
-	t.Parallel()
+
 	t.Helper()
 
 	userID := int64(1022221)
@@ -140,7 +138,7 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 }
 
 func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
-	t.Parallel()
+
 	t.Helper()
 
 	userID := int64(1022222)

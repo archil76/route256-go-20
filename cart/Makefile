@@ -13,7 +13,7 @@ build: bindir
 
 run:
 	export CONFIG_FILE=./configs/values_local.yaml &&\
-	go run ./cmd/server/main.go
+	go run -race ./cmd/server/main.go
 
 run-all: bindir
 	echo "build cart"

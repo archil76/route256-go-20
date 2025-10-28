@@ -1,81 +1,136 @@
 package errgroup
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
 	"golang.org/x/net/context"
 )
 
+type token struct{ id int }
 type Group struct {
 	ctx      context.Context
+	cancel   context.CancelFunc
 	wg       *sync.WaitGroup
 	limit    int
 	duration time.Duration
 	chIn     chan func() error
-	chOut    chan error
+	chErr    chan error
+	chTokens chan token
 }
 
 func WithContext(ctx context.Context, limit, bufferSize int, duration time.Duration) (*Group, context.Context) {
 	chIn := make(chan func() error, bufferSize)
-	chOut := make(chan error, bufferSize)
+	chErr := make(chan error, bufferSize)
+	chTokens := make(chan token, limit)
+	ctx, cancel := context.WithCancel(ctx)
 
 	return &Group{
 		ctx:      ctx,
+		cancel:   cancel,
 		wg:       &sync.WaitGroup{},
 		limit:    limit,
 		duration: duration,
 		chIn:     chIn,
-		chOut:    chOut,
+		chErr:    chErr,
+		chTokens: chTokens,
 	}, ctx
 }
+
 func (g *Group) RunWorker() {
+	rateCount := 1 + (len(g.chIn) / g.limit)
+
 	g.wg.Add(1)
-	go worker(g.ctx, g.wg, g.limit, g.duration, g.chIn, g.chOut)
+	go runTicker(g, rateCount)
+
+	go runWorkers(g)
+}
+
+func runTicker(g *Group, rateCount int) {
+	ticker := time.NewTicker(g.duration)
+
+	defer g.wg.Done()
+	defer ticker.Stop()
+	defer close(g.chTokens)
+	count := 0
+	for range rateCount {
+		select {
+		case <-g.ctx.Done():
+			return
+		case <-ticker.C:
+			for range g.limit {
+				count++
+				g.chTokens <- token{count}
+			}
+		}
+	}
+}
+
+func runWorkers(g *Group) {
+	for {
+		select {
+		case <-g.ctx.Done():
+			return
+		case token, ok := <-g.chTokens:
+			{
+				if !ok {
+					return
+				}
+				go worker(token.id, g.ctx, g.wg, g.chIn, g.chErr)
+			}
+		}
+	}
 }
 
 func (g *Group) Go(f func() error) {
+	g.wg.Add(1)
 	g.chIn <- f
 }
 
 func (g *Group) Wait() error {
-	close(g.chIn)
 	go func() {
+		close(g.chIn)
+
 		g.wg.Wait()
-		close(g.chOut)
+
+		close(g.chErr)
 	}()
 
-	for res := range g.chOut {
-		if res != nil {
-			return res
+	for err := range g.chErr {
+		if err != nil {
+			g.cancel()
+			return err
 		}
 	}
 
 	return nil
 }
 
-func worker(ctx context.Context, wg *sync.WaitGroup, limit int, duration time.Duration, jobs <-chan func() error, res chan<- error) {
-	ticker := time.NewTicker(duration)
-
+func worker(id int, ctx context.Context, wg *sync.WaitGroup, jobs <-chan func() error, errs chan<- error) {
 	defer wg.Done()
-	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			for range limit {
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
-					job, ok := <-jobs
-					if !ok {
-						return
-					}
-					res <- job()
-				}()
+	fmt.Printf("Job %d start\n", id)
+
+	select {
+	case <-ctx.Done():
+		fmt.Printf("Job %d was interupted\n", id)
+		return
+	case job, ok := <-jobs:
+		{
+			if !ok {
+				fmt.Printf("Canal jobs is finished durind the job %d \n", id)
+				return
+			}
+
+			err := job()
+			if err != nil {
+				fmt.Printf("Job %d finished with error %e \n", err)
+				errs <- err
+			} else {
+				fmt.Printf("Job %d complete\n", id)
 			}
 		}
+
 	}
 }
