@@ -30,6 +30,11 @@ GET http://localhost:8080/user/628594270478096874/cart
 Content-Type: application/json
 ### expected {json} 200 OK;
 
+### Проверка корзины пользователя 4772058475959195954
+GET http://localhost:8080/user/4772058475959195954/cart
+Content-Type: application/json
+### expected {json} 200 OK;
+
 #### Очистка полной корзины
 #DELETE http://localhost:8080/user/628594270478096874/cart
 #Content-Type: application/json

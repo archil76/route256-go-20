@@ -12,6 +12,7 @@ type token struct{ id int }
 type Group struct {
 	ctx      context.Context
 	cancel   context.CancelFunc
+	errOnce  sync.Once
 	wg       *sync.WaitGroup
 	limit    int
 	duration time.Duration
@@ -99,7 +100,10 @@ func (g *Group) Wait() error {
 
 	for err := range g.chErr {
 		if err != nil {
-			g.cancel()
+			g.errOnce.Do(func() {
+				g.cancel()
+			})
+
 			return err
 		}
 	}
@@ -125,7 +129,7 @@ func worker(id int, ctx context.Context, wg *sync.WaitGroup, jobs <-chan func() 
 
 			err := job()
 			if err != nil {
-				fmt.Printf("Job %d finished with error %e \n", err)
+				fmt.Printf("Job %d finished with error %e \n", id, err)
 				errs <- err
 			} else {
 				fmt.Printf("Job %d complete\n", id)

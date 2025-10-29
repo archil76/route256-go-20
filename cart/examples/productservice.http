@@ -9,7 +9,7 @@ X-API-KEY: testToken
 }
 
 ### get product info  nothing found by the sku"
-GET http://localhost:8082/product/1148163
+GET http://localhost:8082/product/1076963
 Content-Type: application/json
 X-API-KEY: testToken
 

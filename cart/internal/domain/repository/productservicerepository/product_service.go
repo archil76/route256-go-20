@@ -33,7 +33,7 @@ func NewProductService(httpClient http.Client, token string, address string) *Pr
 }
 
 func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*model.Product, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 11*time.Second)
 
 	defer cancel()
 
@@ -53,6 +53,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	response, err := s.httpClient.Do(req)
 	if err != nil {
+		fmt.Printf("Request %d finished with error %e \n", err)
 		return nil, ErrNotOk
 	}
 
@@ -79,17 +80,16 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 }
 
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
+	fmt.Printf("\n GetProductsBySkus startes \n")
 	mu := &sync.Mutex{}
 	group, ctx := errgroup.WithContext(ctx, min(10, len(skus)), len(skus), time.Second)
 	group.RunWorker()
 
 	products := make([]model.Product, 0, len(skus))
 	for _, sku := range skus {
-		fmt.Printf("\n Обработка SKU %d\n", sku)
 		group.Go(func() error {
 			product, err := s.GetProductBySku(ctx, sku)
 			if err != nil {
-				fmt.Printf("\n Ошибка %w\n", err)
 				ctx.Done()
 				return err
 			}
@@ -97,7 +97,7 @@ func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku
 			mu.Lock()
 			defer mu.Unlock()
 			products = append(products, *product)
-			fmt.Printf("\n Обработана SKU %d\n", sku)
+
 			return nil
 		})
 	}
