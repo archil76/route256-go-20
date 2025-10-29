@@ -53,7 +53,6 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	response, err := s.httpClient.Do(req)
 	if err != nil {
-		fmt.Printf("Request %d finished with error %e \n", err)
 		return nil, ErrNotOk
 	}
 

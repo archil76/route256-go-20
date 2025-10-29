@@ -78,7 +78,7 @@ func runWorkers(g *Group) {
 				if !ok {
 					return
 				}
-				go worker(token.id, g.ctx, g.wg, g.chIn, g.chErr)
+				go worker(g.ctx, token.id, g.wg, g.chIn, g.chErr)
 			}
 		}
 	}
@@ -111,7 +111,7 @@ func (g *Group) Wait() error {
 	return nil
 }
 
-func worker(id int, ctx context.Context, wg *sync.WaitGroup, jobs <-chan func() error, errs chan<- error) {
+func worker(ctx context.Context, id int, wg *sync.WaitGroup, jobs <-chan func() error, errs chan<- error) {
 	defer wg.Done()
 
 	fmt.Printf("Job %d start\n", id)
