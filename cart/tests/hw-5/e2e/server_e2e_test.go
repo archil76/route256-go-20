@@ -1,9 +1,8 @@
-//go:build e2e_test
-
 package e2e
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 	"sort"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/ozontech/allure-go/pkg/framework/asserts_wrapper/require"
 	"github.com/ozontech/allure-go/pkg/framework/provider"
@@ -22,6 +22,7 @@ type ServerE struct {
 	suite.Suite
 	Host   string
 	client *http.Client
+	ctx    context.Context
 }
 
 func TestServerE(t *testing.T) {
@@ -30,6 +31,8 @@ func TestServerE(t *testing.T) {
 }
 
 func (s *ServerE) BeforeAll(t provider.T) {
+	s.ctx = context.Background()
+
 	envVar := os.Getenv("CONFIG_FILE")
 	if envVar == "" {
 		t.Fatalf("Не задана переменная окружения CONFIG_FILE")
@@ -83,10 +86,13 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 	}
 	t.Title("Проверка получения корзины")
 
+	ctx, cancel := context.WithTimeout(s.ctx, 30*time.Second)
+	defer cancel()
+
 	t.WithTestSetup(func(t provider.T) {
 		t.WithNewStep("Подготовка: Очистка корзины", func(t provider.StepCtx) {
 
-			request, err := getClearCartRequest(s.Host, userID)
+			request, err := getClearCartRequest(ctx, s.Host, userID)
 			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
@@ -95,7 +101,7 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 		})
 
 		t.WithNewStep("Подготовка: Проверка что корзина пуста", func(t provider.StepCtx) {
-			request, err := getGetCartRequest(s.Host, userID)
+			request, err := getGetCartRequest(ctx, s.Host, userID)
 			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
@@ -107,7 +113,7 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 		t.WithNewStep("Подготовка: Наполнение корзины", func(t provider.StepCtx) {
 
 			for _, sku := range skus {
-				request, err := getAddItemRequest(s.Host, testAddItemRequest{
+				request, err := getAddItemRequest(ctx, s.Host, testAddItemRequest{
 					Count: 3,
 				}, userID, sku)
 				require.NoError(t, err)
@@ -122,7 +128,7 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 
 	t.WithNewStep("Действие: Получение", func(t provider.StepCtx) {
 
-		request, err := getGetCartRequest(s.Host, userID)
+		request, err := getGetCartRequest(ctx, s.Host, userID)
 		require.NoError(t, err)
 
 		response, err := s.client.Do(request)
@@ -151,10 +157,13 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 	}
 	t.Title("Проверка получения корзины")
 
+	ctx, cancel := context.WithTimeout(s.ctx, 30*time.Second)
+	defer cancel()
+
 	t.WithTestSetup(func(t provider.T) {
 		t.WithNewStep("Подготовка: Очистка корзины", func(t provider.StepCtx) {
 
-			request, err := getClearCartRequest(s.Host, userID)
+			request, err := getClearCartRequest(ctx, s.Host, userID)
 			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
@@ -163,7 +172,7 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 		})
 
 		t.WithNewStep("Подготовка: Проверка что корзина пуста", func(t provider.StepCtx) {
-			request, err := getGetCartRequest(s.Host, userID)
+			request, err := getGetCartRequest(ctx, s.Host, userID)
 			require.NoError(t, err)
 
 			response, err := s.client.Do(request)
@@ -174,7 +183,7 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 
 		t.WithNewStep("Подготовка: Наполнение корзины", func(t provider.StepCtx) {
 			for _, sku := range skus {
-				request, err := getAddItemRequest(s.Host, testAddItemRequest{
+				request, err := getAddItemRequest(ctx, s.Host, testAddItemRequest{
 					Count: 3,
 				}, userID, sku)
 				require.NoError(t, err)
@@ -189,7 +198,7 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 
 	t.WithNewStep("Действие: Получение", func(t provider.StepCtx) {
 
-		request, err := getGetCartRequest(s.Host, userID)
+		request, err := getGetCartRequest(ctx, s.Host, userID)
 		require.NoError(t, err)
 
 		response, err := s.client.Do(request)
@@ -200,14 +209,14 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 
 }
 
-func getAddItemRequest(host string, addItemRequest testAddItemRequest, userID int64, sku int64) (*http.Request, error) {
+func getAddItemRequest(ctx context.Context, host string, addItemRequest testAddItemRequest, userID int64, sku int64) (*http.Request, error) {
 	body, err := json.Marshal(addItemRequest)
 	if err != nil {
 		return nil, err
 	}
 
 	reader := bytes.NewBuffer(body)
-	request, err := http.NewRequest(
+	request, err := http.NewRequestWithContext(ctx,
 		http.MethodPost,
 		fmt.Sprintf("%s/user/%s/cart/%s", host, strconv.FormatInt(userID, 10), strconv.FormatInt(sku, 10)),
 		reader,
@@ -221,8 +230,8 @@ func getAddItemRequest(host string, addItemRequest testAddItemRequest, userID in
 	return request, nil
 }
 
-func getGetCartRequest(host string, userID int64) (*http.Request, error) {
-	request, err := http.NewRequest(
+func getGetCartRequest(ctx context.Context, host string, userID int64) (*http.Request, error) {
+	request, err := http.NewRequestWithContext(ctx,
 		http.MethodGet,
 		fmt.Sprintf("%s/user/%s/cart", host, strconv.FormatInt(userID, 10)),
 		http.NoBody,
@@ -236,8 +245,8 @@ func getGetCartRequest(host string, userID int64) (*http.Request, error) {
 	return request, nil
 }
 
-func getClearCartRequest(host string, userID int64) (*http.Request, error) {
-	request, err := http.NewRequest(
+func getClearCartRequest(ctx context.Context, host string, userID int64) (*http.Request, error) {
+	request, err := http.NewRequestWithContext(ctx,
 		http.MethodDelete,
 		fmt.Sprintf("%s/user/%s/cart", host, strconv.FormatInt(userID, 10)),
 		http.NoBody,

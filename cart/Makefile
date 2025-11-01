@@ -15,7 +15,7 @@ run:
 	export CONFIG_FILE=./configs/values_local.yaml &&\
 	go run -race ./cmd/server/main.go
 
-run-all: bindir
+run-all: bindircd
 	echo "build cart"
 	docker-compose up --build
 
