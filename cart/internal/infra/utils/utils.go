@@ -3,8 +3,10 @@ package utils
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"strconv"
 )
 
@@ -93,4 +95,10 @@ func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message strin
 
 func WriteErrorToLog(r *http.Request, err error, message string) {
 	log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, err.Error(), message)
+}
+
+func PrintGoroutines() {
+	buf := make([]byte, 1<<16)
+	runtime.Stack(buf, true)
+	fmt.Printf("%s\n", buf)
 }

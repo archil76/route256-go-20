@@ -6,11 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"route256/cart/internal/infra/errgroup"
-	"sync"
-	"time"
-
 	"route256/cart/internal/domain/model"
+	"route256/cart/internal/infra/errgroup"
 )
 
 var (
@@ -33,10 +30,6 @@ func NewProductService(httpClient http.Client, token string, address string) *Pr
 }
 
 func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*model.Product, error) {
-	ctx, cancel := context.WithTimeout(ctx, 11*time.Second)
-
-	defer cancel()
-
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
@@ -79,13 +72,45 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 }
 
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
-	fmt.Printf("\n GetProductsBySkus startes \n")
-	mu := &sync.Mutex{}
-	group, ctx := errgroup.WithContext(ctx, min(10, len(skus)), len(skus), time.Second)
-	group.RunWorker()
+	fmt.Printf("\n GetProductsBySkus start \n")
 
-	products := make([]model.Product, 0, len(skus))
-	for _, sku := range skus {
+	//limit := 10
+	//duration := time.Second
+	//
+	////mu := &sync.Mutex{}
+	//
+	group, ctx := errgroup.WithContext(ctx)
+	//rateLimiter, err := ratelimiter.WithContext(ctx, limit, duration)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//defer rateLimiter.Wait()
+
+	//products := make([]model.Product, len(skus))
+	//for i, sku := range skus {
+	//	group.Go(func() error {
+	//		rateLimiter.Wait()
+	//		product, err := s.GetProductBySku(ctx, sku)
+	//		if err != nil {
+	//			ctx.Done()
+	//			return err
+	//		}
+	//
+	//		products[i] = *product
+	//
+	//		return nil
+	//	})
+	//
+	//	utils.PrintGoroutines()
+	//}
+	//
+	//if err := group.Wait(); err != nil {
+	//	return nil, err
+	//}
+
+	//************************
+	products := make([]model.Product, len(skus))
+	for i, sku := range skus {
 		group.Go(func() error {
 			product, err := s.GetProductBySku(ctx, sku)
 			if err != nil {
@@ -93,9 +118,7 @@ func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku
 				return err
 			}
 
-			mu.Lock()
-			defer mu.Unlock()
-			products = append(products, *product)
+			products[i] = *product
 
 			return nil
 		})
@@ -105,6 +128,8 @@ func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku
 		return nil, err
 	}
 
+	//****************************
+	fmt.Printf("\n GetProductsBySkus stop \n")
 	return products, nil
 }
 

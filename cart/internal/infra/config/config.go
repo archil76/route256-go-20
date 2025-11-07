@@ -8,14 +8,22 @@ import (
 
 type Config struct {
 	Server struct {
+		Host    string `yaml:"host"`
+		Port    string `yaml:"port"`
+		Workers string `yaml:"workers"`
+	} `yaml:"service"`
+
+	Jaeger struct {
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
-	} `yaml:"service"`
+	} `yaml:"jaeger"`
 
 	ProductService struct {
 		Host  string `yaml:"host"`
 		Port  string `yaml:"port"`
 		Token string `yaml:"token"`
+		Limit string `yaml:"limit"`
+		Burst string `yaml:"burst"`
 	} `yaml:"product_service"`
 
 	LomsService struct {

@@ -38,6 +38,11 @@ test-serv: run-all
 	rm ./testы/e2e/allure-results/*
 	go test ./tests/e2e
 
+test1:
+	rm ./tests/e2e/allure-results/* && \
+	export CONFIG_FILE=./configs/values_local.yaml && \
+	go test -race -tags e2e_test ./tests/e2e
+
 allure-serve:
 	allure serve ./tests/e2e/allure-results
 
