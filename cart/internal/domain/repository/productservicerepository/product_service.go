@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"route256/cart/internal/domain/model"
 	"route256/cart/internal/infra/errgroup"
+	"route256/cart/internal/infra/ratelimiter"
+	"time"
 )
 
 var (
@@ -42,7 +44,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	req.Header.Add("X-API-KEY", s.token)
 
-	fmt.Printf("http.NewRequestWithContext: %s %d", s.address, sku)
+	fmt.Printf("Request to ProductService: %s %d\n", s.address, sku)
 
 	response, err := s.httpClient.Do(req)
 	if err != nil {
@@ -72,46 +74,23 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 }
 
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
-	fmt.Printf("\n GetProductsBySkus start \n")
+	fmt.Printf("GetProductsBySkus start\n")
 
-	//limit := 10
-	//duration := time.Second
-	//
-	////mu := &sync.Mutex{}
-	//
+	limit := 10
+	duration := time.Second
+
 	group, ctx := errgroup.WithContext(ctx)
-	//rateLimiter, err := ratelimiter.WithContext(ctx, limit, duration)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//defer rateLimiter.Wait()
+	rateLimiter, err := ratelimiter.WithContext(ctx, limit, duration)
+	if err != nil {
+		return nil, err
+	}
+	rateLimiter.Start()
+	defer rateLimiter.Stop()
 
-	//products := make([]model.Product, len(skus))
-	//for i, sku := range skus {
-	//	group.Go(func() error {
-	//		rateLimiter.Wait()
-	//		product, err := s.GetProductBySku(ctx, sku)
-	//		if err != nil {
-	//			ctx.Done()
-	//			return err
-	//		}
-	//
-	//		products[i] = *product
-	//
-	//		return nil
-	//	})
-	//
-	//	utils.PrintGoroutines()
-	//}
-	//
-	//if err := group.Wait(); err != nil {
-	//	return nil, err
-	//}
-
-	//************************
 	products := make([]model.Product, len(skus))
 	for i, sku := range skus {
 		group.Go(func() error {
+			rateLimiter.Wait()
 			product, err := s.GetProductBySku(ctx, sku)
 			if err != nil {
 				ctx.Done()
@@ -128,8 +107,7 @@ func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku
 		return nil, err
 	}
 
-	//****************************
-	fmt.Printf("\n GetProductsBySkus stop \n")
+	fmt.Printf("GetProductsBySkus stop\n")
 	return products, nil
 }
 

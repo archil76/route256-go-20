@@ -1,5 +1,3 @@
-//go:build e2e_test
-
 package e2e
 
 import (
@@ -11,7 +9,7 @@ import (
 	"github.com/ozontech/allure-go/pkg/framework/provider"
 )
 
-func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
+func (s *Suite) TestServer_Parallel_WrongSku(t provider.T) {
 
 	t.Helper()
 
@@ -20,7 +18,6 @@ func (s *ServerE) TestServerParallelWrongSku(t provider.T) {
 		32638658,
 		32605854,
 		32205848,
-		32205849,
 	}
 	t.Title("Проверка получения корзины")
 

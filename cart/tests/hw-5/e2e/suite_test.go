@@ -1,5 +1,3 @@
-//go:build e2e_test
-
 package e2e
 
 import (
@@ -17,19 +15,18 @@ import (
 	"github.com/ozontech/allure-go/pkg/framework/suite"
 )
 
-type ServerE struct {
+type Suite struct {
 	suite.Suite
 	Host   string
 	client *http.Client
 	ctx    context.Context
 }
 
-func TestServerE(t *testing.T) {
-	t.Parallel()
-	suite.RunSuite(t, new(ServerE))
+func TestSuite(t *testing.T) {
+	suite.RunNamedSuite(t, "Cart Домашнее задание 5", new(Suite))
 }
 
-func (s *ServerE) BeforeAll(t provider.T) {
+func (s *Suite) BeforeAll(t provider.T) {
 	s.ctx = context.Background()
 
 	envVar := os.Getenv("CONFIG_FILE")

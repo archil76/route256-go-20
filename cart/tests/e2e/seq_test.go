@@ -10,8 +10,7 @@ import (
 	"github.com/ozontech/allure-go/pkg/framework/provider"
 )
 
-func (s *ServerE) TestServerE(t provider.T) {
-	t.Parallel()
+func (s *Suite) TestServer_Seq(t provider.T) {
 	t.Helper()
 
 	sku := int64(1076963)
@@ -20,7 +19,7 @@ func (s *ServerE) TestServerE(t provider.T) {
 
 	count := int32(2)
 	count2 := int32(3)
-	userID := int64(1022222)
+	userID := int64(1022202)
 
 	countUint32 := uint32(count)   //nolint:gosec
 	count2Uint32 := uint32(count2) //nolint:gosec

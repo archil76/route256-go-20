@@ -16,18 +16,17 @@ import (
 	"github.com/ozontech/allure-go/pkg/framework/suite"
 )
 
-type ServerE struct {
+type Suite struct {
 	suite.Suite
 	Host   string
 	client *http.Client
 }
 
-func TestServerE(t *testing.T) {
-	t.Parallel()
-	suite.RunSuite(t, new(ServerE))
+func TestSuite(t *testing.T) {
+	suite.RunSuite(t, new(Suite))
 }
 
-func (s *ServerE) BeforeAll(t provider.T) {
+func (s *Suite) BeforeAll(t provider.T) {
 	envVar := os.Getenv("CONFIG_FILE")
 	if envVar == "" {
 		t.Fatalf("Не задана переменная окружения CONFIG_FILE")

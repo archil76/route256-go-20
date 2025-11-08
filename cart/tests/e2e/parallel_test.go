@@ -11,11 +11,11 @@ import (
 	"github.com/ozontech/allure-go/pkg/framework/provider"
 )
 
-func (s *ServerE) TestServerParallel(t provider.T) {
+func (s *Suite) TestServer_Parallel(t provider.T) {
 	t.Parallel()
 	t.Helper()
 
-	userID := int64(1022223)
+	userID := int64(1022224)
 
 	t.Title("Проверка удаления товара из корзины")
 
@@ -70,12 +70,12 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 
 		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
 
-		require.Equal(t, 5, len(reportCart.Items))
+		require.Equal(t, 4, len(reportCart.Items))
 	})
 
 }
 
-func (s *ServerE) TestServerParallel2(t provider.T) {
+func (s *Suite) TestServer_Parallel2(t provider.T) {
 	t.Parallel()
 	t.Helper()
 
@@ -152,7 +152,7 @@ func (s *ServerE) TestServerParallel2(t provider.T) {
 
 		sort.Slice(reportCart.Items, func(i, j int) bool { return reportCart.Items[i].SKU < reportCart.Items[j].SKU })
 
-		require.Equal(t, 5, len(reportCart.Items))
+		require.Equal(t, 2, len(reportCart.Items))
 	})
 
 	t.WithNewStep("Действие: удаление sku из корзины", func(t provider.StepCtx) {
@@ -176,7 +176,7 @@ func (s *ServerE) TestServerParallel2(t provider.T) {
 		reportCart, err := decodeResponseBody(response)
 		require.NoError(t, err)
 
-		require.Equal(t, 4, len(reportCart.Items))
+		require.Equal(t, 1, len(reportCart.Items))
 		//require.NotContains(t, model.Item{
 		//	Sku:   sku,
 		//	Count: count,

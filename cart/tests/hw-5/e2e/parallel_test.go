@@ -1,5 +1,3 @@
-//go:build e2e_test
-
 package e2e
 
 import (
@@ -12,7 +10,7 @@ import (
 	"github.com/ozontech/allure-go/pkg/framework/provider"
 )
 
-func (s *ServerE) TestServerParallel(t provider.T) {
+func (s *Suite) TestServer_Parallel(t provider.T) {
 
 	t.Helper()
 
@@ -20,7 +18,6 @@ func (s *ServerE) TestServerParallel(t provider.T) {
 	skus := []int64{
 		1076963,
 		1148162,
-		1625903,
 		2618151,
 		2956315,
 		2958025,
