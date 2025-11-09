@@ -12,6 +12,7 @@ import (
 	"route256/cart/internal/infra/config"
 	"route256/cart/internal/infra/http/middlewares"
 	"route256/cart/internal/infra/http/round_trippers"
+	"strconv"
 	"time"
 )
 
@@ -55,10 +56,16 @@ func (app *App) bootstrapHandlers() http.Handler {
 		Timeout:   10 * time.Second,
 	}
 
+	rpsLimit, err := strconv.Atoi(app.config.ProductService.Limit)
+	if err != nil {
+		rpsLimit = 10
+	}
+
 	productService := productservice.NewProductService(
 		httpClient,
 		app.config.ProductService.Token,
 		fmt.Sprintf("%s:%s", app.config.ProductService.Host, app.config.ProductService.Port),
+		rpsLimit,
 	)
 
 	lomsService := lomsservice.NewLomsService(

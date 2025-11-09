@@ -21,13 +21,15 @@ type ProductService struct {
 	httpClient http.Client
 	token      string
 	address    string
+	limit      int
 }
 
-func NewProductService(httpClient http.Client, token string, address string) *ProductService {
+func NewProductService(httpClient http.Client, token string, address string, limit int) *ProductService {
 	return &ProductService{
 		httpClient: httpClient,
 		token:      token,
 		address:    address,
+		limit:      limit,
 	}
 }
 
@@ -76,11 +78,10 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
 	fmt.Printf("GetProductsBySkus start\n")
 
-	limit := 10
 	duration := time.Second
 
 	group, ctx := errgroup.WithContext(ctx)
-	rateLimiter, err := ratelimiter.WithContext(ctx, limit, duration)
+	rateLimiter, err := ratelimiter.WithContext(ctx, s.limit, duration)
 	if err != nil {
 		return nil, err
 	}

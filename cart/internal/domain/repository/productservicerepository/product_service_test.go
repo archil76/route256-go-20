@@ -40,6 +40,7 @@ func TestHandler_Product_Service_Product(t *testing.T) {
 		httpClient,
 		"testToken",
 		fmt.Sprintf("%s:%s", "http://localhost", "8082"),
+		10,
 	)
 
 	for _, sku := range skus {
@@ -71,6 +72,7 @@ func TestHandler_Product_Service_Products(t *testing.T) {
 		httpClient,
 		"testToken",
 		fmt.Sprintf("%s:%s", "http://localhost", "8082"),
+		10,
 	)
 
 	products, err := productService.GetProductsBySkus(ctx, skus)
@@ -101,6 +103,7 @@ func TestHandler_Product_Service_ProductsWithWrongSku(t *testing.T) {
 		httpClient,
 		"testToken",
 		fmt.Sprintf("%s:%s", "http://localhost", "8082"),
+		10,
 	)
 
 	products, err := productService.GetProductsBySkus(ctx, skus)
