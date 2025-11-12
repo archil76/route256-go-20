@@ -122,7 +122,8 @@ func (app *App) ListenAndServe() error {
 		}
 	}()
 
-	fmt.Printf("app up %s:%s-%s", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
+	fmt.Printf("loms service is ready %s:%s-%s\n", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
+
 	if err = app.server.Serve(l); err != nil {
 		return err
 	}

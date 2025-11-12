@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"route256/cart/internal/domain/model"
 	"route256/cart/internal/infra/errgroup"
+	"route256/cart/internal/infra/logger"
 	"route256/cart/internal/infra/ratelimiter"
 	"time"
 )
@@ -46,8 +47,6 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 
 	req.Header.Add("X-API-KEY", s.token)
 
-	fmt.Printf("Request to ProductService: %s %d\n", s.address, sku)
-
 	response, err := s.httpClient.Do(req)
 	if err != nil {
 		return nil, ErrNotOk
@@ -76,13 +75,14 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 }
 
 func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku) ([]model.Product, error) {
-	fmt.Printf("GetProductsBySkus start\n")
+	logger.Infow("batch request to ProductService start", "skus", skus)
 
 	duration := time.Second
 
 	group, ctx := errgroup.WithContext(ctx)
 	rateLimiter, err := ratelimiter.WithContext(ctx, s.limit, duration)
 	if err != nil {
+		logger.Errorw("rate limiter interrupted", "error", err)
 		return nil, err
 	}
 	rateLimiter.Start()
@@ -105,10 +105,12 @@ func (s *ProductService) GetProductsBySkus(ctx context.Context, skus []model.Sku
 	}
 
 	if err := group.Wait(); err != nil {
+		logger.Errorw("batch request to ProductService interrupted", "error", err)
 		return nil, err
 	}
 
-	fmt.Printf("GetProductsBySkus stop\n")
+	logger.Infow("batch request to ProductService done", "skus", skus)
+
 	return products, nil
 }
 

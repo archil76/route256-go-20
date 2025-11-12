@@ -1,9 +1,11 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
+	"route256/cart/internal/infra/logger"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type TimerMux struct {
@@ -17,5 +19,5 @@ func NewTimeMux(h http.Handler) http.Handler {
 func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	m.h.ServeHTTP(w, r)
-	log.Printf("handler spent %s", time.Since(now))
+	logger.Infow("handler spent time", zap.String("mc", time.Since(now).String()))
 }

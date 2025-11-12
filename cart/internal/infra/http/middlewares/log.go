@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
+	"route256/cart/internal/infra/logger"
 )
 
 type LogMux struct {
@@ -14,9 +14,9 @@ func NewLogMux(h http.Handler) http.Handler {
 }
 
 func (m *LogMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Printf("request got. Method: %s; URL; %s", r.Method, r.URL.Path)
+	logger.Infow("request got", r.Method, r.URL.Path)
 
 	m.h.ServeHTTP(w, r)
 
-	log.Printf("request processed. Method: %s; URL; %s", r.Method, r.URL.Path)
+	logger.Infow("request processed", r.Method, r.URL.Path)
 }

@@ -3,10 +3,8 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
 	"net/http"
-	"runtime"
+	"route256/cart/internal/infra/logger"
 	"strconv"
 )
 
@@ -71,7 +69,8 @@ func WriteErrorToResponse(w http.ResponseWriter, r *http.Request, err error, mes
 	}
 
 	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
-		log.Printf("error %s %s: failed to write error response: %v | original: %v",
+
+		logger.Errorw("failed to write error response",
 			r.Method, r.RequestURI, encodeErr, err)
 	}
 }
@@ -88,17 +87,11 @@ func WriteStatusToResponse(w http.ResponseWriter, r *http.Request, message strin
 	}
 
 	if encodeErr := json.NewEncoder(w).Encode(resp); encodeErr != nil {
-		log.Printf("error %s %s: failed to write status response: %v | message: %s",
+		logger.Errorw("failed to write status response",
 			r.Method, r.RequestURI, encodeErr, message)
 	}
 }
 
 func WriteErrorToLog(r *http.Request, err error, message string) {
-	log.Printf("%s %s: %s - %s", r.Method, r.RequestURI, err.Error(), message)
-}
-
-func PrintGoroutines() {
-	buf := make([]byte, 1<<16)
-	runtime.Stack(buf, true)
-	fmt.Printf("%s\n", buf)
+	logger.Errorw(message, r.Method, r.RequestURI, err.Error())
 }

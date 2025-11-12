@@ -41,7 +41,7 @@ func (app *App) ListenAndServe() error {
 		return err
 	}
 
-	fmt.Printf("app bootstrap %s:%s", app.config.Server.Host, app.config.Server.Port)
+	fmt.Printf("cart service is ready %s:%s\n", app.config.Server.Host, app.config.Server.Port)
 
 	return app.server.Serve(l)
 }
