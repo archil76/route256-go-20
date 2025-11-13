@@ -14,6 +14,8 @@ import (
 	"route256/cart/internal/infra/http/round_trippers"
 	"strconv"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type App struct {
@@ -79,6 +81,7 @@ func (app *App) bootstrapHandlers() http.Handler {
 	s := server.NewServer(cartService)
 
 	mux := http.NewServeMux()
+	mux.Handle("GET /metrics", promhttp.Handler())
 	mux.HandleFunc("POST /user/{user_id}/cart/{sku_id}", s.AddItem)
 	mux.HandleFunc("GET /user/{user_id}/cart", s.GetCart)
 	mux.HandleFunc("DELETE /user/{user_id}/cart/{sku_id}", s.DeleteItem)

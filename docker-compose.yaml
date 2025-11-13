@@ -1,3 +1,7 @@
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
 services:
   cart:
     image: cart
@@ -47,3 +51,23 @@ services:
     volumes:
       - ./loms/migrations:/migrations
     command: [ "goose", "-dir", "/migrations", "postgres", "host=postgres-master user=loms-user password=loms-password dbname=loms_db sslmode=disable", "up" ]
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
