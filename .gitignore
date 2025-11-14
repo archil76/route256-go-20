@@ -1,10 +1,7 @@
 .idea
 .env
 bin
-loms/vendor-proto
-cart/vendor-proto
-cart/tests/e2e/allure-results
-loms/tests
+vendor-proto
 allure-results
 grafana_data
 trace.out

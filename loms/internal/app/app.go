@@ -39,6 +39,7 @@ func NewApp(configPath string) (*App, error) {
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			middlewares.Validate,
+			middlewares.Log,
 		),
 	)
 
@@ -98,17 +99,18 @@ func (app *App) ListenAndServe() error {
 		}
 		ctx := context.Background()
 
-		gwmux := runtime.NewServeMux(
+		gwMux := runtime.NewServeMux(
 			runtime.WithIncomingHeaderMatcher(headerMatcher),
 		)
 
-		if err1 = desc.RegisterLomsHandler(ctx, gwmux, conn); err1 != nil {
+		if err1 = desc.RegisterLomsHandler(ctx, gwMux, conn); err1 != nil {
 			panic(err1)
 		}
+		logMux := middlewares.NewLogMux(gwMux)
 
 		gwServer := &http.Server{
 			Addr:                         fmt.Sprintf(":%s", app.config.Server.HttpPort),
-			Handler:                      gwmux,
+			Handler:                      logMux,
 			DisableGeneralOptionsHandler: false,
 			TLSConfig:                    nil,
 			ReadTimeout:                  10 * time.Second,
