@@ -3,6 +3,7 @@ package middlewares
 import (
 	"net/http"
 	"route256/cart/internal/infra/logger"
+	"route256/cart/internal/infra/metrics"
 	"time"
 
 	"go.uber.org/zap"
@@ -17,7 +18,10 @@ func NewTimeMux(h http.Handler) http.Handler {
 }
 
 func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	now := time.Now()
+	defer func(now time.Time) {
+		duration := time.Since(now)
+		metrics.StoreRequestDuration(r.Method, duration)
+		logger.Infow("handler spent time", zap.String("mc", duration.String()))
+	}(time.Now())
 	m.h.ServeHTTP(w, r)
-	logger.Infow("handler spent time", zap.String("mc", time.Since(now).String()))
 }

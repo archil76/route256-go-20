@@ -89,7 +89,8 @@ func (app *App) bootstrapHandlers() http.Handler {
 	mux.HandleFunc("POST /checkout/{user_id}", s.Checkout)
 
 	timerMux := middlewares.NewTimeMux(mux)
-	logMux := middlewares.NewLogMux(timerMux)
+	counterMux := middlewares.NewLogMux(timerMux)
+	logMux := middlewares.NewLogMux(counterMux)
 
 	return logMux
 }

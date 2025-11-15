@@ -39,7 +39,7 @@ func NewApp(configPath string) (*App, error) {
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			middlewares.Validate,
-			middlewares.Log,
+			//middlewares.Log,
 		),
 	)
 
