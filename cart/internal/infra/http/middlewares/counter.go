@@ -3,7 +3,6 @@ package middlewares
 import (
 	"net/http"
 	"route256/cart/internal/infra/metrics"
-	"time"
 )
 
 type CounterMux struct {
@@ -15,9 +14,7 @@ func NewCounterMux(h http.Handler) http.Handler {
 }
 
 func (m *CounterMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	defer func(now time.Time) {
-		metrics.IncRequestCount(r.Method)
-	}(time.Now())
-
-	m.h.ServeHTTP(w, r)
+	rw := newResponseWriter(w)
+	m.h.ServeHTTP(rw, r)
+	metrics.IncRequestCount(r.Method, r.Pattern, rw.statusCode)
 }

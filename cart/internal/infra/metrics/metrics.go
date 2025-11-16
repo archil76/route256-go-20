@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,14 +13,14 @@ var (
 		Namespace: "cart",
 		Name:      "handler_request_total_counter",
 		Help:      "Total count of request",
-	}, []string{"handler"})
+	}, []string{"method", "path", "status"})
 
 	requestDurationHistogram = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "cart",
 		Name:      "handler_request_duration_histogram",
 		Help:      "Total duration of handler processing",
 		Buckets:   prometheus.DefBuckets,
-	}, []string{"handler"})
+	}, []string{"method", "path", "status"})
 
 	repoSizeGauge = promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: "cart",
@@ -28,12 +29,12 @@ var (
 	})
 )
 
-func IncRequestCount(handler string) {
-	requestCounter.WithLabelValues(handler).Inc()
+func IncRequestCount(method, path string, status int) {
+	requestCounter.WithLabelValues(method, path, strconv.Itoa(status)).Inc()
 }
 
-func StoreRequestDuration(handler string, duration time.Duration) {
-	requestDurationHistogram.WithLabelValues(handler).Observe(float64(duration.Seconds()))
+func StoreRequestDuration(method, path string, status int, duration time.Duration) {
+	requestDurationHistogram.WithLabelValues(method, path, strconv.Itoa(status)).Observe(float64(duration.Seconds()))
 }
 
 func StoreRepoSize(size float64) {

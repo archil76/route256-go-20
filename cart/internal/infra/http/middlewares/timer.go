@@ -14,14 +14,18 @@ type TimerMux struct {
 }
 
 func NewTimeMux(h http.Handler) http.Handler {
+
 	return &TimerMux{h: h}
 }
 
 func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	defer func(now time.Time) {
-		duration := time.Since(now)
-		metrics.StoreRequestDuration(r.Method, duration)
-		logger.Infow("handler spent time", zap.String("mc", duration.String()))
-	}(time.Now())
-	m.h.ServeHTTP(w, r)
+	now := time.Now()
+
+	rw := newResponseWriter(w)
+	m.h.ServeHTTP(rw, r)
+
+	duration := time.Since(now)
+
+	metrics.StoreRequestDuration(r.Method, r.Pattern, rw.statusCode, duration)
+	logger.Infow("handler spent time", zap.String("mc", duration.String()))
 }
