@@ -14,7 +14,6 @@ type TimerMux struct {
 }
 
 func NewTimeMux(h http.Handler) http.Handler {
-
 	return &TimerMux{h: h}
 }
 
@@ -27,5 +26,5 @@ func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	duration := time.Since(now)
 
 	metrics.StoreRequestDuration(r.Method, r.Pattern, rw.statusCode, duration)
-	logger.Infow("handler spent time", zap.String("mc", duration.String()))
+	logger.Infow("handler spent time", r.Method, r.URL.Path, zap.String("mc", duration.String()))
 }
