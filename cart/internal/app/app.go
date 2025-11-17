@@ -50,6 +50,8 @@ func (app *App) ListenAndServe() error {
 
 func (app *App) bootstrapHandlers() http.Handler {
 	transport := http.DefaultTransport
+	transport = round_trippers.NewTimerRoundTripper(transport)
+	transport = round_trippers.NewCounterRoundTripper(transport)
 	transport = round_trippers.NewLogRoundTripper(transport)
 	transport = round_trippers.NewRetryRoundTripper(transport, 3, 5*time.Second)
 
@@ -70,9 +72,12 @@ func (app *App) bootstrapHandlers() http.Handler {
 		rpsLimit,
 	)
 
-	lomsService := lomsservice.NewLomsService(
+	lomsService, err := lomsservice.NewLomsService(
 		fmt.Sprintf("%s:%s", app.config.LomsService.Host, app.config.LomsService.Port),
 	)
+	if err != nil {
+		panic(err)
+	}
 
 	const reviewsCap = 100
 	cartRepository := cartsRepository.NewCartInMemoryRepository(reviewsCap)
