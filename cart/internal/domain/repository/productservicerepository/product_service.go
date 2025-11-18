@@ -46,6 +46,7 @@ func (s *ProductService) GetProductBySku(ctx context.Context, sku model.Sku) (*m
 	}
 
 	req.Header.Add("X-API-KEY", s.token)
+	req.Pattern = "/product/{sku_id}"
 
 	response, err := s.httpClient.Do(req)
 	if err != nil {

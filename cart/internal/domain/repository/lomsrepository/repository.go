@@ -25,6 +25,7 @@ func NewLomsService(address string) (*LomsService, error) {
 	conn, err := grpc.NewClient(
 		address,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middlewares.TimerUnaryClientInterceptor),
 		grpc.WithUnaryInterceptor(middlewares.CounterUnaryClientInterceptor),
 	)
 	if err != nil {
