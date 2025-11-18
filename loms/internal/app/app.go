@@ -39,7 +39,9 @@ func NewApp(configPath string) (*App, error) {
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			middlewares.Validate,
-			//middlewares.Log,
+			middlewares.TimerUnaryServerInterceptor,
+			middlewares.CounterUnaryServerInterceptor,
+			middlewares.LogUnaryServerInterceptor,
 		),
 	)
 
@@ -106,7 +108,9 @@ func (app *App) ListenAndServe() error {
 		if err1 = desc.RegisterLomsHandler(ctx, gwMux, conn); err1 != nil {
 			panic(err1)
 		}
-		logMux := middlewares.NewLogMux(gwMux)
+		timerMux := middlewares.NewTimerMux(gwMux)
+		counterMux := middlewares.NewCounterMux(timerMux)
+		logMux := middlewares.NewLogMux(counterMux)
 
 		gwServer := &http.Server{
 			Addr:                         fmt.Sprintf(":%s", app.config.Server.HttpPort),
