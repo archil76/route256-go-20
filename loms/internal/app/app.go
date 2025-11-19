@@ -19,6 +19,7 @@ import (
 	"route256/loms/internal/infra/middlewares"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -108,6 +109,10 @@ func (app *App) ListenAndServe() error {
 		if err1 = desc.RegisterLomsHandler(ctx, gwMux, conn); err1 != nil {
 			panic(err1)
 		}
+		gwMux.HandlePath(http.MethodGet, "/metrics", func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			promhttp.Handler().ServeHTTP(w, r)
+		})
+
 		timerMux := middlewares.NewTimerMux(gwMux)
 		counterMux := middlewares.NewCounterMux(timerMux)
 		logMux := middlewares.NewLogMux(counterMux)

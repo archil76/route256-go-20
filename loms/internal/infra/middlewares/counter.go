@@ -18,5 +18,5 @@ func (m *CounterMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	m.h.ServeHTTP(rw, r)
 
-	metrics.IncRequestCount(r.Method, r.Pattern, rw.statusCode)
+	metrics.IncRequestCount("http", r.Method, r.Pattern, rw.statusCode)
 }

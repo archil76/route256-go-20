@@ -12,7 +12,7 @@ func CounterUnaryServerInterceptor(ctx context.Context, request any, info *grpc.
 	response, err = handler(ctx, request)
 
 	statusCode := int(status.Code(err)) //nolint:gosec
-	metrics.IncRequestCount("", info.FullMethod, statusCode)
+	metrics.IncRequestCount("grpc", "", info.FullMethod, statusCode)
 
 	return response, err
 }

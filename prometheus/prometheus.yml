@@ -10,3 +10,8 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['cart:8080']
+
+  - job_name: 'loms-scrape'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['loms:8084']

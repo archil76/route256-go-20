@@ -25,6 +25,6 @@ func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	duration := time.Since(now)
 
-	metrics.StoreRequestDuration(r.Method, r.Pattern, rw.statusCode, duration)
+	metrics.StoreRequestDuration("http", r.Method, r.Pattern, rw.statusCode, duration)
 	logger.Infow("handler spent time", r.Method, r.URL.Path, zap.String("mc", duration.String()))
 }

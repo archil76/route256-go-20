@@ -17,8 +17,7 @@ func TimerUnaryServerInterceptor(ctx context.Context, request any, info *grpc.Un
 	duration := time.Since(now)
 
 	statusCode := int(status.Code(err)) //nolint:gosec
-	metrics.IncRequestCount("", info.FullMethod, statusCode)
-	metrics.StoreRequestDuration("", info.FullMethod, statusCode, duration)
+	metrics.StoreRequestDuration("grpc", "", info.FullMethod, statusCode, duration)
 
 	return response, err
 }
