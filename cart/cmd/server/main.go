@@ -8,6 +8,9 @@ import (
 )
 
 func main() {
+	defer func() {
+		_ = logger.Sync()
+	}()
 	application, err := app.NewApp(os.Getenv("CONFIG_FILE"))
 	if err != nil {
 		logger.Fatalw("Couldn't read CONFIG_FILE", "err", err.Error())

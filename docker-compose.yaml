@@ -75,3 +75,9 @@ services:
       - ./grafana_data:/var/lib/grafana
     ports:
       - "3000:3000"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "6831:4318"

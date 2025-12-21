@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"route256/cart/internal/domain/model"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 var (
@@ -28,12 +30,17 @@ type LomsService interface {
 	StockInfo(ctx context.Context, sku model.Sku) (uint32, error)
 }
 
+type Tracer interface {
+	Start(ctx context.Context, spanName string, opts ...trace.SpanStartOption) (context.Context, trace.Span)
+}
+
 type CartService struct {
 	repository     CartsRepository
 	productService ProductService
 	lomsService    LomsService
+	tracer         Tracer
 }
 
-func NewCartsService(repository CartsRepository, productService ProductService, lomsService LomsService) *CartService {
-	return &CartService{repository: repository, productService: productService, lomsService: lomsService}
+func NewCartsService(repository CartsRepository, productService ProductService, lomsService LomsService, tracer Tracer) *CartService {
+	return &CartService{repository: repository, productService: productService, lomsService: lomsService, tracer: tracer}
 }

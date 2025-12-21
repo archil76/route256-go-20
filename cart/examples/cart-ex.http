@@ -39,3 +39,7 @@ Content-Type: application/json
 #DELETE http://localhost:8080/user/628594270478096874/cart
 #Content-Type: application/json
 #### expected {} 204 OK;
+
+GET http://localhost:8080//products
+Content-Type: application/json
+### expected {json} 200 OK;

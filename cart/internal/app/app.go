@@ -12,8 +12,12 @@ import (
 	"route256/cart/internal/infra/config"
 	"route256/cart/internal/infra/http/middlewares"
 	"route256/cart/internal/infra/http/round_trippers"
+	"route256/cart/internal/infra/logger"
+	"route256/cart/internal/infra/tracer"
 	"strconv"
 	"time"
+
+	"context"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -49,6 +53,8 @@ func (app *App) ListenAndServe() error {
 }
 
 func (app *App) bootstrapHandlers() http.Handler {
+	ctx := context.Background()
+
 	transport := http.DefaultTransport
 	transport = round_trippers.NewTimerRoundTripper(transport)
 	transport = round_trippers.NewCounterRoundTripper(transport)
@@ -65,6 +71,18 @@ func (app *App) bootstrapHandlers() http.Handler {
 		rpsLimit = 10
 	}
 
+	jaegerURI := fmt.Sprintf("%s:%s", app.config.Jaeger.Host, app.config.Jaeger.Port)
+	t, err := tracer.NewTracer(ctx, jaegerURI)
+	if err != nil {
+		logger.Fatalw("can't create tracer", "err", err.Error())
+	}
+	defer func() {
+		err := t.TracerProvider.Shutdown(ctx)
+		if err != nil {
+			logger.Fatalw("can't shutdown tracer", "err", err.Error())
+		}
+	}()
+
 	productService := productservice.NewProductService(
 		httpClient,
 		app.config.ProductService.Token,
@@ -80,8 +98,8 @@ func (app *App) bootstrapHandlers() http.Handler {
 	}
 
 	const reviewsCap = 100
-	cartRepository := cartsRepository.NewCartInMemoryRepository(reviewsCap)
-	cartService := cartsService.NewCartsService(cartRepository, productService, lomsService)
+	cartRepository := cartsRepository.NewCartInMemoryRepository(reviewsCap, t.Tracer)
+	cartService := cartsService.NewCartsService(cartRepository, productService, lomsService, t.Tracer)
 
 	s := server.NewServer(cartService)
 
@@ -97,5 +115,7 @@ func (app *App) bootstrapHandlers() http.Handler {
 	counterMux := middlewares.NewCounterMux(timerMux)
 	logMux := middlewares.NewLogMux(counterMux)
 
-	return logMux
+	traceMux := middlewares.NewTraceMux(logMux, t.Tracer)
+
+	return traceMux
 }

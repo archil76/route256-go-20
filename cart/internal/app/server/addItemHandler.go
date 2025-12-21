@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"route256/cart/internal/domain/model"
+	"route256/cart/internal/infra/logger"
 	"route256/cart/internal/infra/utils"
 
 	gody "github.com/guiferpa/gody/v2"
@@ -62,6 +63,7 @@ func (s *Server) AddItem(writer http.ResponseWriter, request *http.Request) {
 
 	_, err = s.cartService.AddItem(request.Context(), userID, skuID, uint32(addItemRequest.Count))
 	if err != nil {
+		logger.Errorw("controller", err)
 		if errors.Is(err, model.ErrProductNotFound) {
 			utils.WriteErrorToResponse(writer, request, ErrPSFail, "", http.StatusPreconditionFailed)
 		} else {

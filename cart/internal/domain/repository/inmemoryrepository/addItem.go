@@ -3,16 +3,21 @@ package inmemoryrepository
 import (
 	"context"
 	"route256/cart/internal/domain/model"
+	"route256/cart/internal/infra/logger"
 )
 
 func (r *Repository) AddItem(ctx context.Context, userID model.UserID, item model.Item) (*model.Item, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	ctx, span := r.tracer.Start(ctx, "Repo.AddItem")
+	defer span.End()
+
 	cart, err := r.getCart(ctx, userID)
 	if err != nil {
 		cart, err = r.createCart(ctx, model.Cart{UserID: userID, Items: map[model.Sku]uint32{}})
 		if err != nil {
+			logger.Errorw("Repository", err)
 			return nil, err
 		}
 	}
