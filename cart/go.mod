@@ -9,7 +9,7 @@ require (
 	github.com/gojuno/minimock/v3 v3.4.7
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/guiferpa/gody/v2 v2.2.0
-	github.com/ozontech/allure-go/pkg/framework v0.8.0
+	github.com/ozontech/allure-go/pkg/framework v0.7.4
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.75.1
 	google.golang.org/protobuf v1.36.9
@@ -36,7 +36,7 @@ require (
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/ozontech/allure-go/pkg/allure v0.7.5 // indirect
+	github.com/ozontech/allure-go/pkg/allure v0.7.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
