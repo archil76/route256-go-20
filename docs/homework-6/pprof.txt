@@ -1,0 +1,13 @@
+pprof
+в курсе вот так 
+go tool pprof -http=":8000" http://localhost:8080/debug/pprof/profile?seconds=30
+И должно открытся окно к графическим представление профиля.
+Но для этого браузер должен быть под wsl
+
+Для Windows надо выполнить: go tool pprof http://localhost:8080/debug/pprof/profile?seconds=30
+Забрать файл вот здесь: \\wsl.localhost\Ubuntu\home\atvaladze\pprof\pprof.server.samples.cpu.004.pb.gz
+И открыть его с помощью https://graphviz.org/
+
+Не буду этого делать, система безопасности ругается 
+в текстовом формате работает и так.
+
