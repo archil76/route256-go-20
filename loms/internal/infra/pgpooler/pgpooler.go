@@ -31,6 +31,8 @@ func NewPooler(ctx context.Context, dsn string) (*Pooler, error) {
 		return nil, errors.Wrap(err, "pgxpool.ParseConfig")
 	}
 
+	config.ConnConfig.Tracer = NewPgxQueryTracer()
+
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		return nil, errors.Wrap(err, "pgxpool.NewWithConfig")

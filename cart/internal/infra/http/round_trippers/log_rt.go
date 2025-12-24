@@ -1,8 +1,8 @@
 package round_trippers
 
 import (
-	"fmt"
 	"net/http"
+	"route256/cart/internal/infra/logger"
 )
 
 type LogRoundTripper struct {
@@ -14,10 +14,17 @@ func NewLogRoundTripper(rt http.RoundTripper) http.RoundTripper {
 }
 
 func (l *LogRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
-	fmt.Printf("%s called\n", r.URL.String())
+	logger.Infow("service called",
+		"url", r.URL.String(),
+	)
 
 	resp, err := l.rt.RoundTrip(r)
-	fmt.Printf("%+v, %v", resp, err)
+	if err != nil {
+		logger.Infow("service called",
+			"response", resp,
+			"error", err,
+		)
+	}
 
 	return resp, err
 }

@@ -19,6 +19,7 @@ import (
 	"route256/loms/internal/infra/middlewares"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -39,6 +40,9 @@ func NewApp(configPath string) (*App, error) {
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			middlewares.Validate,
+			middlewares.TimerUnaryServerInterceptor,
+			middlewares.CounterUnaryServerInterceptor,
+			middlewares.LogUnaryServerInterceptor,
 		),
 	)
 
@@ -98,17 +102,24 @@ func (app *App) ListenAndServe() error {
 		}
 		ctx := context.Background()
 
-		gwmux := runtime.NewServeMux(
+		gwMux := runtime.NewServeMux(
 			runtime.WithIncomingHeaderMatcher(headerMatcher),
 		)
 
-		if err1 = desc.RegisterLomsHandler(ctx, gwmux, conn); err1 != nil {
+		if err1 = desc.RegisterLomsHandler(ctx, gwMux, conn); err1 != nil {
 			panic(err1)
 		}
+		gwMux.HandlePath(http.MethodGet, "/metrics", func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			promhttp.Handler().ServeHTTP(w, r)
+		})
+
+		timerMux := middlewares.NewTimerMux(gwMux)
+		counterMux := middlewares.NewCounterMux(timerMux)
+		logMux := middlewares.NewLogMux(counterMux)
 
 		gwServer := &http.Server{
 			Addr:                         fmt.Sprintf(":%s", app.config.Server.HttpPort),
-			Handler:                      gwmux,
+			Handler:                      logMux,
 			DisableGeneralOptionsHandler: false,
 			TLSConfig:                    nil,
 			ReadTimeout:                  10 * time.Second,
@@ -122,7 +133,8 @@ func (app *App) ListenAndServe() error {
 		}
 	}()
 
-	fmt.Printf("app up %s:%s-%s", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
+	fmt.Printf("loms service is ready %s:%s-%s\n", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
+
 	if err = app.server.Serve(l); err != nil {
 		return err
 	}

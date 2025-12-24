@@ -1,8 +1,8 @@
 package round_trippers
 
 import (
-	"log"
 	"net/http"
+	"route256/cart/internal/infra/logger"
 	"time"
 )
 
@@ -17,16 +17,17 @@ func NewRetryRoundTripper(rt http.RoundTripper, maxRetries int, delay time.Durat
 }
 
 func (customRT *RetryRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
-	log.Print("using product_service api")
-
 	var response *http.Response
 	var err error
+	var attempts int
+	var resStatusCode int
 
-	for attempts := 0; attempts < customRT.maxRetries; attempts++ {
+	for attempts = 0; attempts < customRT.maxRetries; attempts++ {
 		response, err = customRT.rt.RoundTrip(request)
+		resStatusCode = response.StatusCode
 
 		// good outcome
-		if err == nil && !(response.StatusCode == http.StatusTooManyRequests || response.StatusCode == 420) {
+		if err == nil && !(resStatusCode == http.StatusTooManyRequests || resStatusCode == 420) {
 			break
 		}
 
@@ -37,6 +38,13 @@ func (customRT *RetryRoundTripper) RoundTrip(request *http.Request) (*http.Respo
 		case <-time.After(customRT.delay):
 		}
 	}
+
+	logger.Infow("using product_service api",
+		"url", request.URL.String(),
+		"method", request.Method,
+		"attempts", attempts,
+		"resStatusCode", resStatusCode,
+		"error", err)
 
 	return response, err
 }
