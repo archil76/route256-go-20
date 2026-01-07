@@ -37,5 +37,7 @@ func (s *LomsService) OrderCancel(ctx context.Context, orderID int64) error {
 		return err
 	}
 
+	s.producer.SendMessage(orderID, string(model.CANCELED))
+
 	return nil
 }

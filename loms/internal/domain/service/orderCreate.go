@@ -22,6 +22,8 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 		return 0, err
 	}
 
+	s.producer.SendMessage(upOrder.OrderID, string(upOrder.Status))
+
 	orderStatus := model.AWAITINGPAYMENT
 
 	_, err = s.stockRepository.Reserve(ctx, items)
@@ -33,6 +35,8 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 	if err != nil {
 		return upOrder.OrderID, err // Заказ уже записан в статусе new. Так что id можно вернуть.
 	}
+
+	s.producer.SendMessage(upOrder.OrderID, string(orderStatus))
 
 	if orderStatus == model.FAILED {
 		return upOrder.OrderID, model.ErrOutOfStock // Заказ уже записан в статусе new. Так что id можно вернуть.

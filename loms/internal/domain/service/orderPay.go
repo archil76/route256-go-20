@@ -33,5 +33,7 @@ func (s *LomsService) OrderPay(ctx context.Context, orderID int64) error {
 		return err
 	}
 
+	s.producer.SendMessage(orderID, string(model.PAYED))
+
 	return nil
 }

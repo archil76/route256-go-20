@@ -18,6 +18,10 @@ func NewTimeMux(h http.Handler) http.Handler {
 }
 
 func (m *TimerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/metrics" {
+		m.h.ServeHTTP(w, r)
+		return
+	}
 	now := time.Now()
 
 	rw := newResponseWriter(w)

@@ -27,18 +27,21 @@ services:
       postgres-master:
         condition:
           service_started
+      kafka:
+        condition:
+          service_started
 
   postgres-master:
-    image: gitlab-registry.ozon.dev/go/classroom-20/students/base/postgres:16
+    image: postgresmasterloms:latest
     container_name: postgresmaster
     environment:
-      - POSTGRESQL_USERNAME=loms-user
-      - POSTGRESQL_PASSWORD=loms-password
-      - POSTGRESQL_DATABASE=loms_db
+      - POSTGRES_USERNAME=loms-user
+      - POSTGRES_PASSWORD=loms-password
+      - POSTGRES_DATABASE=loms_db
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRESQL_USERNAME -d $$POSTGRESQL_DATABASE" ]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USERNAME -d $$POSTGRES_DATABASE" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -81,3 +84,43 @@ services:
     ports:
       - "16686:16686"
       - "6831:4318"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.7.1
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+  kafka-init-topics:
+    image: confluentinc/cp-kafka:7.7.1
+    depends_on:
+      - kafka
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+      cub kafka-ready -b kafka:29092 1 30 && \
+      kafka-topics --create --topic loms.order-events --partitions 2 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - 8085:8080
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      DYNAMIC_CONFIG_ENABLED: "true"

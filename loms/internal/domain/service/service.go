@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"route256/loms/internal/domain/model"
+	"route256/loms/internal/infra/kafka/producer"
 )
 
 type OrderRepository interface {
@@ -20,12 +21,16 @@ type StockRepository interface {
 	ReserveCancel(ctx context.Context, items []model.Item) error
 	GetBySKU(ctx context.Context, sku int64) (uint32, error)
 }
+type KafkaProducer interface {
+	SendMessage(orderID int64, status string)
+}
 
 type LomsService struct {
 	orderRepository OrderRepository
 	stockRepository StockRepository
+	producer        producer.KafkaProducer
 }
 
-func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository) *LomsService {
-	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository}
+func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, producer producer.KafkaProducer) *LomsService {
+	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, producer: producer}
 }
