@@ -31,6 +31,14 @@ services:
         condition:
           service_started
 
+  notifier:
+    image: notifier
+    build: ./notifier
+    depends_on:
+      kafka:
+        condition:
+          service_started
+
   postgres-master:
     image: postgresmasterloms:latest
     container_name: postgresmaster
