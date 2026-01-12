@@ -25,19 +25,22 @@ services:
       - "8084:8084"
     depends_on:
       postgres-master:
-        condition:
-          service_started
+        condition: service_healthy
+      migration:
+          condition: service_started
       kafka:
-        condition:
-          service_started
+        condition: service_healthy
+      kafka-init-topics:
+        condition: service_completed_successfully
 
   notifier:
     image: notifier
     build: ./notifier
     depends_on:
-      kafka:
-        condition:
-          service_started
+      loms:
+        condition: service_started
+      kafka-init-topics:
+          condition: service_completed_successfully
 
   postgres-master:
     image: postgresmasterloms:latest
@@ -67,6 +70,7 @@ services:
     image: prom/prometheus:latest
     depends_on:
       - cart
+      - loms
     volumes:
       - ./prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus
@@ -113,11 +117,17 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    healthcheck:
+      test: ["CMD-SHELL", "cub kafka-ready -b kafka:29092 1 30"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
 
   kafka-init-topics:
     image: confluentinc/cp-kafka:7.7.1
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
       cub kafka-ready -b kafka:29092 1 30 && \
       kafka-topics --create --topic loms.order-events --partitions 2 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
@@ -125,7 +135,8 @@ services:
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     ports:
       - 8085:8080
     environment:

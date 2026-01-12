@@ -4,7 +4,7 @@ service:
   http_port: 8084
 
 jaeger:
-  host: 0.0.0.0
+  host: localhost
   port: 6831
 
 db_master:
@@ -26,4 +26,5 @@ kafka:
   port: 29092
   order_topic: loms.order-events
   brokers: kafka:29092
+
 

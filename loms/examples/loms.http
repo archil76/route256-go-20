@@ -30,7 +30,7 @@ POST http://localhost:8084/order/pay
 Content-Type: application/json
 
 {
-  "orderId": 19
+  "orderId": 2
 }
 ### expected: 200 (OK) {}
 
@@ -47,7 +47,7 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderId": 19
+  "orderId": 3
 }
 ### expected: 400 (Bad Request) {"code":9, ... }
 
