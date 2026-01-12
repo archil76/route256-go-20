@@ -36,6 +36,9 @@ services:
   notifier:
     image: notifier
     build: ./notifier
+    deploy:
+      mode: replicated
+      replicas: 3
     depends_on:
       loms:
         condition: service_started

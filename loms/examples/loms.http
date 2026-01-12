@@ -19,7 +19,7 @@ Content-Type: application/json
 
 
 ### get info, assert status="awaiting payment"
-GET http://localhost:8084/order/info?orderId=19
+GET http://localhost:8084/order/info?orderId=5
 Content-Type: application/json
 
 ### expected: 200 (OK) {"status":"awaiting payment","user":31337,"Items":[{"sku":1076963,"count":3},{"sku":135717466,"count":2}]}
@@ -30,13 +30,13 @@ POST http://localhost:8084/order/pay
 Content-Type: application/json
 
 {
-  "orderId": 2
+  "orderId": 4
 }
 ### expected: 200 (OK) {}
 
 
 ### check actual status is "paid"
-GET http://localhost:8084/order/info?orderId=1
+GET http://localhost:8084/order/info?orderId=4
 Content-Type: application/json
 
 ### expected: 200 (OK) {"status":"paid","user":31337,"Items":[{"sku":1076963,"count":3},{"sku":135717466,"count":2}]}
@@ -47,7 +47,7 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderId": 3
+  "orderId": 5
 }
 ### expected: 400 (Bad Request) {"code":9, ... }
 
