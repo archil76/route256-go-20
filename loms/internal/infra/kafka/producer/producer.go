@@ -17,10 +17,9 @@ type KafkaProducer struct {
 }
 
 type KafkaMessage struct {
-	OrderId              int64  `json:"order_id"`
-	Status               string `json:"status"`
-	Moment               string `json:"moment"`
-	AdditionalProperties bool   `json:"additionalProperties"`
+	OrderId int       `json:"order_id"`
+	Status  string    `json:"status"`
+	Moment  time.Time `json:"moment"`
 }
 
 func NewProducer(_ context.Context, addrs, topic string) (KafkaProducer, error) {
@@ -39,10 +38,11 @@ func NewProducer(_ context.Context, addrs, topic string) (KafkaProducer, error) 
 
 func newKafkaMessage(orderID int64, status string) *KafkaMessage {
 	kafkaMessage := KafkaMessage{}
-	kafkaMessage.OrderId = orderID
+
+	orderIDint := int(orderID) //nolint:gosec
+	kafkaMessage.OrderId = orderIDint
 	kafkaMessage.Status = status
-	kafkaMessage.Moment = time.Now().String()
-	kafkaMessage.AdditionalProperties = false
+	kafkaMessage.Moment = time.Now()
 
 	return &kafkaMessage
 }
