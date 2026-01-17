@@ -18,8 +18,10 @@ func NewApp(configPath string) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config.LoadConfig: %w", err)
 	}
+
 	ctx := context.Background()
-	consumerGroup, err := kafkaConsumer.NewConsumer(ctx, c.Kafka.Brokers, c.Kafka.OrderTopic, c.Kafka.ConsumerGroupID)
+
+	consumerGroup, err := kafkaConsumer.NewConsumerGroup(ctx, c.Kafka.Brokers, c.Kafka.OrderTopic, c.Kafka.ConsumerGroupID)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +41,16 @@ func (app *App) ListenAndServe() error {
 	//	}
 	//}()
 	fmt.Printf("notifier service is ready %s:%s\n", app.config.Kafka.Host, app.config.Kafka.Port)
+
 	for {
 		ctx := context.Background()
-		// Метод Consume запускает обработку; после ребалансиров может возвращаться и вызываться снова
+
+		// Метод Consume запускает обработку; после ребалансировки может возвращаться и вызываться снова
 		err := app.consumerGroup.Consume(ctx)
 		if err != nil {
-			logger.Fatalw("ConsumerGroup error:", "err", err)
+			logger.Fatalw("ConsumerGroup error:", "err", err, "topic", app.config.Kafka.OrderTopic, "consumerGroup", app.config.Kafka.ConsumerGroupID)
 		}
+
 		// Если пришел сигнал прекращения, выходим из цикла
 		if ctx.Err() != nil {
 			break

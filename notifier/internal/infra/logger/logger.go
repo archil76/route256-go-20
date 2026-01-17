@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	serviceName = "loms"
+	serviceName = "notifier"
 
 	global       *zap.SugaredLogger
 	defaultLevel = zap.NewAtomicLevelAt(zap.InfoLevel)
