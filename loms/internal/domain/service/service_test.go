@@ -89,29 +89,33 @@ type LomsServiceWithMock struct {
 	handler             *LomsService
 	orderRepositoryMock *mock.OrderRepositoryMock
 	stockRepositoryMock *mock.StockRepositoryMock
+	kafkaProducerMock   *mock.KafkaProducerMock
 }
 
-func NewLomsServiceWithInMemoryRepository() *LomsService {
+func NewLomsServiceWithInMemoryRepository(t *testing.T) *LomsService {
 	orderRepository := orderrepo.NewOrderInMemoryRepository(10, &counter)
 
 	stockRepository := stockrepo.NewStockInMemoryRepository(10)
+	ctrl := minimock.NewController(t)
+	kafkaProducer := mock.NewKafkaProducerMock(ctrl)
 
-	return NewLomsService(orderRepository, stockRepository)
+	return NewLomsService(orderRepository, stockRepository, kafkaProducer)
 }
 
 func NewLomsServiceWithMock(t *testing.T) *LomsServiceWithMock {
 	ctrl := minimock.NewController(t)
 
 	orderRepository := mock.NewOrderRepositoryMock(ctrl)
-
 	stockRepository := mock.NewStockRepositoryMock(ctrl)
+	kafkaProducer := mock.NewKafkaProducerMock(ctrl)
 
-	lomsService := NewLomsService(orderRepository, stockRepository)
+	lomsService := NewLomsService(orderRepository, stockRepository, kafkaProducer)
 
 	return &LomsServiceWithMock{
 		handler:             lomsService,
 		orderRepositoryMock: orderRepository,
 		stockRepositoryMock: stockRepository,
+		kafkaProducerMock:   kafkaProducer,
 	}
 }
 

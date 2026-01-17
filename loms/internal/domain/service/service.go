@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"route256/loms/internal/domain/model"
-	"route256/loms/internal/infra/kafka/producer"
 )
 
 type OrderRepository interface {
@@ -28,9 +27,9 @@ type KafkaProducer interface {
 type LomsService struct {
 	orderRepository OrderRepository
 	stockRepository StockRepository
-	producer        producer.KafkaProducer
+	producer        KafkaProducer
 }
 
-func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, producer producer.KafkaProducer) *LomsService {
+func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, producer KafkaProducer) *LomsService {
 	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, producer: producer}
 }

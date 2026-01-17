@@ -21,8 +21,10 @@ func Test_OrderCreate(t *testing.T) {
 		var orderIDRes, orderID2Res int64
 
 		testHandler.orderRepositoryMock.CreateMock.When(ctx, newOrder).Then(&order, nil)
+		testHandler.kafkaProducerMock.SendMessageMock.When(order.OrderID, string(model.NEWSTATUS))
 		testHandler.stockRepositoryMock.ReserveMock.When(ctx, items).Then(stocks, nil)
 		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, order, model.AWAITINGPAYMENT).Then(nil)
+		testHandler.kafkaProducerMock.SendMessageMock.When(order.OrderID, string(model.AWAITINGPAYMENT))
 
 		handler := testHandler.handler
 
@@ -32,7 +34,9 @@ func Test_OrderCreate(t *testing.T) {
 		require.Equal(t, tp.orderID, orderIDRes)
 
 		testHandler.orderRepositoryMock.CreateMock.When(ctx, newOrder2).Then(&order2, nil)
+		testHandler.kafkaProducerMock.SendMessageMock.When(order2.OrderID, string(model.NEWSTATUS))
 		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, order2, model.AWAITINGPAYMENT).Then(nil)
+		testHandler.kafkaProducerMock.SendMessageMock.When(order2.OrderID, string(model.AWAITINGPAYMENT))
 
 		orderID2Res, err = handler.OrderCreate(ctx, tp.userID2, items)
 

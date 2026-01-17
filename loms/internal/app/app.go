@@ -80,7 +80,7 @@ func NewApp(configPath string) (*App, error) {
 		return nil, err
 	}
 
-	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, producer)
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, &producer)
 
 	lomsServer := server.NewServer(service)
 
