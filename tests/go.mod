@@ -14,6 +14,8 @@ require (
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.43.0
 	golang.org/x/sync v0.18.0
+	github.com/IBM/sarama v1.43.3
+
 )
 
 require (

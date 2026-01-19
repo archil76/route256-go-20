@@ -175,3 +175,17 @@ Content-Type: application/json
 
 ### expected: {"count":78}; 200 OK
 
+### create order with count for sku more than stock
+POST http://localhost:8084/order/create
+Content-Type: application/json
+
+{
+  "userId": 1000,
+  "items": [
+    {
+      "sku": 1076963,
+      "count": 5000000
+    }
+  ]
+}
+### expected: 400 (Bad Request) {"code":9, ... }
