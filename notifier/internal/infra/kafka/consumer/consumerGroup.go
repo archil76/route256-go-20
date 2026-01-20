@@ -45,5 +45,5 @@ func (cg *KafkaConsumerGroup) Close() {
 }
 
 func (cg *KafkaConsumerGroup) Errors() <-chan error {
-	return cg.Errors()
+	return cg.consumerGroup.Errors()
 }

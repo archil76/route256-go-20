@@ -34,12 +34,13 @@ func NewApp(configPath string) (*App, error) {
 func (app *App) ListenAndServe() error {
 	defer app.consumerGroup.Close()
 
-	//go func() {
-	//	// слушаем ошибки группы в отдельной горутине
-	//	for err := range app.consumerGroup.Errors() {
-	//		logger.Errorw("ConsumerGroup error:", "err", err)
-	//	}
-	//}()
+	go func() {
+		// слушаем ошибки группы в отдельной горутине
+		for err := range app.consumerGroup.Errors() {
+			logger.Errorw("ConsumerGroup error:", "err", err)
+		}
+	}()
+
 	fmt.Printf("notifier service is ready %s:%s\n", app.config.Kafka.Host, app.config.Kafka.Port)
 
 	for {
