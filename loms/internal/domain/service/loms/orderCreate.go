@@ -1,8 +1,9 @@
-package service
+package loms
 
 import (
 	"context"
 	"route256/loms/internal/domain/model"
+	"route256/loms/internal/infra/logger"
 )
 
 func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []model.Item) (int64, error) {
@@ -22,21 +23,23 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 		return 0, err
 	}
 
-	s.producer.SendMessage(upOrder.OrderID, string(upOrder.Status))
+	s.outboxService.CreateMessage(ctx, upOrder.OrderID, upOrder.Status)
 
 	orderStatus := model.AWAITINGPAYMENT
 
 	_, err = s.stockRepository.Reserve(ctx, items)
 	if err != nil {
+		logger.Errorw("error reserve in loms", "error", err)
 		orderStatus = model.FAILED
 	}
 
 	err = s.orderRepository.SetStatus(ctx, *upOrder, orderStatus)
 	if err != nil {
+		logger.Errorw("error set status in repository", "error", err)
 		return upOrder.OrderID, err // Заказ уже записан в статусе new. Так что id можно вернуть.
 	}
 
-	s.producer.SendMessage(upOrder.OrderID, string(orderStatus))
+	s.outboxService.CreateMessage(ctx, upOrder.OrderID, orderStatus)
 
 	if orderStatus == model.FAILED {
 		return upOrder.OrderID, model.ErrOutOfStock // Заказ уже записан в статусе new. Так что id можно вернуть.

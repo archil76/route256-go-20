@@ -25,5 +25,5 @@ VALUES
 TRUNCATE TABLE stocks;
 TRUNCATE TABLE order_items;
 TRUNCATE TABLE orders;
-
+TRUNCATE TABLE outbox;
 -- +goose StatementEnd

@@ -2,7 +2,7 @@
 
 package mock
 
-//go:generate minimock -i route256/loms/internal/domain/service.StockRepository -o stock_repository_mock.go -n StockRepositoryMock -p mock
+//go:generate minimock -i route256/loms/internal/domain/service/loms.StockRepository -o stock_repository_mock.go -n StockRepositoryMock -p mock
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/gojuno/minimock/v3"
 )
 
-// StockRepositoryMock implements mm_service.StockRepository
+// StockRepositoryMock implements mm_loms.StockRepository
 type StockRepositoryMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
@@ -62,7 +62,7 @@ type StockRepositoryMock struct {
 	UpdateStockMock          mStockRepositoryMockUpdateStock
 }
 
-// NewStockRepositoryMock returns a mock for mm_service.StockRepository
+// NewStockRepositoryMock returns a mock for mm_loms.StockRepository
 func NewStockRepositoryMock(t minimock.Tester) *StockRepositoryMock {
 	m := &StockRepositoryMock{t: t}
 
@@ -306,7 +306,7 @@ func (mmGetBySKU *mStockRepositoryMockGetBySKU) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetBySKU implements mm_service.StockRepository
+// GetBySKU implements mm_loms.StockRepository
 func (mmGetBySKU *StockRepositoryMock) GetBySKU(ctx context.Context, sku int64) (u1 uint32, err error) {
 	mm_atomic.AddUint64(&mmGetBySKU.beforeGetBySKUCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetBySKU.afterGetBySKUCounter, 1)
@@ -649,7 +649,7 @@ func (mmGetStock *mStockRepositoryMockGetStock) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetStock implements mm_service.StockRepository
+// GetStock implements mm_loms.StockRepository
 func (mmGetStock *StockRepositoryMock) GetStock(ctx context.Context, sku int64) (sp1 *model.Stock, err error) {
 	mm_atomic.AddUint64(&mmGetStock.beforeGetStockCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetStock.afterGetStockCounter, 1)
@@ -992,7 +992,7 @@ func (mmReserve *mStockRepositoryMockReserve) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Reserve implements mm_service.StockRepository
+// Reserve implements mm_loms.StockRepository
 func (mmReserve *StockRepositoryMock) Reserve(ctx context.Context, items []model.Item) (sa1 []model.Stock, err error) {
 	mm_atomic.AddUint64(&mmReserve.beforeReserveCounter, 1)
 	defer mm_atomic.AddUint64(&mmReserve.afterReserveCounter, 1)
@@ -1334,7 +1334,7 @@ func (mmReserveCancel *mStockRepositoryMockReserveCancel) invocationsDone() bool
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// ReserveCancel implements mm_service.StockRepository
+// ReserveCancel implements mm_loms.StockRepository
 func (mmReserveCancel *StockRepositoryMock) ReserveCancel(ctx context.Context, items []model.Item) (err error) {
 	mm_atomic.AddUint64(&mmReserveCancel.beforeReserveCancelCounter, 1)
 	defer mm_atomic.AddUint64(&mmReserveCancel.afterReserveCancelCounter, 1)
@@ -1676,7 +1676,7 @@ func (mmReserveRemove *mStockRepositoryMockReserveRemove) invocationsDone() bool
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// ReserveRemove implements mm_service.StockRepository
+// ReserveRemove implements mm_loms.StockRepository
 func (mmReserveRemove *StockRepositoryMock) ReserveRemove(ctx context.Context, items []model.Item) (err error) {
 	mm_atomic.AddUint64(&mmReserveRemove.beforeReserveRemoveCounter, 1)
 	defer mm_atomic.AddUint64(&mmReserveRemove.afterReserveRemoveCounter, 1)
@@ -2019,7 +2019,7 @@ func (mmUpdateStock *mStockRepositoryMockUpdateStock) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// UpdateStock implements mm_service.StockRepository
+// UpdateStock implements mm_loms.StockRepository
 func (mmUpdateStock *StockRepositoryMock) UpdateStock(ctx context.Context, stock model.Stock) (sp1 *model.Stock, err error) {
 	mm_atomic.AddUint64(&mmUpdateStock.beforeUpdateStockCounter, 1)
 	defer mm_atomic.AddUint64(&mmUpdateStock.afterUpdateStockCounter, 1)

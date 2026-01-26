@@ -1,4 +1,4 @@
-package service
+package loms
 
 import (
 	"context"
@@ -22,7 +22,7 @@ func Test_OrderCancel(t *testing.T) {
 
 		testHandler.stockRepositoryMock.ReserveCancelMock.When(ctx, items).Then(nil)
 		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, awaitingPaymentOrder, model.CANCELED).Then(nil)
-		testHandler.kafkaProducerMock.SendMessageMock.When(tp.orderID, string(model.CANCELED))
+		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, tp.orderID, model.CANCELED)
 
 		handler := testHandler.handler
 

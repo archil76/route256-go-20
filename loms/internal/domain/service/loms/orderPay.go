@@ -1,4 +1,4 @@
-package service
+package loms
 
 import (
 	"context"
@@ -33,7 +33,7 @@ func (s *LomsService) OrderPay(ctx context.Context, orderID int64) error {
 		return err
 	}
 
-	s.producer.SendMessage(orderID, string(model.PAYED))
+	s.outboxService.CreateMessage(ctx, orderID, model.PAYED)
 
 	return nil
 }

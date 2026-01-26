@@ -29,9 +29,12 @@ run-migrations:
 
 gen-mock:
 	minimock -i ./internal/app/server.LomsServise -o ./internal/app/server/mock/loms_servise_mock.go
-	minimock -i ./internal/domain/service.OrderRepository -o ./internal/domain/service/mock/order_repository_mock.go
-	minimock -i ./internal/domain/service.StockRepository -o ./internal/domain/service/mock/stock_repository_mock.go
-	minimock -i ./internal/domain/service.KafkaProducer -o ./internal/domain/service/mock/kafka_producer_mock.go
+	minimock -i ./internal/domain/service/loms.OrderRepository -o ./internal/domain/service/loms/mock/order_repository_mock.go
+	minimock -i ./internal/domain/service/loms.StockRepository -o ./internal/domain/service/loms/mock/stock_repository_mock.go
+	minimock -i ./internal/domain/service/loms.OutboxService -o ./internal/domain/service/loms/mock/outbox_service_mock.go
+	minimock -i ./internal/domain/service/outbox.OutboxRepository -o ./internal/domain/service/outbox/mock/outbox_repository_mock.go
+	minimock -i ./internal/domain/service/outbox.KafkaProducer -o ./internal/domain/service/outbox/mock/kafka_producer_mock.go
+
 test-all:
 	go test -cover ./internal/app/server ./internal/domain/service
 

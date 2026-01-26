@@ -1,4 +1,4 @@
-package service
+package loms
 
 import (
 	"context"
@@ -20,16 +20,17 @@ type StockRepository interface {
 	ReserveCancel(ctx context.Context, items []model.Item) error
 	GetBySKU(ctx context.Context, sku int64) (uint32, error)
 }
-type KafkaProducer interface {
-	SendMessage(orderID int64, status string)
+
+type OutboxService interface {
+	CreateMessage(ctx context.Context, orderID int64, status model.Status)
 }
 
 type LomsService struct {
 	orderRepository OrderRepository
 	stockRepository StockRepository
-	producer        KafkaProducer
+	outboxService   OutboxService
 }
 
-func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, producer KafkaProducer) *LomsService {
-	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, producer: producer}
+func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, outboxService OutboxService) *LomsService {
+	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, outboxService: outboxService}
 }

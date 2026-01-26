@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	lomsService "route256/loms/internal/domain/service/loms"
+	outboxService "route256/loms/internal/domain/service/outbox"
 	"route256/loms/internal/infra/logger"
 	"route256/loms/internal/infra/pgpooler"
 	"strings"
@@ -14,8 +16,8 @@ import (
 	desc "route256/loms/internal/api"
 	"route256/loms/internal/app/server"
 	orderRepository "route256/loms/internal/domain/repository/postgres/order"
+	outboxRepository "route256/loms/internal/domain/repository/postgres/outbox"
 	stockRepository "route256/loms/internal/domain/repository/postgres/stock"
-	lomsService "route256/loms/internal/domain/service"
 	"route256/loms/internal/infra/config"
 	kafkaProducer "route256/loms/internal/infra/kafka/producer"
 	"route256/loms/internal/infra/middlewares"
@@ -80,7 +82,16 @@ func NewApp(configPath string) (*App, error) {
 		return nil, err
 	}
 
-	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, &producer)
+	newOutboxRepository, err := outboxRepository.NewOutboxPostgresRepository(pooler)
+	if err != nil {
+		return nil,
+			fmt.Errorf("NewOutboxPostgresRepository: %w", err)
+	}
+
+	sendinterval := 1 // можно вынести в конфиги
+	newOutboxService := outboxService.NewOutboxService(ctx, newOutboxRepository, sendinterval, &producer)
+
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, newOutboxService)
 
 	lomsServer := server.NewServer(service)
 

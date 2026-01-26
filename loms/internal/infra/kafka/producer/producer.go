@@ -2,11 +2,8 @@ package producer
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"route256/loms/internal/infra/logger"
-	"strconv"
-	"time"
 
 	"github.com/IBM/sarama"
 )
@@ -14,12 +11,6 @@ import (
 type KafkaProducer struct {
 	producer sarama.SyncProducer
 	topic    string
-}
-
-type KafkaMessage struct {
-	OrderId int       `json:"order_id"`
-	Status  string    `json:"status"`
-	Moment  time.Time `json:"moment"`
 }
 
 func NewProducer(_ context.Context, addrs, topic string) (KafkaProducer, error) {
@@ -36,29 +27,11 @@ func NewProducer(_ context.Context, addrs, topic string) (KafkaProducer, error) 
 	return KafkaProducer{producer, topic}, nil
 }
 
-func newKafkaMessage(orderID int64, status string) *KafkaMessage {
-	kafkaMessage := KafkaMessage{}
-
-	orderIDint := int(orderID) //nolint:gosec
-	kafkaMessage.OrderId = orderIDint
-	kafkaMessage.Status = status
-	kafkaMessage.Moment = time.Now()
-
-	return &kafkaMessage
+func (p *KafkaProducer) SendMessage(_ context.Context, key string, message []byte) error {
+	return p.sendKafkaMessage(key, message)
 }
 
-func (p *KafkaProducer) SendMessage(orderID int64, status string) {
-	kafkaMessage := newKafkaMessage(orderID, status)
-	kafkaKey := strconv.FormatInt(orderID, 10)
-
-	message, err := json.Marshal(kafkaMessage)
-	if err != nil {
-		logger.Errorw("Ошибка создания сообщения kafka", "топик", p.topic, "Error", err)
-	}
-	p.sendKafkaMessage(kafkaKey, message)
-}
-
-func (p *KafkaProducer) sendKafkaMessage(key string, message []byte) {
+func (p *KafkaProducer) sendKafkaMessage(key string, message []byte) error {
 	msg := &sarama.ProducerMessage{
 		Topic:     p.topic,
 		Partition: 0,
@@ -70,6 +43,8 @@ func (p *KafkaProducer) sendKafkaMessage(key string, message []byte) {
 	if err != nil {
 		logger.Errorw("Ошибка при отправке сообщения в топик", "топик", p.topic, "Error", err)
 	}
+
+	return err
 }
 
 func (p *KafkaProducer) Close() error {

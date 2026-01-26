@@ -1,10 +1,10 @@
-package service
+package loms
 
 import (
 	"route256/loms/internal/domain/model"
 	orderrepo "route256/loms/internal/domain/repository/inmemoryrepository/order"
 	stockrepo "route256/loms/internal/domain/repository/inmemoryrepository/stock"
-	"route256/loms/internal/domain/service/mock"
+	mock2 "route256/loms/internal/domain/service/loms/mock"
 	"sync/atomic"
 	"testing"
 
@@ -87,9 +87,9 @@ var (
 
 type LomsServiceWithMock struct {
 	handler             *LomsService
-	orderRepositoryMock *mock.OrderRepositoryMock
-	stockRepositoryMock *mock.StockRepositoryMock
-	kafkaProducerMock   *mock.KafkaProducerMock
+	orderRepositoryMock *mock2.OrderRepositoryMock
+	stockRepositoryMock *mock2.StockRepositoryMock
+	outboxServiceMock   *mock2.OutboxServiceMock
 }
 
 func NewLomsServiceWithInMemoryRepository(t *testing.T) *LomsService {
@@ -97,25 +97,25 @@ func NewLomsServiceWithInMemoryRepository(t *testing.T) *LomsService {
 
 	stockRepository := stockrepo.NewStockInMemoryRepository(10)
 	ctrl := minimock.NewController(t)
-	kafkaProducer := mock.NewKafkaProducerMock(ctrl)
+	outboxServiceMock := mock2.NewOutboxServiceMock(ctrl)
 
-	return NewLomsService(orderRepository, stockRepository, kafkaProducer)
+	return NewLomsService(orderRepository, stockRepository, outboxServiceMock)
 }
 
 func NewLomsServiceWithMock(t *testing.T) *LomsServiceWithMock {
 	ctrl := minimock.NewController(t)
 
-	orderRepository := mock.NewOrderRepositoryMock(ctrl)
-	stockRepository := mock.NewStockRepositoryMock(ctrl)
-	kafkaProducer := mock.NewKafkaProducerMock(ctrl)
+	orderRepository := mock2.NewOrderRepositoryMock(ctrl)
+	stockRepository := mock2.NewStockRepositoryMock(ctrl)
+	outboxService := mock2.NewOutboxServiceMock(ctrl)
 
-	lomsService := NewLomsService(orderRepository, stockRepository, kafkaProducer)
+	lomsService := NewLomsService(orderRepository, stockRepository, outboxService)
 
 	return &LomsServiceWithMock{
 		handler:             lomsService,
 		orderRepositoryMock: orderRepository,
 		stockRepositoryMock: stockRepository,
-		kafkaProducerMock:   kafkaProducer,
+		outboxServiceMock:   outboxService,
 	}
 }
 

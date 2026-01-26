@@ -1,4 +1,4 @@
-package service
+package loms
 
 import (
 	"context"
@@ -37,7 +37,7 @@ func (s *LomsService) OrderCancel(ctx context.Context, orderID int64) error {
 		return err
 	}
 
-	s.producer.SendMessage(orderID, string(model.CANCELED))
+	s.outboxService.CreateMessage(ctx, orderID, model.CANCELED)
 
 	return nil
 }

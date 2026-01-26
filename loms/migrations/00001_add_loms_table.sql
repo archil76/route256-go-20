@@ -17,6 +17,18 @@ CREATE TABLE order_items (
                         sku integer not null,
                         count integer not null default 0
 );
+
+CREATE TABLE if not exists outbox
+(
+    id         bigserial PRIMARY KEY,
+    key        text,
+    payload    jsonb       NOT NULL,
+    status     text        NOT NULL DEFAULT 'new', -- new | sent | error
+    created_at timestamptz NOT NULL DEFAULT now(),
+    sent_at    timestamptz
+);
+CREATE INDEX ON outbox (status, created_at);
+
 -- +goose StatementEnd
 
 -- +goose Down
@@ -24,4 +36,5 @@ CREATE TABLE order_items (
 DROP TABLE stocks;
 DROP TABLE order_items;
 DROP TABLE orders;
+DROP TABLE outbox;
 -- +goose StatementEnd

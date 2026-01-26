@@ -1,4 +1,4 @@
-package service
+package loms
 
 import (
 	"context"
@@ -20,7 +20,7 @@ func Test_OrderPay(t *testing.T) {
 		testHandler.orderRepositoryMock.GetByIDMock.When(ctx, tp.orderID).Then(&awaitingPaymentOrder, nil)
 		testHandler.stockRepositoryMock.ReserveRemoveMock.When(ctx, items).Then(nil)
 		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, awaitingPaymentOrder, model.PAYED).Then(nil)
-		testHandler.kafkaProducerMock.SendMessageMock.When(awaitingPaymentOrder.OrderID, string(model.PAYED))
+		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, awaitingPaymentOrder.OrderID, model.PAYED)
 
 		handler := testHandler.handler
 

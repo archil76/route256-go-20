@@ -2,7 +2,7 @@
 
 package mock
 
-//go:generate minimock -i route256/loms/internal/domain/service.OrderRepository -o order_repository_mock.go -n OrderRepositoryMock -p mock
+//go:generate minimock -i route256/loms/internal/domain/service/loms.OrderRepository -o order_repository_mock.go -n OrderRepositoryMock -p mock
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/gojuno/minimock/v3"
 )
 
-// OrderRepositoryMock implements mm_service.OrderRepository
+// OrderRepositoryMock implements mm_loms.OrderRepository
 type OrderRepositoryMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
@@ -48,7 +48,7 @@ type OrderRepositoryMock struct {
 	UpdateOrderMock          mOrderRepositoryMockUpdateOrder
 }
 
-// NewOrderRepositoryMock returns a mock for mm_service.OrderRepository
+// NewOrderRepositoryMock returns a mock for mm_loms.OrderRepository
 func NewOrderRepositoryMock(t minimock.Tester) *OrderRepositoryMock {
 	m := &OrderRepositoryMock{t: t}
 
@@ -286,7 +286,7 @@ func (mmCreate *mOrderRepositoryMockCreate) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Create implements mm_service.OrderRepository
+// Create implements mm_loms.OrderRepository
 func (mmCreate *OrderRepositoryMock) Create(ctx context.Context, order model.Order) (op1 *model.Order, err error) {
 	mm_atomic.AddUint64(&mmCreate.beforeCreateCounter, 1)
 	defer mm_atomic.AddUint64(&mmCreate.afterCreateCounter, 1)
@@ -629,7 +629,7 @@ func (mmGetByID *mOrderRepositoryMockGetByID) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetByID implements mm_service.OrderRepository
+// GetByID implements mm_loms.OrderRepository
 func (mmGetByID *OrderRepositoryMock) GetByID(ctx context.Context, orderID int64) (op1 *model.Order, err error) {
 	mm_atomic.AddUint64(&mmGetByID.beforeGetByIDCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetByID.afterGetByIDCounter, 1)
@@ -997,7 +997,7 @@ func (mmSetStatus *mOrderRepositoryMockSetStatus) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// SetStatus implements mm_service.OrderRepository
+// SetStatus implements mm_loms.OrderRepository
 func (mmSetStatus *OrderRepositoryMock) SetStatus(ctx context.Context, order model.Order, status model.Status) (err error) {
 	mm_atomic.AddUint64(&mmSetStatus.beforeSetStatusCounter, 1)
 	defer mm_atomic.AddUint64(&mmSetStatus.afterSetStatusCounter, 1)
@@ -1345,7 +1345,7 @@ func (mmUpdateOrder *mOrderRepositoryMockUpdateOrder) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// UpdateOrder implements mm_service.OrderRepository
+// UpdateOrder implements mm_loms.OrderRepository
 func (mmUpdateOrder *OrderRepositoryMock) UpdateOrder(ctx context.Context, order model.Order) (op1 *model.Order, err error) {
 	mm_atomic.AddUint64(&mmUpdateOrder.beforeUpdateOrderCounter, 1)
 	defer mm_atomic.AddUint64(&mmUpdateOrder.afterUpdateOrderCounter, 1)
