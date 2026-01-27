@@ -23,7 +23,7 @@ func Test_SendMessages(t *testing.T) {
 
 		handler := testHandler.handler
 		key = "10"
-		message = []byte{'m', 'e', 's', 's', 'a', 'g', 'e'}
+		message = []byte("message")
 		item := model.OutboxItem{
 			Id:      1,
 			Key:     key,
