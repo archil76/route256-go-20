@@ -36,7 +36,7 @@ gen-mock:
 	minimock -i ./internal/domain/service/outbox.KafkaProducer -o ./internal/domain/service/outbox/mock/kafka_producer_mock.go
 
 test-all:
-	go test -cover ./internal/app/server ./internal/domain/service
+	go test -cover ./internal/app/server ./internal/domain/service/loms ./internal/domain/service/outbox
 
 bin-deps:
 	GOBIN=$(BINDIR) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1 && \
