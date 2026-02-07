@@ -17,31 +17,49 @@ func (s *LomsService) OrderCreate(ctx context.Context, userID int64, items []mod
 		Status:  model.NEWSTATUS,
 		Items:   items,
 	}
+	var upOrder *model.Order
+	err := s.pooler.InTx(ctx, func(ctx context.Context) error {
+		var err error
+		upOrder, err = s.orderRepository.Create(ctx, order)
+		if err != nil {
+			return err
+		}
 
-	upOrder, err := s.orderRepository.Create(ctx, order)
+		s.outboxService.CreateMessage(ctx, upOrder.OrderID, upOrder.Status)
+
+		return nil
+	})
+
 	if err != nil {
 		return 0, err
 	}
 
-	s.outboxService.CreateMessage(ctx, upOrder.OrderID, upOrder.Status)
+	err = s.pooler.InTx(ctx, func(ctx context.Context) error {
+		var err error
+		orderStatus := model.AWAITINGPAYMENT
 
-	orderStatus := model.AWAITINGPAYMENT
+		_, err = s.stockRepository.Reserve(ctx, items)
+		if err != nil {
+			logger.Errorw("error reserve in loms", "error", err)
+			orderStatus = model.FAILED
+		}
+		upOrder.Status = orderStatus
+		err = s.orderRepository.SetStatus(ctx, *upOrder, orderStatus)
+		if err != nil {
+			logger.Errorw("error set status in repository", "error", err)
+			return err // Заказ уже записан в статусе new. Так что id можно вернуть.
+		}
 
-	_, err = s.stockRepository.Reserve(ctx, items)
+		s.outboxService.CreateMessage(ctx, upOrder.OrderID, orderStatus)
+
+		return nil
+	})
+
 	if err != nil {
-		logger.Errorw("error reserve in loms", "error", err)
-		orderStatus = model.FAILED
+		return upOrder.OrderID, err
 	}
 
-	err = s.orderRepository.SetStatus(ctx, *upOrder, orderStatus)
-	if err != nil {
-		logger.Errorw("error set status in repository", "error", err)
-		return upOrder.OrderID, err // Заказ уже записан в статусе new. Так что id можно вернуть.
-	}
-
-	s.outboxService.CreateMessage(ctx, upOrder.OrderID, orderStatus)
-
-	if orderStatus == model.FAILED {
+	if upOrder.Status == model.FAILED {
 		return upOrder.OrderID, model.ErrOutOfStock // Заказ уже записан в статусе new. Так что id можно вернуть.
 	}
 

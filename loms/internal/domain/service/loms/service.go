@@ -3,6 +3,7 @@ package loms
 import (
 	"context"
 	"route256/loms/internal/domain/model"
+	"route256/loms/internal/infra/pgpooler"
 )
 
 type OrderRepository interface {
@@ -29,8 +30,9 @@ type LomsService struct {
 	orderRepository OrderRepository
 	stockRepository StockRepository
 	outboxService   OutboxService
+	pooler          *pgpooler.Pooler
 }
 
-func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, outboxService OutboxService) *LomsService {
-	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, outboxService: outboxService}
+func NewLomsService(orderRepository OrderRepository, stockRepository StockRepository, outboxService OutboxService, pooler *pgpooler.Pooler) *LomsService {
+	return &LomsService{orderRepository: orderRepository, stockRepository: stockRepository, outboxService: outboxService, pooler: pooler}
 }

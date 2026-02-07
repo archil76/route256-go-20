@@ -30,9 +30,10 @@ import (
 )
 
 type App struct {
-	config   *config.Config
-	server   *grpc.Server
-	producer *kafkaProducer.KafkaProducer
+	config        *config.Config
+	server        *grpc.Server
+	producer      *kafkaProducer.KafkaProducer
+	outboxService *outboxService.OutboxService
 }
 
 func NewApp(configPath string) (*App, error) {
@@ -89,17 +90,20 @@ func NewApp(configPath string) (*App, error) {
 	}
 
 	sendinterval := 1 // можно вынести в конфиги
-	newOutboxService := outboxService.NewOutboxService(ctx, newOutboxRepository, sendinterval, &producer)
+	newOutboxService := outboxService.NewOutboxService(ctx, newOutboxRepository, sendinterval, &producer, pooler)
 
-	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, newOutboxService)
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, newOutboxService, pooler)
 
 	lomsServer := server.NewServer(service)
+
+	newOutboxService.Start()
 
 	desc.RegisterLomsServer(grpcServer, lomsServer)
 
 	app := &App{config: c}
 	app.server = grpcServer
 	app.producer = &producer
+
 	return app, nil
 }
 
@@ -111,6 +115,10 @@ func (app *App) ListenAndServe() error {
 			logger.Errorw("Error closing producer: %v", err)
 		}
 		logger.Infow("kafka is closed")
+
+		app.server.GracefulStop()
+		app.outboxService.Stop()
+
 	}()
 
 	l, err := net.Listen("tcp", address)
@@ -157,6 +165,7 @@ func (app *App) ListenAndServe() error {
 		if err1 = gwServer.ListenAndServe(); err1 != nil {
 			panic(err1)
 		}
+
 	}()
 
 	fmt.Printf("loms service is ready %s:%s-%s\n", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)

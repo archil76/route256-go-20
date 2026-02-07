@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func (r *OutboxService) CreateMessage(ctx context.Context, orderID int64, status model.Status) {
+func (s *OutboxService) CreateMessage(ctx context.Context, orderID int64, status model.Status) {
 	key := strconv.FormatInt(orderID, 10)
 
 	kafkaMessage := newKafkaMessage(orderID, string(status))
@@ -19,7 +19,7 @@ func (r *OutboxService) CreateMessage(ctx context.Context, orderID int64, status
 		return
 	}
 
-	_, err = r.outboxRepository.Create(ctx, key, string(NEWSTATUS), message)
+	_, err = s.outboxRepository.Create(ctx, key, string(NEWSTATUS), message)
 	if err != nil {
 		logger.Errorw("Ошибка записи сообщения в outbox", "orderID", orderID, "status", status, "Error", err)
 		return

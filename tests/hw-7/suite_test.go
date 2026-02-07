@@ -57,10 +57,11 @@ func (s *Suite) BeforeAll(t provider.T) {
 
 func (s *Suite) AfterAll(t provider.T) {
 	defer s.cancel()
-
+	t.Log("kafkaConsumer.Close")
 	if err := s.kafkaConsumer.Close(); err != nil {
 		t.Log(err)
 	}
+	t.Log("kafkaConsumer.Closed")
 }
 
 func TestHW7Suite(t *testing.T) {

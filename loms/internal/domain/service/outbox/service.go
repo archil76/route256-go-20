@@ -3,6 +3,8 @@ package outbox
 import (
 	"context"
 	"route256/loms/internal/domain/model"
+	"route256/loms/internal/infra/logger"
+	"route256/loms/internal/infra/pgpooler"
 	"time"
 )
 
@@ -33,28 +35,50 @@ type KafkaMessage struct {
 type OutboxService struct {
 	outboxRepository OutboxRepository
 	producer         KafkaProducer
+	pooler           *pgpooler.Pooler
+	ticker           time.Ticker
+	ctx              context.Context
+	cancel           context.CancelFunc
 }
 
-func NewOutboxService(ctx context.Context, outboxRepository OutboxRepository, interval int, producer KafkaProducer) *OutboxService {
+func NewOutboxService(ctx context.Context, outboxRepository OutboxRepository, interval int, producer KafkaProducer, pooler *pgpooler.Pooler) *OutboxService {
+	ctx, cancel := context.WithCancel(ctx)
+	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 	s := OutboxService{
 		outboxRepository: outboxRepository,
 		producer:         producer,
+		pooler:           pooler,
+		ticker:           *ticker,
+		ctx:              ctx,
+		cancel:           cancel,
 	}
 
+	return &s
+}
+
+func (s *OutboxService) Start() {
 	go func() {
-		t := time.NewTicker(time.Duration(interval) * time.Second)
+		defer logger.Infow("Sender goroutine stopped")
+
 		for {
 			select {
-			case <-t.C:
-				s.SendMessages(ctx)
-			case <-ctx.Done():
-				t.Stop()
+			case <-s.ctx.Done():
+				logger.Infow("Stopping sender")
 				return
+			case <-s.ticker.C:
+				if s.ctx.Err() != nil {
+					return
+				}
+				s.SendMessages(s.ctx)
 			}
 		}
-	}()
 
-	return &s
+	}()
+}
+
+func (s *OutboxService) Stop() {
+	s.ticker.Stop()
+	s.cancel()
 }
 
 func newKafkaMessage(orderID int64, status string) *KafkaMessage {

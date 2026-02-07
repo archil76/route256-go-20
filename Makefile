@@ -7,6 +7,8 @@ build: cart-build loms-build notifier-build comments-build
 
 up:
 	docker-compose up --build -d
+upl:
+	docker-compose up -d --build loms
 
 down:
 	docker-compose down
