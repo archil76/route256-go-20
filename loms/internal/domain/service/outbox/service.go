@@ -4,7 +4,6 @@ import (
 	"context"
 	"route256/loms/internal/domain/model"
 	"route256/loms/internal/infra/logger"
-	"route256/loms/internal/infra/pgpooler"
 	"time"
 )
 
@@ -16,6 +15,10 @@ type OutboxRepository interface {
 
 type KafkaProducer interface {
 	SendMessage(ctx context.Context, key string, message []byte) error
+}
+
+type PgPooler interface {
+	InTx(ctx context.Context, fn func(ctx context.Context) error) error
 }
 
 type Status string
@@ -35,13 +38,13 @@ type KafkaMessage struct {
 type OutboxService struct {
 	outboxRepository OutboxRepository
 	producer         KafkaProducer
-	pooler           *pgpooler.Pooler
+	pooler           PgPooler
 	ticker           time.Ticker
 	ctx              context.Context
 	cancel           context.CancelFunc
 }
 
-func NewOutboxService(ctx context.Context, outboxRepository OutboxRepository, interval int, producer KafkaProducer, pooler *pgpooler.Pooler) *OutboxService {
+func NewOutboxService(ctx context.Context, outboxRepository OutboxRepository, interval int, producer KafkaProducer, pooler PgPooler) *OutboxService {
 	ctx, cancel := context.WithCancel(ctx)
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 	s := OutboxService{

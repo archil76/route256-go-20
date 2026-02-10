@@ -21,7 +21,9 @@ func Test_OrderPay(t *testing.T) {
 		testHandler.stockRepositoryMock.ReserveRemoveMock.When(ctx, items).Then(nil)
 		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, awaitingPaymentOrder, model.PAYED).Then(nil)
 		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, awaitingPaymentOrder.OrderID, model.PAYED)
-
+		testHandler.poolerMock.InTxMock.Set(func(ctx context.Context, fn func(ctx context.Context) error) error {
+			return fn(ctx)
+		})
 		handler := testHandler.handler
 
 		err := handler.OrderPay(ctx, tp.orderID)

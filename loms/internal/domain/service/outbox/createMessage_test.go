@@ -37,6 +37,10 @@ func Test_CreateMessage(t *testing.T) {
 			return 1, nil
 		})
 
+		testHandler.poolerMock.InTxMock.Set(func(ctx context.Context, fn func(ctx context.Context) error) error {
+			return fn(ctx)
+		})
+
 		handler.CreateMessage(ctx, orderID, model.NEWSTATUS)
 
 		require.NoError(t, err)

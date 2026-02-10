@@ -18,13 +18,15 @@ func Test_OrderCreate(t *testing.T) {
 
 	t.Run("Добавление Заказа. Успешный путь", func(t *testing.T) {
 		var err error
-		var orderIDRes, orderID2Res int64
+		var orderIDRes int64
 
-		testHandler.orderRepositoryMock.CreateMock.When(ctx, newOrder).Then(&order, nil)
-		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, order.OrderID, model.NEWSTATUS)
-		testHandler.stockRepositoryMock.ReserveMock.When(ctx, items).Then(stocks, nil)
-		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, order, model.AWAITINGPAYMENT).Then(nil)
-		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, order.OrderID, model.AWAITINGPAYMENT)
+		testHandler.orderRepositoryMock.CreateMock.Expect(ctx, newOrder).Return(&order, nil)
+		testHandler.outboxServiceMock.CreateMessageMock.Set(func(ctx context.Context, orderID int64, status model.Status) {})
+		testHandler.poolerMock.InTxMock.Set(func(ctx context.Context, fn func(ctx context.Context) error) error {
+			return fn(ctx)
+		})
+		testHandler.stockRepositoryMock.ReserveMock.Expect(ctx, items).Return(stocks, nil)
+		testHandler.orderRepositoryMock.SetStatusMock.Expect(ctx, awaitingPaymentOrder, model.AWAITINGPAYMENT).Return(nil)
 
 		handler := testHandler.handler
 
@@ -33,10 +35,15 @@ func Test_OrderCreate(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, tp.orderID, orderIDRes)
 
-		testHandler.orderRepositoryMock.CreateMock.When(ctx, newOrder2).Then(&order2, nil)
-		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, order2.OrderID, model.NEWSTATUS)
-		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, order2, model.AWAITINGPAYMENT).Then(nil)
-		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, order2.OrderID, model.AWAITINGPAYMENT)
+		var orderID2Res int64
+
+		testHandler.orderRepositoryMock.CreateMock.Expect(ctx, newOrder2).Return(&order2, nil)
+		testHandler.outboxServiceMock.CreateMessageMock.Set(func(ctx context.Context, orderID2 int64, status model.Status) {})
+		testHandler.poolerMock.InTxMock.Set(func(ctx context.Context, fn func(ctx context.Context) error) error {
+			return fn(ctx)
+		})
+		testHandler.stockRepositoryMock.ReserveMock.Expect(ctx, items).Return(stocks, nil)
+		testHandler.orderRepositoryMock.SetStatusMock.Expect(ctx, awaitingPaymentOrder2, model.AWAITINGPAYMENT).Return(nil)
 
 		orderID2Res, err = handler.OrderCreate(ctx, tp.userID2, items)
 

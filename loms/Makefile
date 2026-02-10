@@ -32,8 +32,10 @@ gen-mock:
 	minimock -i ./internal/domain/service/loms.OrderRepository -o ./internal/domain/service/loms/mock/order_repository_mock.go
 	minimock -i ./internal/domain/service/loms.StockRepository -o ./internal/domain/service/loms/mock/stock_repository_mock.go
 	minimock -i ./internal/domain/service/loms.OutboxService -o ./internal/domain/service/loms/mock/outbox_service_mock.go
+	minimock -i ./internal/domain/service/loms.PgPooler -o ./internal/domain/service/loms/mock/pg_pooler_mock.go
 	minimock -i ./internal/domain/service/outbox.OutboxRepository -o ./internal/domain/service/outbox/mock/outbox_repository_mock.go
 	minimock -i ./internal/domain/service/outbox.KafkaProducer -o ./internal/domain/service/outbox/mock/kafka_producer_mock.go
+	minimock -i ./internal/domain/service/outbox.PgPooler -o ./internal/domain/service/outbox/mock/pg_pooler_mock.go
 
 test-all:
 	go test -cover ./internal/app/server ./internal/domain/service/loms ./internal/domain/service/outbox

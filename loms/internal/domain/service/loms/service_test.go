@@ -76,6 +76,12 @@ var (
 		Status:  model.AWAITINGPAYMENT,
 		Items:   items,
 	}
+	awaitingPaymentOrder2 = model.Order{
+		OrderID: tp.orderID2,
+		UserID:  tp.userID2,
+		Status:  model.AWAITINGPAYMENT,
+		Items:   items,
+	}
 	stocks = []model.Stock{
 		{
 			Sku:        tp.sku,
@@ -90,6 +96,7 @@ type LomsServiceWithMock struct {
 	orderRepositoryMock *mock2.OrderRepositoryMock
 	stockRepositoryMock *mock2.StockRepositoryMock
 	outboxServiceMock   *mock2.OutboxServiceMock
+	poolerMock          *mock2.PgPoolerMock
 }
 
 func NewLomsServiceWithInMemoryRepository(t *testing.T) *LomsService {
@@ -98,8 +105,9 @@ func NewLomsServiceWithInMemoryRepository(t *testing.T) *LomsService {
 	stockRepository := stockrepo.NewStockInMemoryRepository(10)
 	ctrl := minimock.NewController(t)
 	outboxServiceMock := mock2.NewOutboxServiceMock(ctrl)
+	pooler := mock2.NewPgPoolerMock(ctrl)
 
-	return NewLomsService(orderRepository, stockRepository, outboxServiceMock)
+	return NewLomsService(orderRepository, stockRepository, outboxServiceMock, pooler)
 }
 
 func NewLomsServiceWithMock(t *testing.T) *LomsServiceWithMock {
@@ -108,14 +116,16 @@ func NewLomsServiceWithMock(t *testing.T) *LomsServiceWithMock {
 	orderRepository := mock2.NewOrderRepositoryMock(ctrl)
 	stockRepository := mock2.NewStockRepositoryMock(ctrl)
 	outboxService := mock2.NewOutboxServiceMock(ctrl)
+	pooler := mock2.NewPgPoolerMock(ctrl)
 
-	lomsService := NewLomsService(orderRepository, stockRepository, outboxService)
+	lomsService := NewLomsService(orderRepository, stockRepository, outboxService, pooler)
 
 	return &LomsServiceWithMock{
 		handler:             lomsService,
 		orderRepositoryMock: orderRepository,
 		stockRepositoryMock: stockRepository,
 		outboxServiceMock:   outboxService,
+		poolerMock:          pooler,
 	}
 }
 

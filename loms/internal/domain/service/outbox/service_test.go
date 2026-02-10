@@ -12,6 +12,7 @@ type OutboxServiceWithMock struct {
 	handler              *OutboxService
 	outboxRepositoryMock *mock2.OutboxRepositoryMock
 	producerMock         *mock2.KafkaProducerMock
+	poolerMock           *mock2.PgPoolerMock
 }
 
 func NewOutboxServiceWithMock(t *testing.T) *OutboxServiceWithMock {
@@ -19,13 +20,15 @@ func NewOutboxServiceWithMock(t *testing.T) *OutboxServiceWithMock {
 
 	outboxRepository := mock2.NewOutboxRepositoryMock(ctrl)
 	producer := mock2.NewKafkaProducerMock(ctrl)
+	pooler := mock2.NewPgPoolerMock(ctrl)
 
-	outboxService := NewOutboxService(context.Background(), outboxRepository, 1, producer)
+	outboxService := NewOutboxService(context.Background(), outboxRepository, 1, producer, pooler)
 
 	return &OutboxServiceWithMock{
 		handler:              outboxService,
 		outboxRepositoryMock: outboxRepository,
 		producerMock:         producer,
+		poolerMock:           pooler,
 	}
 }
 

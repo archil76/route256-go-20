@@ -23,7 +23,9 @@ func Test_OrderCancel(t *testing.T) {
 		testHandler.stockRepositoryMock.ReserveCancelMock.When(ctx, items).Then(nil)
 		testHandler.orderRepositoryMock.SetStatusMock.When(ctx, awaitingPaymentOrder, model.CANCELED).Then(nil)
 		testHandler.outboxServiceMock.CreateMessageMock.When(ctx, tp.orderID, model.CANCELED)
-
+		testHandler.poolerMock.InTxMock.Set(func(ctx context.Context, fn func(ctx context.Context) error) error {
+			return fn(ctx)
+		})
 		handler := testHandler.handler
 
 		err := handler.OrderCancel(ctx, tp.orderID)

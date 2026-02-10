@@ -34,6 +34,9 @@ func Test_SendMessages(t *testing.T) {
 		testHandler.outboxRepositoryMock.GetMock.When(ctx).Then(&items, nil)
 		testHandler.producerMock.SendMessageMock.When(ctx, items[0].Key, items[0].Payload).Then(nil)
 		testHandler.outboxRepositoryMock.SetStatusMock.When(ctx, int(items[0].Id), "sent").Then(nil)
+		testHandler.poolerMock.InTxMock.Set(func(ctx context.Context, fn func(ctx context.Context) error) error {
+			return fn(ctx)
+		})
 
 		handler.SendMessages(ctx)
 

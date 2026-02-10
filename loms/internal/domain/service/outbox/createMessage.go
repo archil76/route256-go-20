@@ -18,10 +18,13 @@ func (s *OutboxService) CreateMessage(ctx context.Context, orderID int64, status
 		logger.Errorw("Ошибка создания сообщения kafka", "orderID", orderID, "status", status, "Error", err)
 		return
 	}
+	err = s.pooler.InTx(ctx, func(ctx context.Context) error {
+		_, err = s.outboxRepository.Create(ctx, key, string(NEWSTATUS), message)
+		if err != nil {
+			logger.Errorw("Ошибка записи сообщения в outbox", "orderID", orderID, "status", status, "Error", err)
+			return err
+		}
+		return nil
+	})
 
-	_, err = s.outboxRepository.Create(ctx, key, string(NEWSTATUS), message)
-	if err != nil {
-		logger.Errorw("Ошибка записи сообщения в outbox", "orderID", orderID, "status", status, "Error", err)
-		return
-	}
 }
