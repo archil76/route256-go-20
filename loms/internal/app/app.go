@@ -89,7 +89,7 @@ func NewApp(configPath string) (*App, error) {
 			fmt.Errorf("NewOutboxPostgresRepository: %w", err)
 	}
 
-	sendinterval := 1 // можно вынести в конфиги
+	sendinterval := 3 // можно вынести в конфиги
 	newOutboxService := outboxService.NewOutboxService(ctx, newOutboxRepository, sendinterval, &producer, pooler)
 
 	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, newOutboxService, pooler)
