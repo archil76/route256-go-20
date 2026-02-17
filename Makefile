@@ -15,3 +15,6 @@ down:
 
 run-all:
 	docker-compose up --build -d
+
+tests:
+	go test -v ./...
