@@ -1,49 +1,33 @@
-package e2e
+//go:build e2e_test
+
+package hw3e2e
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
-
-	"route256/loms/internal/infra/config"
 	"testing"
 
-	"github.com/ozontech/allure-go/pkg/framework/asserts_wrapper/require"
 	"github.com/ozontech/allure-go/pkg/framework/provider"
 	"github.com/ozontech/allure-go/pkg/framework/suite"
 )
 
-type ServerE struct {
+type Suite struct {
 	suite.Suite
-	Host   string
-	client *http.Client
+
+	cartClient *Client
+	lomsClient *Client
 }
 
-func TestServerE(t *testing.T) {
-	t.Parallel()
-	suite.RunSuite(t, new(ServerE))
+func TestSuite(t *testing.T) {
+	suite.RunNamedSuite(t, "hw 3 student", new(Suite))
 }
 
-func (s *ServerE) BeforeAll(t provider.T) {
-	env_var := os.Getenv("CONFIG_FILE")
-	if env_var == "" {
-		t.Fatalf("Не задана переменная окружения CONFIG_FILE")
-		return
-	}
+func (s *Suite) BeforeAll(t provider.T) {
 
-	c, err := config.LoadConfig(os.Getenv("CONFIG_FILE"))
-	if err != nil {
-		t.Fatalf("Неверный формат конфига по адресу: %s", env_var)
-		return
-	}
-
-	s.Host = fmt.Sprintf("http://%s:%s", c.Server.Host, c.Server.HttpPort)
-
-	s.client = &http.Client{}
-
-	t.Title("e2e test")
+	s.cartClient = NewClient("http://localhost:8080")
+	s.lomsClient = NewClient("http://localhost:8084")
 }
 
 type CreateOrderRequest struct {
@@ -58,77 +42,6 @@ type ItemRequest struct {
 
 type OrderIDResponse struct {
 	OrderID int64 `json:"orderID"`
-}
-
-func (s *ServerE) TestServerE(t provider.T) {
-	t.Parallel()
-	t.Helper()
-
-	sku := int64(1076963)
-	sku2 := int64(1148162) // должен быть больше Sku для проверки сортировки получаемой корзины
-	wrongSku := int64(1076963000)
-
-	count := uint32(2)
-	count2 := uint32(3)
-	userID := int64(1022222)
-
-	createOrderRequest := CreateOrderRequest{
-		UserID: userID,
-		Items: []ItemRequest{
-			{
-				Sku:   sku,
-				Count: count,
-			},
-			{
-				Sku:   sku2,
-				Count: count2,
-			},
-		}}
-
-	createWrongOrderRequest := CreateOrderRequest{
-		UserID: userID,
-		Items: []ItemRequest{
-			{
-				Sku:   sku,
-				Count: count,
-			},
-			{
-				Sku:   wrongSku,
-				Count: count2,
-			},
-		}}
-
-	t.Title("Создание заказа")
-
-	t.WithNewStep("Действие: Создание заказа", func(t provider.StepCtx) {
-
-		request, err := getCreateOrderRequest(s.Host, createOrderRequest)
-		require.NoError(t, err)
-
-		response, err := s.client.Do(request)
-		require.NoError(t, err)
-		require.Equal(t, http.StatusOK, response.StatusCode)
-
-		orderIDResponse, err := decodeResponseBody(response, OrderIDResponse{})
-		require.NoError(t, err)
-		if value, ok := orderIDResponse.(OrderIDResponse); ok {
-			require.Greater(t, 0, value.OrderID)
-		} else {
-			require.False(t, ok)
-		}
-
-	})
-
-	t.WithNewStep("Действие: Не валидный sku", func(t provider.StepCtx) {
-
-		request, err := getCreateOrderRequest(s.Host, createWrongOrderRequest)
-		require.NoError(t, err)
-
-		response, err := s.client.Do(request)
-		require.NoError(t, err)
-		require.Equal(t, http.StatusBadRequest, response.StatusCode)
-
-	})
 }
 
 func getCreateOrderRequest(host string, createOrderRequest CreateOrderRequest) (*http.Request, error) {

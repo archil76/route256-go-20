@@ -44,10 +44,6 @@ func NewPooler(ctx context.Context, dsn string) (*Pooler, error) {
 }
 
 func (p *Pooler) InTx(ctx context.Context, fn func(ctx context.Context) error) error {
-	//IsoLevel := pgx.ReadCommitted
-	//if role == "RW" {
-	//	IsoLevel = pgx.RepeatableRead
-	//}
 	tx, err := p.master.Begin(ctx)
 	if err != nil {
 		return err

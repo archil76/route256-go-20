@@ -30,13 +30,13 @@ POST http://localhost:8084/order/pay
 Content-Type: application/json
 
 {
-  "orderId": 6
+  "orderId": 1
 }
 ### expected: 200 (OK) {}
 
 
 ### check actual status is "paid"
-GET http://localhost:8084/order/info?orderId=1
+GET http://localhost:8084/order/info?orderId=4
 Content-Type: application/json
 
 ### expected: 200 (OK) {"status":"paid","user":31337,"Items":[{"sku":1076963,"count":3},{"sku":135717466,"count":2}]}
@@ -47,7 +47,7 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderId": 1
+  "orderId": 5
 }
 ### expected: 400 (Bad Request) {"code":9, ... }
 
@@ -157,7 +157,7 @@ POST http://localhost:8084/order/cancel
 Content-Type: application/json
 
 {
-  "orderId": 4
+  "orderId": 20
 }
 ### expected: 200 (OK)
 
@@ -175,3 +175,17 @@ Content-Type: application/json
 
 ### expected: {"count":78}; 200 OK
 
+### create order with count for sku more than stock
+POST http://localhost:8084/order/create
+Content-Type: application/json
+
+{
+  "userId": 1000,
+  "items": [
+    {
+      "sku": 1076963,
+      "count": 5000000
+    }
+  ]
+}
+### expected: 400 (Bad Request) {"code":9, ... }

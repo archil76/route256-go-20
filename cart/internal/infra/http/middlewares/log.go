@@ -14,6 +14,10 @@ func NewLogMux(h http.Handler) http.Handler {
 }
 
 func (m *LogMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/metrics" {
+		m.h.ServeHTTP(w, r)
+		return
+	}
 	logger.Infow("request got", r.Method, r.URL.Path)
 
 	m.h.ServeHTTP(w, r)

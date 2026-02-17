@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	lomsService "route256/loms/internal/domain/service/loms"
+	outboxService "route256/loms/internal/domain/service/outbox"
+	"route256/loms/internal/infra/logger"
 	"route256/loms/internal/infra/pgpooler"
 	"strings"
 	"time"
@@ -13,9 +16,10 @@ import (
 	desc "route256/loms/internal/api"
 	"route256/loms/internal/app/server"
 	orderRepository "route256/loms/internal/domain/repository/postgres/order"
+	outboxRepository "route256/loms/internal/domain/repository/postgres/outbox"
 	stockRepository "route256/loms/internal/domain/repository/postgres/stock"
-	lomsService "route256/loms/internal/domain/service"
 	"route256/loms/internal/infra/config"
+	kafkaProducer "route256/loms/internal/infra/kafka/producer"
 	"route256/loms/internal/infra/middlewares"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -26,8 +30,10 @@ import (
 )
 
 type App struct {
-	config *config.Config
-	server *grpc.Server
+	config        *config.Config
+	server        *grpc.Server
+	producer      *kafkaProducer.KafkaProducer
+	outboxService *outboxService.OutboxService
 }
 
 func NewApp(configPath string) (*App, error) {
@@ -72,20 +78,48 @@ func NewApp(configPath string) (*App, error) {
 			fmt.Errorf("NewOrderPostgresRepository: %w", err)
 	}
 
-	service := lomsService.NewLomsService(newOrderRepository, newStockRepository)
+	producer, err := kafkaProducer.NewProducer(ctx, c.Kafka.Brokers, c.Kafka.OrderTopic)
+	if err != nil {
+		return nil, err
+	}
+
+	newOutboxRepository, err := outboxRepository.NewOutboxPostgresRepository(pooler)
+	if err != nil {
+		return nil,
+			fmt.Errorf("NewOutboxPostgresRepository: %w", err)
+	}
+
+	sendinterval := 3 // можно вынести в конфиги
+	newOutboxService := outboxService.NewOutboxService(ctx, newOutboxRepository, sendinterval, &producer, pooler)
+
+	service := lomsService.NewLomsService(newOrderRepository, newStockRepository, newOutboxService, pooler)
 
 	lomsServer := server.NewServer(service)
+
+	newOutboxService.Start()
 
 	desc.RegisterLomsServer(grpcServer, lomsServer)
 
 	app := &App{config: c}
 	app.server = grpcServer
+	app.producer = &producer
 
 	return app, nil
 }
 
 func (app *App) ListenAndServe() error {
 	address := fmt.Sprintf("%s:%s", app.config.Server.Host, app.config.Server.GrpcPort)
+
+	defer func() {
+		if err := app.producer.Close(); err != nil {
+			logger.Errorw("Error closing producer: %v", err)
+		}
+		logger.Infow("kafka is closed")
+
+		app.server.GracefulStop()
+		app.outboxService.Stop()
+
+	}()
 
 	l, err := net.Listen("tcp", address)
 	if err != nil {
@@ -131,6 +165,7 @@ func (app *App) ListenAndServe() error {
 		if err1 = gwServer.ListenAndServe(); err1 != nil {
 			panic(err1)
 		}
+
 	}()
 
 	fmt.Printf("loms service is ready %s:%s-%s\n", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)

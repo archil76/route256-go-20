@@ -33,7 +33,7 @@ type Repository struct {
 func NewCartInMemoryRepository(capacity int, tracer Tracer) *Repository {
 	repository := &Repository{storage: make(Storage, capacity), done: make(chan struct{}), tracer: tracer}
 	go func() {
-		t := time.NewTicker(time.Second)
+		t := time.NewTicker(30 * time.Second)
 		for {
 			select {
 			case <-t.C:

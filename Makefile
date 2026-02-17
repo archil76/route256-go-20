@@ -7,9 +7,14 @@ build: cart-build loms-build notifier-build comments-build
 
 up:
 	docker-compose up --build -d
+upl:
+	docker-compose up -d --build loms
 
 down:
 	docker-compose down
 
 run-all:
 	docker-compose up --build -d
+
+tests:
+	go test -v ./...
