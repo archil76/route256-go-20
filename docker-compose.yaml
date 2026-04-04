@@ -151,3 +151,60 @@ services:
     image: ghcr.io/shopify/toxiproxy:2.11.0
     ports:
       - "8474:8474"
+
+  comments:
+    image: comments
+    build: ./comments
+    ports:
+      - "8085:8085"
+      - "8086:8086"
+    depends_on:
+      postgres-comments-shard-1:
+        condition: service_healthy
+      postgres-comments-shard-2:
+        condition: service_healthy
+      migration-comments:
+        condition: service_started
+
+  postgres-comments-shard-1:
+    image: postgres:16
+    container_name: postgres-comments-shard-1
+    environment:
+      POSTGRES_DB: comments_db
+      POSTGRES_USER: comments-user-1
+      POSTGRES_PASSWORD: comments-password-1
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USERNAME -d $$POSTGRES_DATABASE" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-comments-shard-2:
+    image: postgres:16
+    container_name: postgres-comments-shard-2
+    environment:
+      POSTGRES_DB:  comments_db
+      POSTGRES_USER: comments-user-2
+      POSTGRES_PASSWORD: comments-password-2
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USERNAME -d $$POSTGRES_DATABASE" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration-comments:
+    image: gomicro/goose:3.7.0
+    depends_on:
+      postgres-comments-shard-1:
+        condition: service_healthy
+      postgres-comments-shard-2:
+        condition: service_healthy
+    volumes:
+      - ./comments/migrations:/migrations
+    command: "bash -c 'echo Waiting for Migration-Comments to be done... && \
+          goose -dir /migrations/  postgres \"host=postgres-comments-shard-1 user=comments-user-1 password=comments-password-1 dbname=comments_db sslmode=disable\" up  && \
+          goose -dir /migrations/  postgres \"host=postgres-comments-shard-2 user=comments-user-2 password=comments-password-2 dbname=comments_db sslmode=disable\" up'"
