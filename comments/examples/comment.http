@@ -170,7 +170,7 @@ POST http://localhost:8086/comment/get-by-id
 Content-Type: application/json
 
 {
-  "id": 8000
+  "id": 5
 }
 
 ### Expect:

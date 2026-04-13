@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (s Server) GetListBySKU(ctx context.Context, request *commentspb.CommentListBySKURequest) (*commentspb.CommentListBySKUResponse, error) {
+func (s Server) CommentListBySKU(ctx context.Context, request *commentspb.CommentListBySKURequest) (*commentspb.CommentListBySKUResponse, error) {
 	commentsList, err := s.commentsService.GetListBySKU(ctx, request.Sku)
 	if err != nil {
 		return nil, err

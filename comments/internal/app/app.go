@@ -19,7 +19,6 @@ import (
 	"route256/comments/internal/infra/shard_manager"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -48,6 +47,10 @@ func NewApp(configPath string) (*App, error) {
 	reflection.Register(grpcServer)
 
 	shardsCount := len(c.DBShards)
+	if shardsCount == 0 {
+		return nil, fmt.Errorf("config.DBShards: %s", "not any shard exist")
+	}
+
 	poolers := make([]shard_manager.PgPooler, shardsCount)
 	for i, shardCfg := range c.DBShards {
 		postgresDsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
@@ -108,9 +111,9 @@ func (app *App) ListenAndServe() error {
 		if err1 = desc.RegisterCommentsHandler(ctx, gwMux, conn); err1 != nil {
 			panic(err1)
 		}
-		gwMux.HandlePath(http.MethodGet, "/metrics", func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-			promhttp.Handler().ServeHTTP(w, r)
-		})
+		//gwMux.HandlePath(http.MethodGet, "/metrics", func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+		//	promhttp.Handler().ServeHTTP(w, r)
+		//})
 
 		logMux := middlewares.NewLogMux(gwMux)
 
@@ -131,7 +134,7 @@ func (app *App) ListenAndServe() error {
 
 	}()
 
-	fmt.Printf("loms service is ready %s:%s-%s\n", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
+	fmt.Printf("comments service is ready %s:%s-%s\n", app.config.Server.Host, app.config.Server.HttpPort, app.config.Server.GrpcPort)
 
 	if err = app.server.Serve(l); err != nil {
 		return err

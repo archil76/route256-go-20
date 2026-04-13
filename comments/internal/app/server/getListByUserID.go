@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (s Server) getListByUserID(ctx context.Context, request *commentspb.CommentListByUserRequest) (*commentspb.CommentListByUserResponse, error) {
+func (s Server) CommentListByUser(ctx context.Context, request *commentspb.CommentListByUserRequest) (*commentspb.CommentListByUserResponse, error) {
 	commentsList, err := s.commentsService.GetListByUserID(ctx, request.UserID)
 	if err != nil {
 		return nil, err

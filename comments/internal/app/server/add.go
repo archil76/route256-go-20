@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s Server) Add(ctx context.Context, request *commentspb.CommentAddRequest) (*commentspb.CommentAddResponse, error) {
+func (s Server) CommentAdd(ctx context.Context, request *commentspb.CommentAddRequest) (*commentspb.CommentAddResponse, error) {
 	comment := model.Comment{}
 	comment.UserID = request.UserID
 	comment.Comment = request.Comment

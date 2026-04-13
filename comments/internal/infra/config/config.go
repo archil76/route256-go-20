@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	App struct {
-		EditInterval int `yaml:"edit_interval"`
+		EditInterval string `yaml:"edit_interval"`
 	} `yaml:"app"`
 
 	Server struct {
@@ -23,7 +23,7 @@ type Config struct {
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 		DBName   string `yaml:"db_name"`
-	} `yaml:"database_shards"`
+	} `yaml:"db_shards"`
 }
 
 func LoadConfig(filename string) (*Config, error) {
