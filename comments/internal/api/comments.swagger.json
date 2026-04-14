@@ -81,7 +81,7 @@
       }
     },
     "/comment/get-by-id": {
-      "get": {
+      "post": {
         "operationId": "Comments_CommentGetByID",
         "responses": {
           "200": {
@@ -99,11 +99,12 @@
         },
         "parameters": [
           {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CommentGetByIDRequest"
+            }
           }
         ],
         "tags": [
@@ -144,7 +145,7 @@
       }
     },
     "/comment/list-by-user": {
-      "get": {
+      "post": {
         "operationId": "Comments_CommentListByUser",
         "responses": {
           "200": {
@@ -162,11 +163,12 @@
         },
         "parameters": [
           {
-            "name": "user_id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CommentListByUserRequest"
+            }
           }
         ],
         "tags": [
@@ -220,6 +222,15 @@
     "CommentEditResponse": {
       "type": "object"
     },
+    "CommentGetByIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "CommentGetByIDResponse": {
       "type": "object",
       "properties": {
@@ -262,6 +273,15 @@
             "type": "object",
             "$ref": "#/definitions/CommentsBySKU"
           }
+        }
+      }
+    },
+    "CommentListByUserRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

@@ -16,7 +16,8 @@ service Comments {
 
   rpc CommentGetByID(CommentGetByIDRequest) returns (CommentGetByIDResponse){
     option(google.api.http) = {
-      get: "/comment/get-by-id"
+      post: "/comment/get-by-id"
+      body: "*"
     };
   };
 
@@ -36,7 +37,8 @@ service Comments {
 
   rpc CommentListByUser(CommentListByUserRequest) returns (CommentListByUserResponse){
     option(google.api.http) = {
-      get: "/comment/list-by-user"
+      post: "/comment/list-by-user"
+      body: "*"
     };
   };
 };
