@@ -12,6 +12,7 @@ import (
 func (s Server) CommentEdit(ctx context.Context, request *commentspb.CommentEditRequest) (*commentspb.CommentEditResponse, error) {
 	comment := model.Comment{}
 	comment.UserID = request.UserID
+	comment.ID = request.CommentID
 	comment.Comment = request.NewComment
 
 	_, err := s.commentsService.Edit(ctx, comment)

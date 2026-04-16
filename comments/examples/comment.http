@@ -170,7 +170,7 @@ POST http://localhost:8086/comment/get-by-id
 Content-Type: application/json
 
 {
-  "id": 15
+  "id": 23
 }
 
 ### Expect:
@@ -226,7 +226,7 @@ Content-Type: application/json
 
 {
   "user_id": 42,
-  "comment_id": 14,
+  "comment_id": 23,
   "new_comment": "hello world changed"
 }
 
@@ -240,7 +240,7 @@ Content-Type: application/json
 
 {
   "user_id": 555555,
-  "comment_id": 1001,
+  "comment_id": 23,
   "new_comment": "hello world changed"
 }
 
