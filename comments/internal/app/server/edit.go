@@ -17,6 +17,19 @@ func (s Server) CommentEdit(ctx context.Context, request *commentspb.CommentEdit
 
 	_, err := s.commentsService.Edit(ctx, comment)
 	if err != nil {
+
+		if err == model.ErrUserNotAuthor {
+			return nil, status.Errorf(codes.PermissionDenied, "")
+		}
+
+		if err == model.ErrEditTimeExpired {
+			return nil, status.Errorf(codes.FailedPrecondition, "")
+		}
+
+		if err == model.ErrCommentDoesntExist {
+			return nil, status.Errorf(codes.NotFound, "")
+		}
+
 		return nil, err
 	}
 

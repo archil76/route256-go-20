@@ -11,7 +11,7 @@ func (s *CommentsService) Edit(ctx context.Context, comment model.Comment) (int6
 
 	exComment, err := s.repository.GetByID(ctx, comment.ID)
 	if err != nil {
-		return 0, err
+		return 0, model.ErrCommentDoesntExist
 	}
 
 	// Проверяем, что редактирующий пользователь является автором комментария
