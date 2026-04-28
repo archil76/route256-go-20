@@ -15,12 +15,20 @@ func (r *Repository) GetListBySKU(ctx context.Context, sku int64) (*model.Commen
 		return nil, model.ErrSkuIsNotValid
 	}
 	const query = `SELECT id, user_id, sku, comment, created_at FROM comments where sku = $1`
-	pool, err := r.sm.PickPool(ctx, sku)
+	shardIndex := r.sm.GetShardIndex(sku)
+	pool, err := r.sm.PickPool(ctx, shardIndex)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.getList(ctx, pool, query, sku)
+	currentList, err := r.getList(ctx, pool, query, sku)
+	if err != nil {
+		return nil, err
+	}
+
+	sortCommentsList(currentList.Comments)
+
+	return &model.CommentsList{Comments: currentList.Comments}, nil
 }
 
 // ходим по всем шардам, получаем списки и соединяем их
@@ -46,11 +54,7 @@ func (r *Repository) GetListByUserID(ctx context.Context, userID int64) (*model.
 		}
 	}
 
-	if len(allComments) != 0 {
-		sort.Slice(allComments, func(i, j int) bool {
-			return allComments[i].CreatedAt.Before(allComments[j].CreatedAt)
-		})
-	}
+	sortCommentsList(allComments)
 
 	return &model.CommentsList{Comments: allComments}, nil
 }
@@ -78,4 +82,17 @@ func (r *Repository) getList(ctx context.Context, pool *pgxpool.Pool, query stri
 	}
 
 	return &commentList, nil
+}
+
+func sortCommentsList(currentList []model.Comment) {
+	if len(currentList) != 0 {
+		sort.Slice(currentList, func(i, j int) bool {
+			// Сначала сортируем по CreatedAt по убыванию (новые первыми)
+			if currentList[i].CreatedAt.Equal(currentList[j].CreatedAt) {
+				// Если CreatedAt равны, сортируем по UserID по возрастанию
+				return currentList[i].UserID < currentList[j].UserID
+			}
+			return currentList[i].CreatedAt.After(currentList[j].CreatedAt)
+		})
+	}
 }

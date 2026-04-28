@@ -13,14 +13,16 @@ func (r *Repository) edit(ctx context.Context, comment model.Comment) (*model.Co
 	const query = `UPDATE comments SET comment=$2 where id = $1 returning id`
 
 	upComment := model.Comment{}
+	shardIndex := r.sm.GetShardIndexFromID(comment.ID)
+	pool, err := r.sm.PickPool(ctx, shardIndex)
 
-	for _, pool := range r.sm.GetShards(ctx) {
-		if err := pool.QueryRow(ctx, query, comment.ID, comment.Comment).
-			Scan(&upComment.ID); err == nil {
-			upComment.Comment = comment.Comment
-			return &upComment, nil
-		}
+	if err = pool.QueryRow(ctx, query, comment.ID, comment.Comment).
+		Scan(&upComment.ID); err != nil {
+
+		return nil, model.ErrCommentDoesntExist
 	}
 
-	return nil, model.ErrCommentDoesntExist
+	upComment.Comment = comment.Comment
+
+	return &upComment, nil
 }

@@ -6,7 +6,7 @@ Content-Type: application/json
 
 {
   "user_id": 42,
-  "sku": 1004005,
+  "sku": 1004006,
   "comment": "hello world"
 }
 
@@ -170,7 +170,7 @@ POST http://localhost:8086/comment/get-by-id
 Content-Type: application/json
 
 {
-  "id": 8000
+  "id": 8001
 }
 
 ### Expect:
@@ -225,9 +225,9 @@ POST http://localhost:8086/comment/edit
 Content-Type: application/json
 
 {
-  "user_id": 42,
-  "comment_id": 1001,
-  "new_comment": "hello world changed"
+  "user_id": 123,
+  "comment_id": 8001,
+  "new_comment": "hello world changed again"
 }
 
 ### Expect

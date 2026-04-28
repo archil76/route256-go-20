@@ -7,6 +7,7 @@ import (
 	commentsService "route256/comments/internal/domain/service"
 	"route256/comments/internal/infra/middlewares"
 	"route256/comments/internal/infra/pgpooler"
+	"strconv"
 	"strings"
 	"time"
 
@@ -74,7 +75,13 @@ func NewApp(configPath string) (*App, error) {
 			fmt.Errorf("NewStockPostgresRepository: %w", err)
 	}
 
-	newCommentsService := commentsService.NewCommentsService(newCommentsRepository, shardManager)
+	editIntervalInt, err := strconv.Atoi(c.App.EditInterval)
+	if err != nil {
+		editIntervalInt = 1
+	}
+	editInterval := time.Duration(editIntervalInt)
+
+	newCommentsService := commentsService.NewCommentsService(newCommentsRepository, shardManager, editInterval)
 
 	commentsServer := server.NewServer(newCommentsService)
 
@@ -96,7 +103,7 @@ func (app *App) ListenAndServe() error {
 
 	go func() {
 		conn, err1 := grpc.NewClient(
-			fmt.Sprintf(":%s", app.config.Server.GrpcPort),
+			fmt.Sprintf("%s:%s", app.config.Server.Host, app.config.Server.GrpcPort),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err1 != nil {

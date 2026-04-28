@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE comments (
-                        id bigserial primary key,
+                        id bigserial not null primary key,
                         user_id bigint not null default 0,
                         sku integer not null,
                         comment text CHECK (length(comment) <= 250),

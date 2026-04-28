@@ -3,6 +3,7 @@ package comments
 import (
 	"context"
 	"route256/comments/internal/domain/model"
+	"time"
 )
 
 type Repository interface {
@@ -18,10 +19,11 @@ type PgPooler interface {
 }
 
 type CommentsService struct {
-	repository Repository
-	pooler     PgPooler
+	repository   Repository
+	pooler       PgPooler
+	editInterval time.Duration
 }
 
-func NewCommentsService(repository Repository, pooler PgPooler) *CommentsService {
-	return &CommentsService{repository: repository, pooler: pooler}
+func NewCommentsService(repository Repository, pooler PgPooler, editInterval time.Duration) *CommentsService {
+	return &CommentsService{repository: repository, pooler: pooler, editInterval: editInterval}
 }

@@ -7,7 +7,9 @@ import (
 )
 
 type ShardManager interface {
-	PickPool(ctx context.Context, key int64) (*pgxpool.Pool, error)
+	GetShardIndexFromID(id int64) int
+	GetShardIndex(key int64) int
+	PickPool(_ context.Context, shardIndex int) (*pgxpool.Pool, error)
 	GetShards(ctx context.Context) []*pgxpool.Pool
 }
 

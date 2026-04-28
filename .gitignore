@@ -5,3 +5,4 @@ vendor-proto
 allure-results
 grafana_data
 trace.out
+/claude.md
