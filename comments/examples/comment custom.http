@@ -1,0 +1,21 @@
+
+POST http://localhost:8086/comment/add
+Content-Type: application/json
+
+{
+  "user_id": 123,
+  "sku": 456005,
+  "comment": "hello world 123"
+}
+
+### Expect:
+### {
+###   "id": "8000"
+### }
+
+POST http://localhost:8086/comment/get-by-id
+Content-Type: application/json
+
+{
+  "id": 28001
+}
