@@ -36,8 +36,8 @@ type comments struct {
 
 type comment struct {
 	ID        int64     `json:"id,string"`
-	UserID    int64     `json:"userId,string"`
+	UserID    int64     `json:"user_id,string"`
 	SKU       int64     `json:"sku,string"`
 	Comment   string    `json:"comment"`
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"created_at"`
 }
